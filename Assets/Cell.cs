@@ -1,29 +1,28 @@
-using Unity.VisualScripting;
-using UnityEngine;
-using UnityEngine.UI;
-
-public class Cell:MonoBehaviour
+/// <summary>
+/// 各セルを表すクラス。
+/// </summary>
+public class Cell
 {
-    public int x;
-    public int y;
-    [SerializeField] private Image occupant;
+    public int X { get; }
+    public int Y { get; }
+
+    public IUnit Occupant { get; private set; }
 
     public Cell(int x, int y)
     {
-        this.x = x;
-        this.y = y;
-        ClearOccupation();
+        X = x;
+        Y = y;
     }
 
-    public void SetOccupation(Sprite sprite)
+    public bool IsEmpty => Occupant == null;
+
+    public void Place(IUnit unit)
     {
-        Debug.Log(occupant == null ? "occupant is null" : "occupant ok");
-        occupant.gameObject.SetActive(true);
+        Occupant = unit;
     }
 
-    public void ClearOccupation()
+    public void Clear()
     {
-
-            occupant.gameObject.SetActive(false);
+        Occupant = null;
     }
 }
