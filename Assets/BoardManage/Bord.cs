@@ -1,3 +1,8 @@
+using TestCardGame.Charactor;
+using UnityEngine;
+namespace TestCardGame.BoardManage
+{
+
 /// <summary>
 /// セルをまとめたボードを表すクラス。
 /// </summary>
@@ -8,6 +13,11 @@ public class Board
 
     private readonly Cell[,] cells;
 
+    /// <summary>
+    /// 指定した幅と高さでボードを初期化する。
+    /// </summary>
+    /// <param name="width"></param>
+    /// <param name="height"></param>
     public Board(int width, int height)
     {
         Width = width;
@@ -23,6 +33,7 @@ public class Board
             }
         }
     }
+
     /// <summary>
     /// 指定した座標のセルを取得する。
     /// </summary>
@@ -47,6 +58,8 @@ public class Board
                y >= 0 && y < Height;
     }
 
+
+
     /// <summary>
     /// 指定したユニットを指定した座標のセルに配置する。
     /// </summary>
@@ -54,13 +67,37 @@ public class Board
     /// <param name="x"></param>
     /// <param name="y"></param>
     /// <exception cref="System.InvalidOperationException"></exception>
-    public void PlaceUnit(IUnit unit, int x, int y)
+    public bool TryMoveUnit(IUnit unit, int x, int y)
     {
-        var cell = GetCell(x, y);
+        if (!IsInside(x, y))
+        {
+            return false;
+        }
 
-        if (!cell.IsEmpty)
-            throw new System.InvalidOperationException("Cell is occupied.");
+        var from = unit.Position;
+        if (from.x == x && from.y == y)
+        {
+            return false;
+        }
 
-        cell.Place(unit);
+        var targetCell = GetCell(x, y);
+        if (!targetCell.CanMove)
+        {
+            return false;
+        }
+
+        if (IsInside(from.x, from.y))
+        {
+            var currentCell = GetCell(from.x, from.y);
+            if (currentCell.Occupant == unit)
+            {
+                currentCell.Clear();
+            }
+        }
+
+        targetCell.Place(unit);
+        unit.MoveTo(x, y);
+        return true;
     }
+}
 }
