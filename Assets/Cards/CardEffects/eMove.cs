@@ -9,8 +9,8 @@ namespace TestCardGame.Cards.Effects
 
         public override void Execute(CardContext context)
         {
-            var dir = Normalize(context.targetPosition);
-            context.controller.RequestMove(context.User, dir * step);
+            var dir = Normalize(context.TargetPosition);
+            context.MoveService.RequestMoveRelative(context.User.ID, dir * step);
         }
 
         private static Vector2Int Normalize(Vector2Int d)

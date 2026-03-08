@@ -5,9 +5,9 @@ using TestCardGame.Cards.VOs;
 
 namespace TestCardGame.Cards
 {
-    public class MoveCard : CardBase
+    public class cMove : CardBase
     {
-        public MoveCard(CardLevel level, List<CardModifier> enchants = null): base
+        public cMove(CardLevel level, List<CardModifier> enchants = null): base
             (
                 "移動",
                 "ユニットを移動させる。",

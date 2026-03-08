@@ -50,11 +50,11 @@ public class CardLevel: VOBase
     }
 
     /// <summary>レベル1のCardLevelを返すスタティックプロパティ</summary>
-    public static CardLevel Level1 => new CardLevel(1);
+    public static CardLevel one => new CardLevel(1);
     /// <summary>レベル2のCardLevelを返すスタティックプロパティ</summary>
-    public static CardLevel Level2 => new CardLevel(2);
+    public static CardLevel two => new CardLevel(2);
     /// <summary>レベル3のCardLevelを返すスタティックプロパティ</summary>
-    public static CardLevel Level3 => new CardLevel(3);
+    public static CardLevel three => new CardLevel(3);
 
     public static implicit operator int(CardLevel level)
     {

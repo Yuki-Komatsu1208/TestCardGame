@@ -2,6 +2,7 @@ using TestCardGame.BoardManage;
 using TestCardGame.Charactor;
 using TestCardGame.Charactor.ValueObjects;
 using TestCardGame.Controller;
+using TestCardGame.Controller.Services;
 using UnityEngine;
 
 namespace TestCardGame.Cards
@@ -15,7 +16,7 @@ public class CardContext
     /// <summary>
     /// コントローラ
     /// </summary>
-    public GameController Controller { get; }
+    public UnitMoveService MoveService { get; }
     /// <summary>
     /// カードを使用するユニットのID
     /// </summary>
@@ -25,9 +26,9 @@ public class CardContext
     /// </summary>
     public Vector2Int TargetPosition { get; }
 
-    public CardContext(GameController controller, IUnit user, Vector2Int targetPosition)
+    public CardContext(UnitMoveService service, IUnit user, Vector2Int targetPosition)
     {
-        Controller = controller;
+        MoveService = service;
         User = user;
         TargetPosition = targetPosition;
     }

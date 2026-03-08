@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using TestCardGame.Charactor.StatusVO;
+using TestCardGame.CommonBase;
 
 namespace TestCardGame.Charactor.ValueObjects
 {

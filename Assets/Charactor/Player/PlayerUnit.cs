@@ -1,3 +1,8 @@
+using System.Collections.Generic;
+using TestCardGame.Cards;
+using TestCardGame.Cards.Effects;
+using TestCardGame.Cards.Modifiers;
+using TestCardGame.Cards.VOs;
 using TestCardGame.Charactor.StatusVO;
 using TestCardGame.Charactor.ValueObjects;
 using UnityEngine;
@@ -20,6 +25,7 @@ namespace TestCardGame.Charactor.Player
         {
             Position = new Vector2Int(x, y);
         }
+        public List<CardBase> Cards {get;private set;}
 
         /// <summary>
         /// プレイヤーのコンストラクタ。ID、名前、HPを初期化する。
@@ -30,6 +36,7 @@ namespace TestCardGame.Charactor.Player
             Name = name;
             Position = position;
             Hp = hp;
+            Cards = new List<CardBase>{new cMove(CardLevel.one) };
         }
     }
 }
