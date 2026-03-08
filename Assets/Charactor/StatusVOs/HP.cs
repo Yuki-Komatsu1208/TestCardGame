@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TestCardGame.CommonBase;
 using UnityEngine;
 
 namespace TestCardGame.Charactor.StatusVO

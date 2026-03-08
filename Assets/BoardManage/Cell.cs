@@ -1,4 +1,5 @@
 using TestCardGame.Charactor;
+using UnityEngine;
 
 namespace TestCardGame.BoardManage
 {
@@ -8,7 +9,7 @@ namespace TestCardGame.BoardManage
 /// </summary>
 public class Cell
 {
-    public int X { get; }
+    public int X { get; }   
     public int Y { get; }
 
     public IUnit Occupant { get; private set; }
@@ -27,6 +28,27 @@ public class Cell
     /// </summary>
     public bool IsWall {get;set;}
     public bool CanMove => !IsWall && IsEmpty;
+    /// <summary>
+    /// セルのツールチップテキストを取得
+    /// </summary>
+    public string TooltipText
+    {
+        get
+        {
+            if (IsWall)
+            {
+                return "壁";
+            }
+            else if (IsEmpty)
+            {
+                return "空きセル";
+            }
+            else
+            {
+                return $"ユニット: {Occupant.Name}";
+            }
+        }
+    }
 
     /// <summary>
     /// セルにユニットを配置

@@ -4,24 +4,33 @@ using UnityEngine;
 using TestCardGame.Charactor;
 using TestCardGame.Charactor.ValueObjects;
 using TestCardGame.BoardManage;
+using TestCardGame.Controller.Services;
 
 namespace TestCardGame.Controller
 {
+
+    /// <summary>
+    /// ゲーム全体のロジックを管理するコントローラー
+    /// </summary>
     public class GameController : MonoBehaviour
     {
         [SerializeField] private CellBuilder cellBuilder;
 
-        private Board board;
+        private UnitMoveService moveService;
+        private ViewMoveService viewMoveService;
         private readonly Dictionary<UnitID, IUnit> unitsById = new();
         private readonly Dictionary<int, UnitView> viewByCharacterCode = new();
         private readonly Dictionary<Vector2Int, RectTransform> cellRects = new();
-        private bool isBusy;
         private bool initialized;
 
         public event Action<UnitID, Vector2Int, Vector2Int> MoveStarted;
         public event Action<UnitID, Vector2Int, Vector2Int> MoveCompleted;
         public event Action<UnitID, Vector2Int, string> MoveRejected;
 
+        /// <summary>
+        /// コントローラーの初期化を行う
+        /// </summary>
+        /// <returns></returns>
         public bool Initialize()
         {
             if (initialized)
@@ -45,7 +54,12 @@ namespace TestCardGame.Controller
                 return false;
             }
 
-            board = cellBuilder.Board;
+            var board = cellBuilder.Board;
+            if (board == null)
+            {
+                Debug.LogError("GameController: Board was not initialized.", this);
+                return false;
+            }
 
             unitsById.Clear();
             unitsById[cellBuilder.Player.ID] = cellBuilder.Player;
@@ -59,116 +73,164 @@ namespace TestCardGame.Controller
                 cellRects[entry.Key] = entry.Value;
             }
 
-            cellBuilder.CellClicked += OnCellClicked;
-            SyncAllViewsFromModel();
+            moveService = new UnitMoveService(board, unitsById);
+            moveService.MoveStarted += OnMoveStarted;
+            moveService.MoveCompleted += OnMoveCompleted;
+            moveService.MoveRejected += OnMoveRejected;
+
+            viewMoveService = new ViewMoveService(cellRects, viewByCharacterCode, unitsById);
+            viewMoveService.Bind(moveService);
+
             initialized = true;
+            viewMoveService.SyncAllViewsFromModel();
+
+            var placed = moveService.RequestMoveAbsolute(cellBuilder.Player.ID, new Vector2Int(2, 2));
+            if (!placed)
+            {
+                Debug.LogError("GameController: failed to place player at initial position (2,2).", this);
+            }
+
             return true;
         }
 
-        public bool RequestMove(UnitID unitId, Vector2Int to)
+        /// <summary>
+        /// ユニットの移動をリクエストする
+        /// </summary>
+        /// <param name="unitId"></param>
+        /// <param name="relativeDelta">現在座標からの相対移動量</param>
+        /// <returns></returns>
+        public bool RequestMove(UnitID unitId, Vector2Int relativeDelta)
         {
             if (!initialized)
             {
-                NotifyMoveFailed(unitId, to, "Controller is not initialized.");
+                MoveRejected?.Invoke(unitId, relativeDelta, "Controller is not initialized.");
                 return false;
             }
 
-            if (isBusy)
+            if (moveService == null)
             {
-                NotifyMoveFailed(unitId, to, "Controller is busy.");
+                MoveRejected?.Invoke(unitId, relativeDelta, "Move service is not initialized.");
                 return false;
             }
 
-            if (!TryResolveMove(unitId, to, out var unit, out var from))
-            {
-                return false;
-            }
-
-            MoveStarted?.Invoke(unitId, from, to);
-            SetBusy(true);
-
-            if (!board.TryMoveUnit(unit, to.x, to.y))
-            {
-                SetBusy(false);
-                NotifyMoveFailed(unitId, to, "Move failed in model.");
-                return false;
-            }
-
-            PlayMoveView(unit, from, to);
-            return true;
+            return moveService.RequestMoveRelative(unitId, relativeDelta);
         }
+        /// <summary>
+        /// ユニットの移動をリクエストする（方向指定版）
+        /// </summary>
+        /// <param name="direction"></param>
+        /// <param name="moveCount"></param>
+        /// <returns></returns>
+        public bool RequestPlayerMoveByDirection(Vector2Int direction, int moveCount = 1)
+        {
+            if (cellBuilder == null)
+            {
+                return false;
+            }
 
+            return RequestMoveByDirection(cellBuilder.Player.ID, direction, moveCount);
+        }
+        /// <summary>
+        /// ユニットの移動をリクエストする（方向指定版）
+        /// </summary>
+        /// <param name="unitId"></param>
+        /// <param name="direction"></param>
+        /// <param name="moveCount"></param>
+        /// <returns></returns>
+        public bool RequestMoveByDirection(UnitID unitId, Vector2Int direction, int moveCount = 1)
+        {
+            if (!initialized)
+            {
+                MoveRejected?.Invoke(unitId, default, "Controller is not initialized.");
+                return false;
+            }
+
+            if (moveCount <= 0)
+            {
+                MoveRejected?.Invoke(unitId, default, "Move count must be positive.");
+                return false;
+            }
+
+            var offset = NormalizeCardinalDirection(direction);
+            if (offset == Vector2Int.zero)
+            {
+                MoveRejected?.Invoke(unitId, offset, "Direction must not be zero.");
+                return false;
+            }
+
+            return RequestMove(unitId, offset * moveCount);
+        }
+        /// <summary>
+        /// モデルの状態に基づいて全てのユニットビューを同期する
+        /// </summary>
         public void SyncAllViewsFromModel()
         {
-            foreach (var unit in unitsById.Values)
+            if (viewMoveService == null)
             {
-                if (!viewByCharacterCode.ContainsKey(unit.ID.CharaID.Code))
-                {
-                    continue;
-                }
-                cellBuilder.MoveUnitView(unit);
+                return;
             }
-        }
 
-        private bool TryResolveMove(UnitID unitId, Vector2Int to, out IUnit unit, out Vector2Int from)
+            viewMoveService.SyncAllViewsFromModel();
+        }
+        /// <summary>
+        /// 方向ベクトルを正規化して、最も近いカードナル方向（上下左右）に変換する
+        /// </summary>
+        /// <param name="direction"></param>
+        /// <returns></returns>
+        private static Vector2Int NormalizeCardinalDirection(Vector2Int direction)
         {
-            unit = null;
-            from = default;
-
-            if (!unitsById.TryGetValue(unitId, out unit))
+            if (direction == Vector2Int.zero)
             {
-                NotifyMoveFailed(unitId, to, "Unit not found.");
-                return false;
+                return Vector2Int.zero;
             }
 
-            from = unit.Position;
-            if (from == to)
-            {
-                NotifyMoveFailed(unitId, to, "Already at target.");
-                return false;
-            }
-
-            if (!board.IsInside(to.x, to.y))
-            {
-                NotifyMoveFailed(unitId, to, "Target is outside board.");
-                return false;
-            }
-
-            return true;
+            return Mathf.Abs(direction.x) >= Mathf.Abs(direction.y)
+                ? new Vector2Int(direction.x > 0 ? 1 : -1, 0)
+                : new Vector2Int(0, direction.y > 0 ? 1 : -1);
         }
-
-        private void PlayMoveView(IUnit unit, Vector2Int from, Vector2Int to)
+        /// <summary>
+        /// ユニットの移動開始を通知する
+        /// </summary>
+        /// <param name="unitId"></param>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        private void OnMoveStarted(UnitID unitId, Vector2Int from, Vector2Int to)
         {
-            if (cellRects.ContainsKey(to))
-            {
-                cellBuilder.MoveUnitView(unit);
-            }
-
-            SetBusy(false);
-            MoveCompleted?.Invoke(unit.ID, from, to);
+            MoveStarted?.Invoke(unitId, from, to);
         }
-
-        private void OnCellClicked(int x, int y)
+        /// <summary>
+        /// ユニットの移動完了を通知する
+        /// </summary>
+        /// <param name="unitId"></param>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        private void OnMoveCompleted(UnitID unitId, Vector2Int from, Vector2Int to)
         {
-            var playerId = cellBuilder.Player.ID;
-            RequestMove(playerId, new Vector2Int(x, y));
+            MoveCompleted?.Invoke(unitId, from, to);
         }
-
-        private void SetBusy(bool busy)
-        {
-            isBusy = busy;
-        }
-
-        private void NotifyMoveFailed(UnitID unitId, Vector2Int to, string reason)
+        /// <summary>
+        /// ユニットの移動拒否を通知する
+        /// </summary>
+        /// <param name="unitId"></param>
+        /// <param name="to"></param>
+        /// <param name="reason"></param>
+        private void OnMoveRejected(UnitID unitId, Vector2Int to, string reason)
         {
             MoveRejected?.Invoke(unitId, to, reason);
         }
-
+        
         private void OnDestroy()
         {
-            if (cellBuilder != null)
+            if (moveService != null)
             {
-                cellBuilder.CellClicked -= OnCellClicked;
+                moveService.MoveStarted -= OnMoveStarted;
+                moveService.MoveCompleted -= OnMoveCompleted;
+                moveService.MoveRejected -= OnMoveRejected;
+            }
+
+            if (viewMoveService != null)
+            {
+                viewMoveService.Dispose();
             }
         }
     }

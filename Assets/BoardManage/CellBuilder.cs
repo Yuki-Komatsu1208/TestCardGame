@@ -50,8 +50,6 @@ public class CellBuilder : MonoBehaviour
         board = new Board(W, H);
         BuildBoard();
         PreparePlayerView();
-
-        PlacePlayerAt(2, 2);
         initialized = true;
         return true;
     }
@@ -65,7 +63,6 @@ public class CellBuilder : MonoBehaviour
                 var obj = Instantiate(cellPrefab, transform);
                 obj.name = $"Cell {x},{y}";
 
-                RegisterCellClick(obj, x, y);
 
                 var position = new Vector2Int(x, y);
                 if (obj.TryGetComponent<RectTransform>(out var rect))
@@ -98,17 +95,6 @@ public class CellBuilder : MonoBehaviour
         });
     }
 
-    public void PlacePlayerAt(int x, int y)
-    {
-        if (!board.TryMoveUnit(playerUnit, x, y))
-        {
-            Debug.LogError($"CellBuilder: failed to place player at ({x},{y}).", this);
-            return;
-        }
-
-        MoveUnitView(playerUnit);
-    }
-
     private void PreparePlayerView()
     {
         playerView.gameObject.SetActive(true);
@@ -135,20 +121,5 @@ public class CellBuilder : MonoBehaviour
 
         playerUnitView.Initialize(playerSprite);
     }
-
-    public void MoveUnitView(IUnit unit)
-    {
-        if (unit == null)
-        {
-            return;
-        }
-
-        if (!cellRects.TryGetValue(unit.Position, out var cellRect))
-        {
-            return;
-        }
-
-        playerUnitView.MoveToCell(cellRect);
     }
-}
 }

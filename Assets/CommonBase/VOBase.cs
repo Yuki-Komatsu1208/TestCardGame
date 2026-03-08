@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace TestCardGame.Charactor.StatusVO
+namespace TestCardGame.CommonBase
 {
     /// <summary>
     /// ValueObjectの基底クラス

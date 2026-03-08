@@ -22,6 +22,7 @@ public class GameStarter : MonoBehaviour
         if (!ok)
         {
             Debug.LogError("GameStarter: GameController initialization failed.", this);
+            return;
         }
     }
 }
