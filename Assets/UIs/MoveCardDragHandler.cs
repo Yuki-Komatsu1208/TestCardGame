@@ -126,6 +126,6 @@ public class MoveCardDragHandler : MonoBehaviour, IPointerDownHandler, IDragHand
             return delta.x >= 0f ? Vector2Int.right : Vector2Int.left;
         }
 
-        return delta.y >= 0f ? Vector2Int.up : Vector2Int.down;
+        return delta.y >= 0f ?  Vector2Int.down:Vector2Int.up ;
     }
 }

@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using TestCardGame.Controller;
 
 namespace TestCardGame.Cards.Views
 {
@@ -17,6 +18,15 @@ namespace TestCardGame.Cards.Views
             nameText.text = card.CardName;
             costText.text = card.Cost.ToString();
             descriptionText.text = card.Description;
+
+            if (TryGetComponent<MoveCardDragHandler>(out var dragHandler))
+            {
+                dragHandler.Configure(
+                    FindFirstObjectByType<GameController>(),
+                    Mathf.Max(1, (int)card.Level),
+                    40f,
+                    GetComponent<RectTransform>());
+            }
         }
 
         public CardBase Card => card;

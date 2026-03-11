@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using TestCardGame.Cards;
 using TestCardGame.Charactor;
+using TestCardGame.Charactor.Player;
 using TestCardGame.Charactor.ValueObjects;
 using TestCardGame.BoardManage;
 using TestCardGame.Controller.Services;
@@ -85,6 +87,8 @@ namespace TestCardGame.Controller
             viewMoveService.SyncAllViewsFromModel();
 
             var placed = moveService.RequestMoveAbsolute(cellBuilder.Player.ID, new Vector2Int(2, 2));
+             
+
             if (!placed)
             {
                 Debug.LogError("GameController: failed to place player at initial position (2,2).", this);
@@ -171,6 +175,16 @@ namespace TestCardGame.Controller
             }
 
             viewMoveService.SyncAllViewsFromModel();
+        }
+
+        public IReadOnlyList<CardBase> GetPlayerCards()
+        {
+            if (cellBuilder?.Player is PlayerUnit player)
+            {
+                return player.Cards;
+            }
+
+            return Array.Empty<CardBase>();
         }
         /// <summary>
         /// 方向ベクトルを正規化して、最も近いカードナル方向（上下左右）に変換する

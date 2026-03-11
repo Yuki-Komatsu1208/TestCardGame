@@ -4,6 +4,7 @@ using TestCardGame.Controller;
 public class GameStarter : MonoBehaviour
 {
     [SerializeField] private GameController gameController;
+    [SerializeField] private HandView handView;
 
     private void Start()
     {
@@ -24,5 +25,18 @@ public class GameStarter : MonoBehaviour
             Debug.LogError("GameStarter: GameController initialization failed.", this);
             return;
         }
+
+        if (handView == null)
+        {
+            handView = FindFirstObjectByType<HandView>();
+        }
+
+        if (handView == null)
+        {
+            Debug.LogWarning("GameStarter: HandView was not found in the scene.", this);
+            return;
+        }
+
+        handView.ShowCards(gameController.GetPlayerCards());
     }
 }
