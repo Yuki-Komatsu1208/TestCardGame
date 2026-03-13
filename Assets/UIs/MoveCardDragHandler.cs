@@ -10,8 +10,8 @@ public class MoveCardDragHandler : MonoBehaviour, IPointerDownHandler, IDragHand
     [SerializeField] private RectTransform cardRect;
 
     private Canvas parentCanvas;
-    private Vector2 pointerDownScreenPos;
     private Vector2 initialAnchoredPos;
+    private Vector2 pointerDownScreenPos;
     private bool isDragging;
 
     private void Awake()
@@ -63,15 +63,14 @@ public class MoveCardDragHandler : MonoBehaviour, IPointerDownHandler, IDragHand
         }
 
         isDragging = false;
-        ResetCardPosition();
 
-        var delta = eventData.position - pointerDownScreenPos;
-        if (delta.magnitude < dragThreshold)
+        var dragDistance = (eventData.position - pointerDownScreenPos).magnitude;
+        if (dragDistance < dragThreshold)
         {
+            ResetCardPosition();
             return;
         }
-
-        var direction = ResolveDirection(delta);
+        ResetCardPosition();
 
         if (gameController == null)
         {
@@ -84,7 +83,7 @@ public class MoveCardDragHandler : MonoBehaviour, IPointerDownHandler, IDragHand
             return;
         }
 
-        gameController.RequestPlayerMoveByDirection(direction, moveCount);
+        gameController.RequestPlayerMoveByDropScreenPosition(eventData.position, moveCount);
     }
 
     private void ResetCardPosition()
@@ -117,15 +116,5 @@ public class MoveCardDragHandler : MonoBehaviour, IPointerDownHandler, IDragHand
         {
             initialAnchoredPos = cardRect.anchoredPosition;
         }
-    }
-
-    private static Vector2Int ResolveDirection(Vector2 delta)
-    {
-        if (Mathf.Abs(delta.x) >= Mathf.Abs(delta.y))
-        {
-            return delta.x >= 0f ? Vector2Int.right : Vector2Int.left;
-        }
-
-        return delta.y >= 0f ?  Vector2Int.down:Vector2Int.up ;
     }
 }

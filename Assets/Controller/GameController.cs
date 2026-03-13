@@ -134,6 +134,23 @@ namespace TestCardGame.Controller
 
             return RequestMoveByDirection(cellBuilder.Player.ID, direction, moveCount);
         }
+
+        public bool RequestPlayerMoveByDropScreenPosition(Vector2 screenPosition, int moveCount = 1)
+        {
+            if (!initialized || cellBuilder?.Player == null)
+            {
+                return false;
+            }
+
+            if (!TryGetClosestCellPosition(screenPosition, out var targetCellPosition))
+            {
+                return false;
+            }
+
+            var playerPosition = cellBuilder.Player.Position;
+            var direction = targetCellPosition - playerPosition;
+            return RequestMoveByDirection(cellBuilder.Player.ID, direction, moveCount);
+        }
         /// <summary>
         /// ユニットの移動をリクエストする（方向指定版）
         /// </summary>
@@ -201,6 +218,43 @@ namespace TestCardGame.Controller
             return Mathf.Abs(direction.x) >= Mathf.Abs(direction.y)
                 ? new Vector2Int(direction.x > 0 ? 1 : -1, 0)
                 : new Vector2Int(0, direction.y > 0 ? 1 : -1);
+        }
+
+        private bool TryGetClosestCellPosition(Vector2 screenPosition, out Vector2Int closestPosition)
+        {
+            closestPosition = default;
+
+            if (cellRects.Count == 0)
+            {
+                return false;
+            }
+
+            var minDistanceSq = float.MaxValue;
+            var found = false;
+
+            foreach (var entry in cellRects)
+            {
+                var rect = entry.Value;
+                if (rect == null)
+                {
+                    continue;
+                }
+
+                var cellCenterScreenPos = RectTransformUtility.WorldToScreenPoint(
+                    null,
+                    rect.TransformPoint(rect.rect.center));
+                var distanceSq = (cellCenterScreenPos - screenPosition).sqrMagnitude;
+                if (distanceSq >= minDistanceSq)
+                {
+                    continue;
+                }
+
+                minDistanceSq = distanceSq;
+                closestPosition = entry.Key;
+                found = true;
+            }
+
+            return found;
         }
         /// <summary>
         /// ユニットの移動開始を通知する

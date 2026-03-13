@@ -61,10 +61,10 @@ public class CellBuilder : MonoBehaviour
             for (int x = 0; x < W; x++)
             {
                 var obj = Instantiate(cellPrefab, transform);
-                obj.name = $"Cell {x},{y}";
+                var position = new Vector2Int(x, H - 1 - y);
+                obj.name = $"Cell {position.x},{position.y}";
 
 
-                var position = new Vector2Int(x, y);
                 if (obj.TryGetComponent<RectTransform>(out var rect))
                 {
                     cellRects[position] = rect;
