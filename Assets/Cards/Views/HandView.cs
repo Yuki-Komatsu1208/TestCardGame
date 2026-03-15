@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using TestCardGame.Cards;
+using TestCardGame.Cards.Core;
 using TestCardGame.Cards.Views;
 using UnityEngine;
 

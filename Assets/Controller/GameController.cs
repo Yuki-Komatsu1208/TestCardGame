@@ -7,6 +7,7 @@ using TestCardGame.Charactor.Player;
 using TestCardGame.Charactor.ValueObjects;
 using TestCardGame.BoardManage;
 using TestCardGame.Controller.Services;
+using TestCardGame.Cards.Core;
 
 namespace TestCardGame.Controller
 {
@@ -119,22 +120,13 @@ namespace TestCardGame.Controller
 
             return moveService.RequestMoveRelative(unitId, relativeDelta);
         }
+
         /// <summary>
-        /// ユニットの移動をリクエストする（方向指定版）
+        /// 画面上の座標から、プレイヤーの移動をリクエストする。最も近いセルに向かって移動する。
         /// </summary>
-        /// <param name="direction"></param>
+        /// <param name="screenPosition"></param>
         /// <param name="moveCount"></param>
         /// <returns></returns>
-        public bool RequestPlayerMoveByDirection(Vector2Int direction, int moveCount = 1)
-        {
-            if (cellBuilder == null)
-            {
-                return false;
-            }
-
-            return RequestMoveByDirection(cellBuilder.Player.ID, direction, moveCount);
-        }
-
         public bool RequestPlayerMoveByDropScreenPosition(Vector2 screenPosition, int moveCount = 1)
         {
             if (!initialized || cellBuilder?.Player == null)
@@ -181,18 +173,7 @@ namespace TestCardGame.Controller
 
             return RequestMove(unitId, offset * moveCount);
         }
-        /// <summary>
-        /// モデルの状態に基づいて全てのユニットビューを同期する
-        /// </summary>
-        public void SyncAllViewsFromModel()
-        {
-            if (viewMoveService == null)
-            {
-                return;
-            }
-
-            viewMoveService.SyncAllViewsFromModel();
-        }
+       
 
         public IReadOnlyList<CardBase> GetPlayerCards()
         {
@@ -287,6 +268,9 @@ namespace TestCardGame.Controller
             MoveRejected?.Invoke(unitId, to, reason);
         }
         
+        /// <summary>
+        /// コントローラーが破棄される際のクリーンアップ処理
+        /// </summary>
         private void OnDestroy()
         {
             if (moveService != null)

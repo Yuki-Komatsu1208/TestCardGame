@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using TestCardGame.Controller;
+using TestCardGame.Cards.Core;
 
 namespace TestCardGame.Cards.Views
 {
