@@ -22,6 +22,24 @@ namespace TestCardGame.Controller.Services
             this.board = board;
             this.unitsById = unitsById;
         }
+
+        public IUnit GetUnitAt(Vector2Int pos)
+        {
+            if (board.IsInside(pos.x, pos.y))
+            {
+                return board.GetCell(pos.x, pos.y).Occupant;
+            }
+            return null;
+        }
+
+        public Cell GetCellAt(Vector2Int pos)
+        {
+            if (board.IsInside(pos.x, pos.y))
+            {
+                return board.GetCell(pos.x, pos.y);
+            }
+            return null;
+        }
         /// <summary>
         /// ユニットの移動をリクエストする（相対座標）
         /// </summary>

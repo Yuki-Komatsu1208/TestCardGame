@@ -1,4 +1,5 @@
 using TestCardGame.Controller;
+using TestCardGame.Cards.Views;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -13,6 +14,7 @@ public class MoveCardDragHandler : MonoBehaviour, IPointerDownHandler, IDragHand
     private Vector2 initialAnchoredPos;
     private Vector2 pointerDownScreenPos;
     private bool isDragging;
+    private CardView cardView;
 
     private void Awake()
     {
@@ -23,7 +25,7 @@ public class MoveCardDragHandler : MonoBehaviour, IPointerDownHandler, IDragHand
 
         if (gameController == null)
         {
-            gameController = FindFirstObjectByType<GameController>();
+            gameController = FindAnyObjectByType<GameController>();
         }
 
         parentCanvas = GetComponentInParent<Canvas>();
@@ -31,6 +33,8 @@ public class MoveCardDragHandler : MonoBehaviour, IPointerDownHandler, IDragHand
         {
             initialAnchoredPos = cardRect.anchoredPosition;
         }
+
+        cardView = GetComponent<CardView>();
     }
 
     public void OnPointerDown(PointerEventData eventData)
@@ -74,7 +78,7 @@ public class MoveCardDragHandler : MonoBehaviour, IPointerDownHandler, IDragHand
 
         if (gameController == null)
         {
-            gameController = FindFirstObjectByType<GameController>();
+            gameController = FindAnyObjectByType<GameController>();
         }
 
         if (gameController == null)
@@ -83,7 +87,14 @@ public class MoveCardDragHandler : MonoBehaviour, IPointerDownHandler, IDragHand
             return;
         }
 
-        gameController.RequestPlayerMoveByDropScreenPosition(eventData.position, moveCount);
+        if (cardView != null && cardView.Card != null)
+        {
+            gameController.UseCardAtDropScreenPosition(cardView.Card, eventData.position);
+        }
+        else
+        {
+            gameController.RequestPlayerMoveByDropScreenPosition(eventData.position, moveCount);
+        }
     }
 
     private void ResetCardPosition()

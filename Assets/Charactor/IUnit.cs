@@ -32,6 +32,5 @@ namespace TestCardGame.Charactor
         /// <param name="x"></param>
         /// <param name="y"></param>
         void MoveTo(int x, int y);
-
     }
 }

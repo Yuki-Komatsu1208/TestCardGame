@@ -10,8 +10,15 @@ namespace TestCardGame.Cards.Effects
 
         public override void Execute(CardContext context)
         {
-            var dir = Normalize(context.TargetPosition);
-            context.MoveService.RequestMoveRelative(context.User.ID, dir * step);
+            Vector2Int userPos = context.User.Position;
+            Vector2Int diff = context.TargetPosition - userPos;
+            if (diff == Vector2Int.zero) return;
+
+            Vector2Int dir = Normalize(diff);
+            int distance = Mathf.Abs(diff.x) >= Mathf.Abs(diff.y) ? Mathf.Abs(diff.x) : Mathf.Abs(diff.y);
+            int actualStep = Mathf.Min(distance, step);
+
+            context.MoveService.RequestMoveRelative(context.User.ID, dir * actualStep);
         }
 
         private static Vector2Int Normalize(Vector2Int d)

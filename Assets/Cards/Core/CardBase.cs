@@ -10,10 +10,10 @@ namespace TestCardGame.Cards.Core
     /// </summary>
     public abstract class CardBase
     {
-        public string CardName { get; }
-        public string Description { get; }
-        public int Cost { get; }
-        public CardLevel Level { get; }
+        public string CardName { get; protected set; }
+        public string Description { get; protected set; }
+        public int Cost { get; protected set; }
+        public CardLevel Level { get; protected set; }
         public List<CardEffect> Effects { get; private set;}
         public List<CardModifier> Enchants { get; private set;}
 
@@ -40,7 +40,7 @@ namespace TestCardGame.Cards.Core
         {
             if(Level.CanUpgrade)
             {
-                Level.Upgrade();
+                Level = Level.Upgrade();
                 // レベルアップ時の効果をここに実装（必要に応じてオーバーライド）
             }
         }
@@ -49,7 +49,7 @@ namespace TestCardGame.Cards.Core
         {
             if(Level.CanDowngrade)
             {
-                Level.Downgrade();
+                Level = Level.Downgrade();
                 // レベルダウン時の効果をここに実装（必要に応じてオーバーライド）
             }
         }   

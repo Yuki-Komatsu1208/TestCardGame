@@ -14,6 +14,33 @@ public class Cell
 
     public IUnit Occupant { get; private set; }
 
+    public int FireTurns { get; private set; }
+    public int FireDamage { get; private set; }
+    public bool IsOnFire => FireTurns > 0;
+
+    public void ApplyFire(int turns, int damage)
+    {
+        FireTurns = turns;
+        FireDamage = damage;
+    }
+
+    public void TickFire(out int damageToOccupant)
+    {
+        damageToOccupant = 0;
+        if (FireTurns > 0)
+        {
+            FireTurns--;
+            if (Occupant != null)
+            {
+                damageToOccupant = FireDamage;
+            }
+        }
+        if (FireTurns == 0)
+        {
+            FireDamage = 0;
+        }
+    }
+
     public Cell(int x, int y)
     {
         X = x;

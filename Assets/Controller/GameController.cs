@@ -66,9 +66,11 @@ namespace TestCardGame.Controller
 
             unitsById.Clear();
             unitsById[cellBuilder.Player.ID] = cellBuilder.Player;
+            unitsById[cellBuilder.Enemy.ID] = cellBuilder.Enemy;
 
             viewByCharacterCode.Clear();
             viewByCharacterCode[cellBuilder.Player.ID.CharaID.Code] = cellBuilder.PlayerUnitView;
+            viewByCharacterCode[cellBuilder.Enemy.ID.CharaID.Code] = cellBuilder.EnemyUnitView;
 
             cellRects.Clear();
             foreach (var entry in cellBuilder.CellRects)
@@ -87,15 +89,200 @@ namespace TestCardGame.Controller
             initialized = true;
             viewMoveService.SyncAllViewsFromModel();
 
-            var placed = moveService.RequestMoveAbsolute(cellBuilder.Player.ID, new Vector2Int(2, 2));
-             
-
+            var placed = moveService.RequestMoveAbsolute(cellBuilder.Player.ID, new Vector2Int(2, 1));
             if (!placed)
             {
-                Debug.LogError("GameController: failed to place player at initial position (2,2).", this);
+                Debug.LogError("GameController: failed to place player at initial position (2,1).", this);
+            }
+
+            var placedEnemy = moveService.RequestMoveAbsolute(cellBuilder.Enemy.ID, new Vector2Int(2, 3));
+            if (!placedEnemy)
+            {
+                Debug.LogError("GameController: failed to place enemy at initial position (2,3).", this);
+            }
+
+            battleUIInstance = gameObject.AddComponent<BattleUI>();
+            battleUIInstance.Initialize(this);
+
+            return true;
+        }
+
+        private BattleUI battleUIInstance;
+
+        public bool IsPlayerTurn => isPlayerTurn;
+        public PlayerUnit PlayerUnitInstance => cellBuilder?.Player as PlayerUnit;
+        public TestCardGame.Charactor.Enemies.DefaultEnemy EnemyUnitInstance => cellBuilder?.Enemy as TestCardGame.Charactor.Enemies.DefaultEnemy;
+
+        private bool isPlayerTurn = true;
+        private bool hasPlayedCardThisTurn = false;
+
+        public bool UseCardAtDropScreenPosition(CardBase card, Vector2 screenPosition)
+        {
+            if (!isPlayerTurn)
+            {
+                Debug.LogWarning("It is not the player's turn.");
+                return false;
+            }
+
+            if (hasPlayedCardThisTurn)
+            {
+                Debug.LogWarning("You can only play one card per turn.");
+                return false;
+            }
+
+            var player = PlayerUnitInstance;
+            if (player == null) return false;
+
+            if (player.Mana < card.Cost)
+            {
+                Debug.LogWarning("Not enough Mana!");
+                return false;
+            }
+
+            if (!TryGetClosestCellPosition(screenPosition, out var targetCellPosition))
+            {
+                return false;
+            }
+
+            // Execute card effect
+            var context = new CardContext(moveService, player, targetCellPosition);
+            foreach (var effect in card.Effects)
+            {
+                effect.Execute(context);
+            }
+
+            // Consume cost
+            player.Mana -= card.Cost;
+            hasPlayedCardThisTurn = true;
+
+            // Update UI & Cell visuals
+            SyncCellVisuals();
+            if (battleUIInstance != null)
+            {
+                battleUIInstance.Refresh();
             }
 
             return true;
+        }
+
+        public void EndPlayerTurn()
+        {
+            if (!isPlayerTurn) return;
+
+            isPlayerTurn = false;
+            if (battleUIInstance != null)
+            {
+                battleUIInstance.Refresh();
+            }
+
+            // Execute enemy turn (moves 1 cell towards player, and hits player if adjacent)
+            ExecuteEnemyTurn();
+        }
+
+        private void ExecuteEnemyTurn()
+        {
+            var enemy = EnemyUnitInstance;
+            var player = PlayerUnitInstance;
+
+            if (enemy != null && player != null)
+            {
+                Vector2Int diff = player.Position - enemy.Position;
+                int dist = Mathf.Abs(diff.x) + Mathf.Abs(diff.y);
+
+                if (dist == 1)
+                {
+                    // Enemy is adjacent, so it hits the player!
+                    player.Hp.TakeDamage(10);
+                    Debug.Log($"Enemy attacked player for 10 damage! Player HP: {player.Hp.CurrentValue}");
+                }
+                else if (diff != Vector2Int.zero)
+                {
+                    // Move 1 cell towards the player
+                    Vector2Int dir = Vector2Int.zero;
+                    if (Mathf.Abs(diff.x) >= Mathf.Abs(diff.y))
+                    {
+                        dir.x = diff.x > 0 ? 1 : -1;
+                    }
+                    else
+                    {
+                        dir.y = diff.y > 0 ? 1 : -1;
+                    }
+
+                    moveService.RequestMoveRelative(enemy.ID, dir);
+                }
+            }
+
+            // Tick fire/cell effects
+            TickCellEffects();
+
+            // Start player turn
+            StartPlayerTurn();
+        }
+
+        private void StartPlayerTurn()
+        {
+            isPlayerTurn = true;
+            hasPlayedCardThisTurn = false;
+
+            var player = PlayerUnitInstance;
+            if (player != null)
+            {
+                player.Mana = Mathf.Min(player.Mana + 1, player.MaxMana);
+            }
+
+            SyncCellVisuals();
+            if (battleUIInstance != null)
+            {
+                battleUIInstance.Refresh();
+            }
+        }
+
+        private void TickCellEffects()
+        {
+            var board = cellBuilder?.Board;
+            if (board == null) return;
+
+            for (int y = 0; y < board.Height; y++)
+            {
+                for (int x = 0; x < board.Width; x++)
+                {
+                    var cell = board.GetCell(x, y);
+                    cell.TickFire(out int damage);
+                    if (damage > 0 && cell.Occupant != null)
+                    {
+                        cell.Occupant.Hp.TakeDamage(damage);
+                        Debug.Log($"{cell.Occupant.Name} took {damage} fire damage! Current HP: {cell.Occupant.Hp.CurrentValue}");
+                    }
+                }
+            }
+        }
+
+        public void SyncCellVisuals()
+        {
+            var board = cellBuilder?.Board;
+            if (board == null) return;
+
+            for (int y = 0; y < board.Height; y++)
+            {
+                for (int x = 0; x < board.Width; x++)
+                {
+                    var cell = board.GetCell(x, y);
+                    if (cellRects.TryGetValue(new Vector2Int(x, y), out var rect))
+                    {
+                        if (rect.TryGetComponent<UnityEngine.UI.Image>(out var img))
+                        {
+                            if (cell.IsOnFire)
+                            {
+                                img.color = new Color(1.0f, 0.5f, 0.2f, 1.0f); // Orange fire
+                            }
+                            else
+                            {
+                                img.color = Color.white; // Default
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>

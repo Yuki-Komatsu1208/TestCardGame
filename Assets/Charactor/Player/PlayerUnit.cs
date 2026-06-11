@@ -22,6 +22,8 @@ namespace TestCardGame.Charactor.Player
         public UnitID ID { get; } 
         public string Name { get; } 
         public HP Hp { get; } 
+        public int Mana { get; set; }
+        public int MaxMana { get; set; }
         public Vector2Int Position { get; set; }
         public void MoveTo(int x, int y)
         {
@@ -38,7 +40,14 @@ namespace TestCardGame.Charactor.Player
             Name = name;
             Position = position;
             Hp = hp;
-            Cards = new List<CardBase>{new cMove(CardLevel.one) };
+            Mana = 3;
+            MaxMana = 5;
+            Cards = new List<CardBase>
+            {
+                new cMove(CardLevel.two),
+                new cAttack(CardLevel.three),
+                new cIgnite(CardLevel.one)
+            };
         }
     }
 }

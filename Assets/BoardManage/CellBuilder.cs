@@ -3,6 +3,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using TestCardGame.Charactor;
 using TestCardGame.Charactor.Player;
+using TestCardGame.Charactor.Enemies;
+using TestCardGame.Charactor.ValueObjects;
+using TestCardGame.Charactor.StatusVO;
 namespace TestCardGame.BoardManage
 {
 
@@ -14,6 +17,10 @@ public class CellBuilder : MonoBehaviour
 
     private Board board;
     private UnitView playerUnitView;
+
+    private RectTransform enemyView;
+    private UnitView enemyUnitView;
+    private readonly DefaultEnemy enemyUnit = new DefaultEnemy(UnitID.defaultEnemyUnit, "Enemy", new HP(50), new Vector2Int(0, 0));
 
     private readonly Dictionary<Vector2Int, RectTransform> cellRects = new();
     private readonly PlayerUnit playerUnit = PlayerUnit.defaultPlayer;
@@ -28,6 +35,8 @@ public class CellBuilder : MonoBehaviour
     public IReadOnlyDictionary<Vector2Int, RectTransform> CellRects => cellRects;
     public IUnit Player => playerUnit;
     public UnitView PlayerUnitView => playerUnitView;
+    public IUnit Enemy => enemyUnit;
+    public UnitView EnemyUnitView => enemyUnitView;
 
     public bool Initialize()
     {
@@ -50,8 +59,29 @@ public class CellBuilder : MonoBehaviour
         board = new Board(W, H);
         BuildBoard();
         PreparePlayerView();
+        PrepareEnemyView();
         initialized = true;
         return true;
+    }
+
+    private void PrepareEnemyView()
+    {
+        enemyView = Instantiate(playerView, playerView.parent);
+        enemyView.gameObject.name = "EnemyView";
+        enemyView.gameObject.SetActive(true);
+
+        if (!enemyView.TryGetComponent<UnitView>(out enemyUnitView))
+        {
+            enemyUnitView = enemyView.gameObject.AddComponent<UnitView>();
+        }
+
+        if (enemyView.TryGetComponent<Image>(out var image))
+        {
+            image.enabled = true;
+            image.color = Color.red; // Distinct red color for enemy!
+        }
+
+        enemyUnitView.Initialize(null);
     }
 
     private void BuildBoard()
