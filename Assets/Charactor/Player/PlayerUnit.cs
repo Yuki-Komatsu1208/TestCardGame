@@ -45,7 +45,7 @@ namespace TestCardGame.Charactor.Player
             Cards = new List<CardBase>
             {
                 new cMove(CardLevel.two),
-                new cAttack(CardLevel.three),
+                new cPunch(CardLevel.three),
                 new cIgnite(CardLevel.one)
             };
         }

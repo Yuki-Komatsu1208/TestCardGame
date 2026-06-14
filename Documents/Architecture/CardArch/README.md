@@ -1,0 +1,97 @@
+# Card Architecture
+
+## 概要
+
+カードは「カード情報」と「実行する効果」を分離して管理する。
+
+- `CardBase`: 名前、説明、コスト、レベル、効果、エンチャントを保持する。
+- `CardEffect`: カード使用時に実行される効果の基底クラス。
+- `CardContext`: 効果の実行に必要な使用者、対象座標、移動サービスを保持する。
+- `CardModifier`: カードを追加強化するための基底クラス。
+- `CardView` / `HandView`: カード情報の表示のみを担当する。
+
+カード固有クラスは `cXxx`、効果クラスは `eXxx` の形式で命名する。
+
+## 構成
+
+```text
+Assets/Cards/
+├── Core/            CardBase、CardContext
+├── Card/            cMove、cPunch、cIgnite などのカード定義
+├── CardEffects/     CardEffect と eMove、eMeleeAttack、eIgnite などの効果
+├── Modifiers/       CardModifier 基底クラス
+├── CardModifiers/   mMove、mNone などの具体的な修飾
+├── VOs/             CardLevel
+└── Views/           CardView、HandView
+```
+
+## 依存関係
+
+```mermaid
+flowchart LR
+    PlayerUnit --> CardBase
+    HandView --> CardView
+    CardView --> CardBase
+    MoveCardDragHandler --> GameController
+    GameController --> CardBase
+    GameController --> CardContext
+    CardBase --> CardLevel
+    CardBase --> CardEffect
+    CardBase --> CardModifier
+    CardEffect --> CardContext
+    CardContext --> IUnit
+    CardContext --> UnitMoveService
+```
+
+依存方向の原則は次のとおり。
+
+- 具体カードは `CardBase` を継承し、必要な `CardEffect` を生成する。
+- `CardEffect` は具体カードを参照しない。
+- Viewはカード情報を表示するが、効果ロジックを持たない。
+- `GameController` がカード使用条件を判定し、効果実行を仲介する。
+
+## カード使用フロー
+
+1. `PlayerUnit` が `CardBase` の一覧を保持する。
+2. `HandView` が各カードを `CardView` にバインドして表示する。
+3. カードのドロップ操作から `GameController.UseCardAtDropScreenPosition` を呼ぶ。
+4. `GameController` がターン、使用回数、マナ、対象座標を検証する。
+5. `CardContext` を生成する。
+6. `CardBase.Effects` を順番に呼び、各 `CardEffect.Execute` を実行する。
+7. コストを消費し、盤面とUIを更新する。
+
+## CardBaseの制約
+
+`Enchants` 以外は生成時に必須とする。
+
+- `CardName`: `null`、空文字を禁止。
+- `Description`: `null`、空文字を禁止。
+- `Level`: `null` を禁止。
+- `Effects`: `null`、空リスト、`null` 要素を禁止。
+- `Enchants`: 省略可能。省略時は空リストになる。
+
+レベルによって効果値が変化するカードは、`LevelUp` / `LevelDown` 後に説明文と効果インスタンスを更新する。
+
+## CardEffectの方針
+
+カードの具体的な処理は `CardEffect` の派生クラスに実装する。
+
+- `eMove`: 対象方向への移動。
+- `eMeleeAttack`: 使用者に隣接する対象への近接攻撃。
+- `eIgnite`: 射程内のマスへの炎上付与。
+
+射程や対象ルールが異なる効果は、責務が明確に異なる場合は別クラスにする。単に威力や射程値だけが異なる場合は、コンストラクタ引数で設定する。
+
+## 新規カード追加手順
+
+1. `Card/Card/cXxx.cs` を作り、`CardBase` を継承する。
+2. 必要なら `CardEffects/eXxx.cs` を作り、`CardEffect` を継承する。
+3. カードのコンストラクタで1つ以上の効果を `Effects` に設定する。
+4. レベル依存値がある場合は `LevelUp` / `LevelDown` で効果を更新する。
+5. 使用可能にする場合は、カードを生成するデッキまたはユニットのカード一覧へ追加する。
+
+## 現在の注意点
+
+- `CardModifier` は保持・追加・削除できるが、現在のカード実行フローでは各フックが呼ばれていない。
+- `CardEffect.Execute` は既定実装が空のため、派生クラスでのオーバーライド忘れをコンパイル時には検出できない。
+- カード使用と効果実行の調停が `GameController` に集中しているため、規模拡大時には専用サービスへの分離を検討する。

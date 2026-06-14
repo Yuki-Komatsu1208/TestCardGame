@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TestCardGame.Cards.Effects;
 using TestCardGame.Cards.Modifiers;
@@ -25,11 +26,41 @@ namespace TestCardGame.Cards.Core
             List<CardEffect> effects,
             List<CardModifier> enchants = null)
         {
+            if (string.IsNullOrEmpty(cardName))
+            {
+                throw new ArgumentNullException(nameof(cardName));
+            }
+
+            if (string.IsNullOrEmpty(description))
+            {
+                throw new ArgumentNullException(nameof(description));
+            }
+
+            if (level == null)
+            {
+                throw new ArgumentNullException(nameof(level));
+            }
+
+            if (effects == null)
+            {
+                throw new ArgumentNullException(nameof(effects));
+            }
+
+            if (effects.Count == 0)
+            {
+                throw new ArgumentException("カードには1つ以上の効果が必要です。", nameof(effects));
+            }
+
+            if (effects.Exists(effect => effect == null))
+            {
+                throw new ArgumentNullException(nameof(effects), "カード効果にnullを指定することはできません。");
+            }
+
             CardName = cardName;
             Description = description;
             Cost = cost;
             Level = level;
-            Effects = effects ?? new List<CardEffect>();
+            Effects = effects;
             Enchants = enchants ?? new List<CardModifier>();
         }
 

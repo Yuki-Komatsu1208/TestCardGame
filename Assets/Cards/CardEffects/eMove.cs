@@ -5,9 +5,19 @@ namespace TestCardGame.Cards.Effects
 {
     public sealed class eMove : CardEffect
     {
+        /// <summary>
+        /// 移動距離
+        /// </summary>
         private readonly int step;
+        /// <summary>
+        /// 移動距離指定
+        /// </summary>
+        /// <param name="step"></param>
         public eMove(int step) { this.step = step; }
-
+        /// <summary>
+        /// 使用者を指定座標へ移動させる。移動距離はStepで指定。
+        /// </summary>
+        /// <param name="context"></param>
         public override void Execute(CardContext context)
         {
             Vector2Int userPos = context.User.Position;

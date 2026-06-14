@@ -4,10 +4,13 @@ using TestCardGame.Charactor;
 
 namespace TestCardGame.Cards.Effects
 {
-    public sealed class eAttack : CardEffect
+    /// <summary>
+    /// 近接攻撃効果。使用者に隣接する指定座標へダメージを与える。
+    /// </summary>
+    public sealed class eMeleeAttack : CardEffect
     {
         private readonly int damage;
-        public eAttack(int damage) { this.damage = damage; }
+        public eMeleeAttack(int damage) { this.damage = damage; }
 
         public override void Execute(CardContext context)
         {
@@ -22,16 +25,16 @@ namespace TestCardGame.Cards.Effects
                 if (targetUnit != null)
                 {
                     targetUnit.Hp.TakeDamage(damage);
-                    Debug.Log($"{context.User.Name} attacked {targetUnit.Name} for {damage} damage! Target HP is now {targetUnit.Hp.CurrentValue}.");
+                    Debug.Log($"{context.User.Name} は{targetUnit.Name} に {damage} ポイントのダメージを与えた。");
                 }
                 else
                 {
-                    Debug.Log("No target at cell to attack.");
+                    Debug.Log("近接攻撃の対象がいません。");
                 }
             }
             else
             {
-                Debug.LogWarning("Attack target must be exactly 1 cell away.");
+                Debug.LogWarning("近接攻撃は隣接マスにしか使用できません。");
             }
         }
     }

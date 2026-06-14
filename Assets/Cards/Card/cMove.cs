@@ -11,7 +11,7 @@ namespace TestCardGame.Cards.Card
     {
         private static readonly string _cardName = "移動";
         private static readonly string _description = "ユニットを移動させる。";
-        private static readonly int _baseCost = 1;
+        private static readonly int _baseCost = 0;
         public cMove(CardLevel level, List<CardModifier> enchants = null): base
             (
                 _cardName,
