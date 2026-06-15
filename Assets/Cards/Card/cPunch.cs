@@ -22,7 +22,10 @@ namespace TestCardGame.Cards.Card
                 _description, 
                 _baseCost, 
                 level, 
-                new List<CardEffect>{new eMeleeAttack(_baseDamage + level *5)}, 
+                new List<CardEffect>
+                {
+                    new eLineAttack(_baseDamage + level * 5, 1, HitType.FirstTargetOnly)
+                },
                 enchants)
         {
         }
@@ -32,7 +35,7 @@ namespace TestCardGame.Cards.Card
         public override void LevelUp()
         {
             base.LevelUp();
-            Effects[0] = new eMeleeAttack(_baseDamage + Level *5);
+            Effects[0] = new eLineAttack(_baseDamage + Level * 5, 1, HitType.FirstTargetOnly);
         }
         /// <summary>
         /// 攻撃力＝（１０＋レベル×５）
@@ -40,7 +43,7 @@ namespace TestCardGame.Cards.Card
         public override void LevelDown()
         {
             base.LevelDown();
-            Effects[0] = new eMeleeAttack(_baseDamage + Level *5);
+            Effects[0] = new eLineAttack(_baseDamage + Level * 5, 1, HitType.FirstTargetOnly);
         }
     }
 }

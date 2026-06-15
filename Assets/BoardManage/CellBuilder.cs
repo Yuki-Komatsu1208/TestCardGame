@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using TestCardGame.Charactor;
 using TestCardGame.Charactor.Player;
 using TestCardGame.Charactor.Enemies;
@@ -78,7 +79,13 @@ public class CellBuilder : MonoBehaviour
         if (enemyView.TryGetComponent<Image>(out var image))
         {
             image.enabled = true;
-            image.color = Color.red; // Distinct red color for enemy!
+            image.color = new Color(0.957f, 0.263f, 0.212f, 1f); // Beautiful clean flat red
+        }
+
+        var textComp = enemyView.GetComponentInChildren<TextMeshProUGUI>();
+        if (textComp != null)
+        {
+            textComp.text = "E";
         }
 
         enemyUnitView.Initialize(null);
@@ -147,6 +154,12 @@ public class CellBuilder : MonoBehaviour
             {
                 image.sprite = playerSprite;
             }
+        }
+
+        var textComp = playerView.GetComponentInChildren<TextMeshProUGUI>();
+        if (textComp != null)
+        {
+            textComp.text = "P";
         }
 
         playerUnitView.Initialize(playerSprite);

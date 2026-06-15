@@ -18,7 +18,7 @@
 Assets/Cards/
 ├── Core/            CardBase、CardContext
 ├── Card/            cMove、cPunch、cIgnite などのカード定義
-├── CardEffects/     CardEffect と eMove、eMeleeAttack、eIgnite などの効果
+├── CardEffects/     CardEffect と eMove、eLineAttack、ePositionAttack などの効果
 ├── Modifiers/       CardModifier 基底クラス
 ├── CardModifiers/   mMove、mNone などの具体的な修飾
 ├── VOs/             CardLevel
@@ -77,10 +77,11 @@ flowchart LR
 カードの具体的な処理は `CardEffect` の派生クラスに実装する。
 
 - `eMove`: 対象方向への移動。
-- `eMeleeAttack`: 使用者に隣接する対象への近接攻撃。
+- `eLineAttack`: 射程と命中方式を指定する直線攻撃。
+- `ePositionAttack`: 指定座標にいる対象への攻撃。
 - `eIgnite`: 射程内のマスへの炎上付与。
 
-射程や対象ルールが異なる効果は、責務が明確に異なる場合は別クラスにする。単に威力や射程値だけが異なる場合は、コンストラクタ引数で設定する。
+`eLineAttack` は射程によって近距離と遠距離を表現し、`HitType.FirstTargetOnly` と `HitType.Penetrating` で貫通の有無を切り替える。使用者の位置に依存せず指定座標だけを攻撃する場合は `ePositionAttack` を使用する。
 
 ## 新規カード追加手順
 
