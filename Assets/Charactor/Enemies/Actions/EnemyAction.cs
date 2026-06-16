@@ -20,11 +20,6 @@ namespace TestCardGame.Charactor.Enemies.Actions
                 throw new ArgumentNullException(nameof(effects));
             }
 
-            if (effects.Count == 0)
-            {
-                throw new ArgumentException("敵行動には1つ以上の効果が必要です。", nameof(effects));
-            }
-
             Effects = effects;
         }
 

@@ -16,7 +16,8 @@ namespace TestCardGame.Charactor.Enemies.Actions
 
         public override bool CanExecute(EnemyTurnContext context)
         {
-            return context.Target.Position != context.Enemy.Position;
+            Vector2Int diff = context.Target.Position - context.Enemy.Position;
+            return Mathf.Abs(diff.x) + Mathf.Abs(diff.y) > 1;
         }
 
         protected override Vector2Int GetTargetPosition(EnemyTurnContext context)

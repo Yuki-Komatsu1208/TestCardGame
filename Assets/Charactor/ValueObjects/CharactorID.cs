@@ -35,6 +35,7 @@ namespace TestCardGame.Charactor.ValueObjects
         /// <summary>デフォルトのプレイヤーID</summary>
         public static CharactorID DefaultPlayer = new CharactorID(1, 1);
         public static CharactorID Slime = new CharactorID(2, 2);
+        public static CharactorID FireSlime = new CharactorID(3, 2);
 
         /// <summary>
         /// 全てのキャラクターIDを管理する辞書。キーはキャラクターコード、値はCharactorIDオブジェクト。
@@ -43,6 +44,7 @@ namespace TestCardGame.Charactor.ValueObjects
         {
             {DefaultPlayer.Code, DefaultPlayer},
             {Slime.Code, Slime},
+            {FireSlime.Code, FireSlime},
             // 他のキャラクターIDもここに追加
         };
     }
