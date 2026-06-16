@@ -1,4 +1,5 @@
 using TestCardGame.Charactor.ValueObjects;
+using UnityEngine;
 
 namespace TestCardGame.Charactor.Enemies
 {
@@ -13,23 +14,29 @@ namespace TestCardGame.Charactor.Enemies
         public UnitID ID { get; }
         public string Name { get; }
         public StatusVO.HP Hp { get; }
-        public UnityEngine.Vector2Int Position { get; set; }
+        public Vector2Int Position { get; set; }
+        public DefaultEnemyAlgorithm Algorithm { get; }
 
         /// <summary>
         /// デフォルトの敵キャラクターのコンストラクタ。ID、名前、HPを初期化する。
         /// </summary>
-        public DefaultEnemy(UnitID id, string name, StatusVO.HP hp, UnityEngine.Vector2Int position)
+        public DefaultEnemy(UnitID id, string name, StatusVO.HP hp, Vector2Int position, DefaultEnemyAlgorithm algorithm = null)
         {
             ID = id;
             Name = name;
             Position = position;
             Hp = hp;
+            Algorithm = algorithm ?? new ChaseAndAttackAlgorithm(10);
         }
 
+        public void ExecuteTurn(EnemyTurnContext context)
+        {
+            Algorithm.Execute(context);
+        }
 
         public void MoveTo(int x, int y)
         {
-            Position = new UnityEngine.Vector2Int(x, y);
+            Position = new Vector2Int(x, y);
         }
     }
 }

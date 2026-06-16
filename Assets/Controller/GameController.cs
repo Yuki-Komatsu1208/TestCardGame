@@ -186,30 +186,7 @@ namespace TestCardGame.Controller
 
             if (enemy != null && player != null)
             {
-                Vector2Int diff = player.Position - enemy.Position;
-                int dist = Mathf.Abs(diff.x) + Mathf.Abs(diff.y);
-
-                if (dist == 1)
-                {
-                    // Enemy is adjacent, so it hits the player!
-                    player.Hp.TakeDamage(10);
-                    Debug.Log($"Enemy attacked player for 10 damage! Player HP: {player.Hp.CurrentValue}");
-                }
-                else if (diff != Vector2Int.zero)
-                {
-                    // Move 1 cell towards the player
-                    Vector2Int dir = Vector2Int.zero;
-                    if (Mathf.Abs(diff.x) >= Mathf.Abs(diff.y))
-                    {
-                        dir.x = diff.x > 0 ? 1 : -1;
-                    }
-                    else
-                    {
-                        dir.y = diff.y > 0 ? 1 : -1;
-                    }
-
-                    moveService.RequestMoveRelative(enemy.ID, dir);
-                }
+                enemy.ExecuteTurn(new TestCardGame.Charactor.Enemies.EnemyTurnContext(moveService, enemy, player));
             }
 
             // Tick fire/cell effects
