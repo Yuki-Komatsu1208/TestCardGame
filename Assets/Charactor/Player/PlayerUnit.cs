@@ -45,7 +45,7 @@ namespace TestCardGame.Charactor.Player
             {
                 new cMove(CardLevel.two),
                 new cPunch(CardLevel.three),
-                new cIgnite(CardLevel.one)
+                new cIgnite(CardLevel.three)
             };
         }
     }
