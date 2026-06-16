@@ -7,7 +7,6 @@
 - `CardBase`: 名前、説明、コスト、レベル、効果、エンチャントを保持する。
 - `ActionEffect`: カードや敵行動から実行される効果の基底クラス。
 - `ActionContext`: 効果の実行に必要な使用者、対象座標、移動サービスを保持する。
-- `CardContext`: カード使用時のContext。`ActionContext` を継承する。
 - `CardModifier`: カードを追加強化するための基底クラス。
 - `CardView` / `HandView`: カード情報の表示のみを担当する。
 
@@ -17,7 +16,7 @@
 
 ```text
 Assets/Cards/
-├── Core/            CardBase、CardContext
+├── Core/            CardBase
 ├── Card/            cMove、cPunch、cIgnite などのカード定義
 ├── Modifiers/       CardModifier 基底クラス
 ├── CardModifiers/   mMove、mNone などの具体的な修飾
@@ -38,11 +37,10 @@ flowchart LR
     CardView --> CardBase
     MoveCardDragHandler --> GameController
     GameController --> CardBase
-    GameController --> CardContext
+    GameController --> ActionContext
     CardBase --> CardLevel
     CardBase --> ActionEffect
     CardBase --> CardModifier
-    CardContext --> ActionContext
     ActionEffect --> ActionContext
     ActionContext --> IUnit
     ActionContext --> UnitMoveService
@@ -61,7 +59,7 @@ flowchart LR
 2. `HandView` が各カードを `CardView` にバインドして表示する。
 3. カードのドロップ操作から `GameController.UseCardAtDropScreenPosition` を呼ぶ。
 4. `GameController` がターン、使用回数、マナ、対象座標を検証する。
-5. `CardContext` を生成する。
+5. `ActionContext` を生成する。
 6. `CardBase.Effects` を順番に呼び、各 `ActionEffect.Execute` を実行する。
 7. コストを消費し、盤面とUIを更新する。
 

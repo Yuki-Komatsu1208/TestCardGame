@@ -1,4 +1,4 @@
-using TestCardGame.Cards.Core;
+using TestCardGame.Actions.Core;
 
 namespace TestCardGame.Cards.Modifiers
 {
@@ -7,12 +7,12 @@ namespace TestCardGame.Cards.Modifiers
     /// </summary>
     public abstract class CardModifier
     {
-        public virtual void OnMove(CardContext context) { }
-        public virtual void OnRemove(CardContext context) { }
-        public virtual void OnTurnStart(CardContext context) { }
-        public virtual void OnTurnEnd(CardContext context) { }
-        public virtual void OnBeforeEffect(CardContext context) { }
-        public virtual void OnAfterEffect(CardContext context) { }
+        public virtual void OnMove(ActionContext context) { }
+        public virtual void OnRemove(ActionContext context) { }
+        public virtual void OnTurnStart(ActionContext context) { }
+        public virtual void OnTurnEnd(ActionContext context) { }
+        public virtual void OnBeforeEffect(ActionContext context) { }
+        public virtual void OnAfterEffect(ActionContext context) { }
 
     }
 }

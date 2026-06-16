@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using TestCardGame.Actions.Core;
 using TestCardGame.Cards;
 using TestCardGame.Charactor;
 using TestCardGame.Charactor.Player;
@@ -145,7 +146,7 @@ namespace TestCardGame.Controller
             }
 
             // Execute card effect
-            var context = new CardContext(moveService, player, targetCellPosition);
+            var context = new ActionContext(moveService, player, targetCellPosition);
             foreach (var effect in card.Effects)
             {
                 effect.Execute(context);
