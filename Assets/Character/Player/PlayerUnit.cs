@@ -88,12 +88,15 @@ namespace TestCardGame.Character.Player
             Cards = new List<CardBase>();
             if (definition != null && definition.initialCards != null)
             {
-                foreach (var def in definition.initialCards)
+                foreach (var entry in definition.initialCards)
                 {
-                    if (def != null)
+                    if (entry == null || entry.card == null)
                     {
-                        Cards.Add(new CardBase(def, CardLevel.one));
+                        continue;
                     }
+
+                    var level = Mathf.Clamp(entry.level, 1, 3);
+                    Cards.Add(new CardBase(entry.card, new CardLevel(level)));
                 }
             }
         }
