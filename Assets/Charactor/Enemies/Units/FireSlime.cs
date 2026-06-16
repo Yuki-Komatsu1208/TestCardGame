@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using TestCardGame.Actions.Effects;
-using TestCardGame.Charactor.Enemies.Targeting;
 using TestCardGame.Charactor.ValueObjects;
 using UnityEngine;
 
@@ -39,9 +38,9 @@ namespace TestCardGame.Charactor.Enemies
             Hp = hp;
             ActionPlans = actionPlans ?? new List<EnemyActionPlan>
             {
-                new EnemyActionPlan(new eMove(1), new TargetUnitPositionSelector()),
-                new EnemyActionPlan(new eIgniteAround(2, 5), new SelfPositionSelector()),
-                new EnemyActionPlan(new eSleep(), new SelfPositionSelector())
+                EnemyActionPlan.Target(new eMove(1)),
+                EnemyActionPlan.Self(new eIgniteAround(2, 5)),
+                EnemyActionPlan.Self(new eSleep())
             };
         }
 
