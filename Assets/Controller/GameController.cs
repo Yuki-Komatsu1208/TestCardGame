@@ -122,7 +122,7 @@ namespace TestCardGame.Controller
 
         public bool IsPlayerTurn => turnService?.IsPlayerTurn ?? true;
         public PlayerUnit PlayerUnitInstance => cellBuilder?.Player as PlayerUnit;
-        public TestCardGame.Charactor.Enemies.DefaultEnemy EnemyUnitInstance => cellBuilder?.Enemy as TestCardGame.Charactor.Enemies.DefaultEnemy;
+        public TestCardGame.Charactor.Enemies.IEnemy EnemyUnitInstance => cellBuilder?.Enemy as TestCardGame.Charactor.Enemies.IEnemy;
 
         public bool UseCardAtDropScreenPosition(CardBase card, Vector2 screenPosition)
         {

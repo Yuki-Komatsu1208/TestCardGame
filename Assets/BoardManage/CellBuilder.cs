@@ -21,7 +21,7 @@ public class CellBuilder : MonoBehaviour
 
     private RectTransform enemyView;
     private UnitView enemyUnitView;
-    private readonly DefaultEnemy enemyUnit = new DefaultEnemy(UnitID.defaultEnemyUnit, "Enemy", new HP(50), new Vector2Int(0, 0));
+    private readonly Slime enemyUnit = new Slime(UnitID.slimeUnit, "Slime", new HP(50), new Vector2Int(0, 0));
 
     private readonly Dictionary<Vector2Int, RectTransform> cellRects = new();
     private readonly PlayerUnit playerUnit = PlayerUnit.defaultPlayer;

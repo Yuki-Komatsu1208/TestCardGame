@@ -1,0 +1,70 @@
+using System.Collections.Generic;
+using TestCardGame.Charactor.Enemies.Actions;
+using TestCardGame.Charactor.ValueObjects;
+using TestCardGame.Charactor.StatusVO;
+using UnityEngine;
+
+namespace TestCardGame.Charactor.Enemies
+{
+    /// <summary>
+    /// 新しい敵を追加するときのテンプレート。
+    /// このファイルをコピーし、ファイル名とクラス名を敵名に変更して使う。
+    /// </summary>
+    public class EnemyTemplate : IEnemy
+    {
+        public UnitID ID { get; }
+        public string Name { get; }
+        public HP Hp { get; }
+        public Vector2Int Position { get; set; }
+        public IReadOnlyList<EnemyAction> Actions { get; }
+
+        /// <summary>
+        /// 敵のID、表示名、HP、初期位置、行動リストを初期化する。
+        /// actionsを省略した場合は、隣接攻撃と接近行動を持つ。
+        /// </summary>
+        public EnemyTemplate(
+            UnitID id,
+            string name,
+            HP hp,
+            Vector2Int position,
+            IReadOnlyList<EnemyAction> actions = null)
+        {
+            ID = id;
+            Name = name;
+            Hp = hp;
+            Position = position;
+            Actions = actions ?? new List<EnemyAction>
+            {
+                new AdjacentAttackEnemyAction(10),
+                new MoveTowardTargetEnemyAction(1)
+            };
+        }
+
+        /// <summary>
+        /// 敵のターン行動を実行する。
+        /// Actionsを上から順番に確認し、実行可能な最初の行動だけを実行する。
+        /// </summary>
+        public void ExecuteTurn(EnemyTurnContext context)
+        {
+            foreach (var action in Actions)
+            {
+                if (!action.CanExecute(context))
+                {
+                    continue;
+                }
+
+                action.Execute(context);
+                return;
+            }
+        }
+
+        /// <summary>
+        /// ユニットの現在位置を更新する。
+        /// 実際の移動可否はUnitMoveServiceとBoard側で判定する。
+        /// </summary>
+        public void MoveTo(int x, int y)
+        {
+            Position = new Vector2Int(x, y);
+        }
+    }
+}

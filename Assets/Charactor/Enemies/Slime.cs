@@ -6,12 +6,12 @@ using UnityEngine;
 namespace TestCardGame.Charactor.Enemies
 {
     /// <summary>
-    /// デフォルトの敵キャラクターを表すクラス。
+    /// スライムの敵キャラクターを表すクラス。
     /// </summary>
-    public class DefaultEnemy : IUnit
+    public class Slime : IEnemy
     {
-        public static readonly DefaultEnemy defaultEnemy = 
-            new DefaultEnemy(UnitID.defaultEnemyUnit, "Default Enemy", new StatusVO.HP(50), new UnityEngine.Vector2Int(0, 0));
+        public static readonly Slime defaultSlime = 
+            new Slime(UnitID.slimeUnit, "Slime", new StatusVO.HP(50), new UnityEngine.Vector2Int(0, 0));
 
         public UnitID ID { get; }
         public string Name { get; }
@@ -20,9 +20,9 @@ namespace TestCardGame.Charactor.Enemies
         public IReadOnlyList<EnemyAction> Actions { get; }
 
         /// <summary>
-        /// デフォルトの敵キャラクターのコンストラクタ。ID、名前、HPを初期化する。
+        /// スライムのコンストラクタ。ID、名前、HP、初期位置、行動を初期化する。
         /// </summary>
-        public DefaultEnemy(
+        public Slime(
             UnitID id,
             string name,
             StatusVO.HP hp,
@@ -42,6 +42,7 @@ namespace TestCardGame.Charactor.Enemies
 
         public void ExecuteTurn(EnemyTurnContext context)
         {
+            // プレイヤーに接近し、隣接したら攻撃する。
             foreach (var action in Actions)
             {
                 if (!action.CanExecute(context))

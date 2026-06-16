@@ -73,7 +73,7 @@ namespace TestCardGame.Controller.Services
         /// <summary>
         /// プレイヤーターンを終了し、敵行動とセル効果を処理して次のプレイヤーターンへ進める。
         /// </summary>
-        public bool EndPlayerTurn(DefaultEnemy enemy, PlayerUnit player)
+        public bool EndPlayerTurn(IEnemy enemy, PlayerUnit player)
         {
             if (!IsPlayerTurn)
             {
@@ -90,7 +90,7 @@ namespace TestCardGame.Controller.Services
         /// <summary>
         /// 敵のターン行動を実行する。
         /// </summary>
-        private void ExecuteEnemyTurn(DefaultEnemy enemy, PlayerUnit player)
+        private void ExecuteEnemyTurn(IEnemy enemy, PlayerUnit player)
         {
             if (enemy == null || player == null || moveService == null)
             {

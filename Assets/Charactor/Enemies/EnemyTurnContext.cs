@@ -9,10 +9,10 @@ namespace TestCardGame.Charactor.Enemies
     public class EnemyTurnContext
     {
         public UnitMoveService MoveService { get; }
-        public DefaultEnemy Enemy { get; }
+        public IEnemy Enemy { get; }
         public IUnit Target { get; }
 
-        public EnemyTurnContext(UnitMoveService moveService, DefaultEnemy enemy, IUnit target)
+        public EnemyTurnContext(UnitMoveService moveService, IEnemy enemy, IUnit target)
         {
             MoveService = moveService ?? throw new ArgumentNullException(nameof(moveService));
             Enemy = enemy ?? throw new ArgumentNullException(nameof(enemy));

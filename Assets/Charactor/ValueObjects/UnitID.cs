@@ -22,7 +22,7 @@ namespace TestCardGame.Charactor.ValueObjects
         }
         
         public static UnitID defaultPlayerUnit = new UnitID(1, CharactorID.DefaultPlayer);
-        public static UnitID defaultEnemyUnit = new UnitID(1, CharactorID.DefaultEnemy);
+        public static UnitID slimeUnit = new UnitID(1, CharactorID.Slime);
         protected override IEnumerable<object> GetEqualityComponents()
         {
             yield return new { Code, CharaID };
