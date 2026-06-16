@@ -1,4 +1,4 @@
-using TestCardGame.Charactor;
+using TestCardGame.Character;
 using TestCardGame.Controller.Services;
 using UnityEngine;
 

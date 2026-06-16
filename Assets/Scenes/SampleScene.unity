@@ -1130,7 +1130,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cellPrefab: {fileID: 1015308185782406248, guid: a88aa6de53c34454198471afe42e60c7, type: 3}
   playerView: {fileID: 889617646}
-  playerSprite: {fileID: 0}
+  playerDefinition: {fileID: 11400000, guid: 473d0e891eec4e74b94125d03bce4645, type: 2}
+  enemyDefinition: {fileID: 11400000, guid: 882cda6c936782344813c002bb3f8d58, type: 2}
 --- !u!114 &1933698319
 MonoBehaviour:
   m_ObjectHideFlags: 0

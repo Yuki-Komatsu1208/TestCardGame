@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using TestCardGame.Charactor;
-using TestCardGame.Charactor.ValueObjects;
+using TestCardGame.Character;
+using TestCardGame.Character.ValueObjects;
 using UnityEngine;
 using System;
 

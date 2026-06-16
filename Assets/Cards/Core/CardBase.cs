@@ -7,83 +7,76 @@ using TestCardGame.Cards.VOs;
 namespace TestCardGame.Cards.Core
 {
     /// <summary>
-    /// ゲーム内のカードの基本クラス
+    /// ゲーム内のカードの基本クラス（データ駆動型）
     /// </summary>
-    public abstract class CardBase
+    public class CardBase
     {
-        public string CardName { get; protected set; }
-        public string Description { get; protected set; }
-        public int Cost { get; protected set; }
+        public CardDefinitionSO Definition { get; private set; }
         public CardLevel Level { get; protected set; }
-        public List<ActionEffect> Effects { get; private set;}
-        public List<CardModifier> Enchants { get; private set;}
+        public List<CardModifier> Enchants { get; private set; }
 
-        protected CardBase(
-            string cardName,
-            string description,
-            int cost,
+        private List<ActionEffect> _cachedEffects;
+
+        public string CardName => Definition != null ? Definition.cardName : string.Empty;
+        public string Description => Definition != null ? Definition.GetDataForLevel(Level.Level).description : string.Empty;
+        public int Cost => Definition != null ? Definition.GetDataForLevel(Level.Level).cost : 0;
+
+        public List<ActionEffect> Effects
+        {
+            get
+            {
+                if (_cachedEffects == null)
+                {
+                    _cachedEffects = new List<ActionEffect>();
+                    if (Definition != null)
+                    {
+                        var levelData = Definition.GetDataForLevel(Level.Level);
+                        if (levelData != null && levelData.effects != null)
+                        {
+                            foreach (var effectConfig in levelData.effects)
+                            {
+                                _cachedEffects.Add(EffectFactory.CreateEffect(effectConfig));
+                            }
+                        }
+                    }
+                }
+                return _cachedEffects;
+            }
+        }
+
+        public CardBase(
+            CardDefinitionSO definition,
             CardLevel level,
-            List<ActionEffect> effects,
             List<CardModifier> enchants = null)
         {
-            if (string.IsNullOrEmpty(cardName))
-            {
-                throw new ArgumentNullException(nameof(cardName));
-            }
-
-            if (string.IsNullOrEmpty(description))
-            {
-                throw new ArgumentNullException(nameof(description));
-            }
-
-            if (level == null)
-            {
-                throw new ArgumentNullException(nameof(level));
-            }
-
-            if (effects == null)
-            {
-                throw new ArgumentNullException(nameof(effects));
-            }
-
-            if (effects.Count == 0)
-            {
-                throw new ArgumentException("カードには1つ以上の効果が必要です。", nameof(effects));
-            }
-
-            if (effects.Exists(effect => effect == null))
-            {
-                throw new ArgumentNullException(nameof(effects), "カード効果にnullを指定することはできません。");
-            }
-
-            CardName = cardName;
-            Description = description;
-            Cost = cost;
-            Level = level;
-            Effects = effects;
+            Definition = definition ?? throw new ArgumentNullException(nameof(definition));
+            Level = level ?? throw new ArgumentNullException(nameof(level));
             Enchants = enchants ?? new List<CardModifier>();
         }
 
         /// <summary>
-        /// カードのレベルを上げる。レベルアップに伴う効果の変更はこのメソッドをオーバーライドして実装する。
+        /// カードのレベルを上げる。
         /// </summary>
         public virtual void LevelUp()
         {
-            if(Level.CanUpgrade)
+            if (Level.CanUpgrade)
             {
                 Level = Level.Upgrade();
-                // レベルアップ時の効果をここに実装（必要に応じてオーバーライド）
+                _cachedEffects = null;
             }
         }
 
+        /// <summary>
+        /// カードのレベルを下げる。
+        /// </summary>
         public virtual void LevelDown()
         {
-            if(Level.CanDowngrade)
+            if (Level.CanDowngrade)
             {
                 Level = Level.Downgrade();
-                // レベルダウン時の効果をここに実装（必要に応じてオーバーライド）
+                _cachedEffects = null;
             }
-        }   
+        }
 
         /// <summary>
         /// カードにエンチャントを追加する
@@ -104,3 +97,4 @@ namespace TestCardGame.Cards.Core
         }
     }
 }
+

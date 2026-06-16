@@ -1,6 +1,6 @@
 using TestCardGame.Actions.Core;
 using TestCardGame.Cards.Core;
-using TestCardGame.Charactor.Player;
+using TestCardGame.Character.Player;
 using UnityEngine;
 
 namespace TestCardGame.Controller.Services

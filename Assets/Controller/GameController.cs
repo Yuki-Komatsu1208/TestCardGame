@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using TestCardGame.Charactor;
-using TestCardGame.Charactor.Player;
-using TestCardGame.Charactor.ValueObjects;
+using TestCardGame.Character;
+using TestCardGame.Character.Player;
+using TestCardGame.Character.ValueObjects;
 using TestCardGame.BoardManage;
 using TestCardGame.Controller.Services;
 using TestCardGame.Cards.Core;
@@ -122,7 +122,7 @@ namespace TestCardGame.Controller
 
         public bool IsPlayerTurn => turnService?.IsPlayerTurn ?? true;
         public PlayerUnit PlayerUnitInstance => cellBuilder?.Player as PlayerUnit;
-        public TestCardGame.Charactor.Enemies.IEnemy EnemyUnitInstance => cellBuilder?.Enemy as TestCardGame.Charactor.Enemies.IEnemy;
+        public TestCardGame.Character.Enemies.IEnemy EnemyUnitInstance => cellBuilder?.Enemy as TestCardGame.Character.Enemies.IEnemy;
 
         public bool UseCardAtDropScreenPosition(CardBase card, Vector2 screenPosition)
         {

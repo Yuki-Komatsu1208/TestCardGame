@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using TestCardGame.Controller;
-using TestCardGame.Charactor.Player;
+using TestCardGame.Character.Player;
 
 namespace TestCardGame.Controller
 {

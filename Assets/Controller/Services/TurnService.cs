@@ -1,7 +1,7 @@
 using TestCardGame.BoardManage;
 using TestCardGame.Cards.Core;
-using TestCardGame.Charactor.Enemies;
-using TestCardGame.Charactor.Player;
+using TestCardGame.Character.Enemies;
+using TestCardGame.Character.Player;
 using UnityEngine;
 
 namespace TestCardGame.Controller.Services
