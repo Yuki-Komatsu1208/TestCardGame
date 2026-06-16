@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using TestCardGame.Actions.Core;
-using TestCardGame.Cards;
 using TestCardGame.Charactor;
 using TestCardGame.Charactor.Player;
 using TestCardGame.Charactor.ValueObjects;
@@ -14,7 +12,7 @@ namespace TestCardGame.Controller
 {
 
     /// <summary>
-    /// ゲーム全体のロジックを管理するコントローラー
+    /// ゲーム全体の操作を受け付け、各サービスへ処理を委譲するコントローラー。
     /// </summary>
     public class GameController : MonoBehaviour
     {
@@ -22,6 +20,12 @@ namespace TestCardGame.Controller
 
         private UnitMoveService moveService;
         private ViewMoveService viewMoveService;
+        // GameControllerは操作の入口に寄せ、具体的な処理は各サービスへ分離する。
+        private BoardTargetingService targetingService;
+        private BoardVisualService boardVisualService;
+        private CellEffectService cellEffectService;
+        private CardPlayService cardPlayService;
+        private TurnService turnService;
         private readonly Dictionary<UnitID, IUnit> unitsById = new();
         private readonly Dictionary<int, UnitView> viewByCharacterCode = new();
         private readonly Dictionary<Vector2Int, RectTransform> cellRects = new();
@@ -87,6 +91,12 @@ namespace TestCardGame.Controller
             viewMoveService = new ViewMoveService(cellRects, viewByCharacterCode, unitsById);
             viewMoveService.Bind(moveService);
 
+            targetingService = new BoardTargetingService(cellRects);
+            boardVisualService = new BoardVisualService(cellRects);
+            cellEffectService = new CellEffectService();
+            cardPlayService = new CardPlayService(moveService, targetingService);
+            turnService = new TurnService(board, moveService, cellEffectService);
+
             initialized = true;
             viewMoveService.SyncAllViewsFromModel();
 
@@ -110,157 +120,51 @@ namespace TestCardGame.Controller
 
         private BattleUI battleUIInstance;
 
-        public bool IsPlayerTurn => isPlayerTurn;
+        public bool IsPlayerTurn => turnService?.IsPlayerTurn ?? true;
         public PlayerUnit PlayerUnitInstance => cellBuilder?.Player as PlayerUnit;
         public TestCardGame.Charactor.Enemies.DefaultEnemy EnemyUnitInstance => cellBuilder?.Enemy as TestCardGame.Charactor.Enemies.DefaultEnemy;
 
-        private bool isPlayerTurn = true;
-        private bool hasPlayedCardThisTurn = false;
-
         public bool UseCardAtDropScreenPosition(CardBase card, Vector2 screenPosition)
         {
-            if (!isPlayerTurn)
-            {
-                Debug.LogWarning("It is not the player's turn.");
-                return false;
-            }
-
-            if (hasPlayedCardThisTurn)
-            {
-                Debug.LogWarning("You can only play one card per turn.");
-                return false;
-            }
-
             var player = PlayerUnitInstance;
-            if (player == null) return false;
-
-            if (player.Mana < card.Cost)
-            {
-                Debug.LogWarning("Not enough Mana!");
-                return false;
-            }
-
-            if (!TryGetClosestCellPosition(screenPosition, out var targetCellPosition))
+            if (turnService == null || cardPlayService == null || !turnService.CanPlayCard(card, player))
             {
                 return false;
             }
 
-            // Execute card effect
-            var context = new ActionContext(moveService, player, targetCellPosition);
-            foreach (var effect in card.Effects)
+            if (!cardPlayService.TryPlayCard(card, player, screenPosition))
             {
-                effect.Execute(context);
+                return false;
             }
 
-            // Consume cost
-            player.Mana -= card.Cost;
-            hasPlayedCardThisTurn = true;
+            turnService.MarkCardPlayed(card, player);
 
-            // Update UI & Cell visuals
-            SyncCellVisuals();
-            if (battleUIInstance != null)
-            {
-                battleUIInstance.Refresh();
-            }
+            RefreshBattleViews();
 
             return true;
         }
 
         public void EndPlayerTurn()
         {
-            if (!isPlayerTurn) return;
-
-            isPlayerTurn = false;
-            if (battleUIInstance != null)
+            if (turnService == null)
             {
-                battleUIInstance.Refresh();
+                return;
             }
 
-            // Execute enemy turn (moves 1 cell towards player, and hits player if adjacent)
-            ExecuteEnemyTurn();
+            if (!turnService.EndPlayerTurn(EnemyUnitInstance, PlayerUnitInstance))
+            {
+                return;
+            }
+
+            RefreshBattleViews();
         }
 
-        private void ExecuteEnemyTurn()
-        {
-            var enemy = EnemyUnitInstance;
-            var player = PlayerUnitInstance;
-
-            if (enemy != null && player != null)
-            {
-                enemy.ExecuteTurn(new TestCardGame.Charactor.Enemies.EnemyTurnContext(moveService, enemy, player));
-            }
-
-            // Tick fire/cell effects
-            TickCellEffects();
-
-            // Start player turn
-            StartPlayerTurn();
-        }
-
-        private void StartPlayerTurn()
-        {
-            isPlayerTurn = true;
-            hasPlayedCardThisTurn = false;
-
-            var player = PlayerUnitInstance;
-            if (player != null)
-            {
-                player.Mana = Mathf.Min(player.Mana + 1, player.MaxMana);
-            }
-
-            SyncCellVisuals();
-            if (battleUIInstance != null)
-            {
-                battleUIInstance.Refresh();
-            }
-        }
-
-        private void TickCellEffects()
-        {
-            var board = cellBuilder?.Board;
-            if (board == null) return;
-
-            for (int y = 0; y < board.Height; y++)
-            {
-                for (int x = 0; x < board.Width; x++)
-                {
-                    var cell = board.GetCell(x, y);
-                    cell.TickFire(out int damage);
-                    if (damage > 0 && cell.Occupant != null)
-                    {
-                        cell.Occupant.Hp.TakeDamage(damage);
-                        Debug.Log($"{cell.Occupant.Name} took {damage} fire damage! Current HP: {cell.Occupant.Hp.CurrentValue}");
-                    }
-                }
-            }
-        }
-
+        /// <summary>
+        /// 盤面セルの表示を現在のモデル状態に同期する。
+        /// </summary>
         public void SyncCellVisuals()
         {
-            var board = cellBuilder?.Board;
-            if (board == null) return;
-
-            for (int y = 0; y < board.Height; y++)
-            {
-                for (int x = 0; x < board.Width; x++)
-                {
-                    var cell = board.GetCell(x, y);
-                    if (cellRects.TryGetValue(new Vector2Int(x, y), out var rect))
-                    {
-                        if (rect.TryGetComponent<UnityEngine.UI.Image>(out var img))
-                        {
-                            if (cell.IsOnFire)
-                            {
-                                img.color = new Color(1.0f, 0.5f, 0.2f, 1.0f); // Orange fire
-                            }
-                            else
-                            {
-                                img.color = Color.white; // Default
-                            }
-                        }
-                    }
-                }
-            }
+            boardVisualService?.SyncCellVisuals(cellBuilder?.Board);
         }
 
         /// <summary>
@@ -299,7 +203,7 @@ namespace TestCardGame.Controller
                 return false;
             }
 
-            if (!TryGetClosestCellPosition(screenPosition, out var targetCellPosition))
+            if (targetingService == null || !targetingService.TryGetClosestCellPosition(screenPosition, out var targetCellPosition))
             {
                 return false;
             }
@@ -329,7 +233,7 @@ namespace TestCardGame.Controller
                 return false;
             }
 
-            var offset = NormalizeCardinalDirection(direction);
+            var offset = BoardTargetingService.NormalizeCardinalDirection(direction);
             if (offset == Vector2Int.zero)
             {
                 MoveRejected?.Invoke(unitId, offset, "Direction must not be zero.");
@@ -350,57 +254,15 @@ namespace TestCardGame.Controller
             return Array.Empty<CardBase>();
         }
         /// <summary>
-        /// 方向ベクトルを正規化して、最も近いカードナル方向（上下左右）に変換する
+        /// 戦闘関連の表示をまとめて更新する。
         /// </summary>
-        /// <param name="direction"></param>
-        /// <returns></returns>
-        private static Vector2Int NormalizeCardinalDirection(Vector2Int direction)
+        private void RefreshBattleViews()
         {
-            if (direction == Vector2Int.zero)
+            SyncCellVisuals();
+            if (battleUIInstance != null)
             {
-                return Vector2Int.zero;
+                battleUIInstance.Refresh();
             }
-
-            return Mathf.Abs(direction.x) >= Mathf.Abs(direction.y)
-                ? new Vector2Int(direction.x > 0 ? 1 : -1, 0)
-                : new Vector2Int(0, direction.y > 0 ? 1 : -1);
-        }
-
-        private bool TryGetClosestCellPosition(Vector2 screenPosition, out Vector2Int closestPosition)
-        {
-            closestPosition = default;
-
-            if (cellRects.Count == 0)
-            {
-                return false;
-            }
-
-            var minDistanceSq = float.MaxValue;
-            var found = false;
-
-            foreach (var entry in cellRects)
-            {
-                var rect = entry.Value;
-                if (rect == null)
-                {
-                    continue;
-                }
-
-                var cellCenterScreenPos = RectTransformUtility.WorldToScreenPoint(
-                    null,
-                    rect.TransformPoint(rect.rect.center));
-                var distanceSq = (cellCenterScreenPos - screenPosition).sqrMagnitude;
-                if (distanceSq >= minDistanceSq)
-                {
-                    continue;
-                }
-
-                minDistanceSq = distanceSq;
-                closestPosition = entry.Key;
-                found = true;
-            }
-
-            return found;
         }
         /// <summary>
         /// ユニットの移動開始を通知する
