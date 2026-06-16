@@ -17,7 +17,6 @@ namespace TestCardGame.Charactor.Enemies
         public string Name { get; }
         public StatusVO.HP Hp { get; }
         public Vector2Int Position { get; set; }
-        public DefaultEnemyAlgorithm Algorithm { get; }
         public IReadOnlyList<EnemyAction> Actions { get; }
 
         /// <summary>
@@ -28,14 +27,12 @@ namespace TestCardGame.Charactor.Enemies
             string name,
             StatusVO.HP hp,
             Vector2Int position,
-            DefaultEnemyAlgorithm algorithm = null,
             IReadOnlyList<EnemyAction> actions = null)
         {
             ID = id;
             Name = name;
             Position = position;
             Hp = hp;
-            Algorithm = algorithm ?? new ChaseAndAttackAlgorithm();
             Actions = actions ?? new List<EnemyAction>
             {
                 new AdjacentAttackEnemyAction(10),
@@ -45,7 +42,16 @@ namespace TestCardGame.Charactor.Enemies
 
         public void ExecuteTurn(EnemyTurnContext context)
         {
-            Algorithm.Execute(context);
+            foreach (var action in Actions)
+            {
+                if (!action.CanExecute(context))
+                {
+                    continue;
+                }
+
+                action.Execute(context);
+                return;
+            }
         }
 
         public void MoveTo(int x, int y)
