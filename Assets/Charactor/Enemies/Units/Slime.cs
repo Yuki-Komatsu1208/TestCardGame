@@ -1,5 +1,6 @@
 using System.Collections.Generic;
-using TestCardGame.Charactor.Enemies.Actions;
+using TestCardGame.Actions.Effects;
+using TestCardGame.Charactor.Enemies.Targeting;
 using TestCardGame.Charactor.ValueObjects;
 using UnityEngine;
 
@@ -17,7 +18,7 @@ namespace TestCardGame.Charactor.Enemies
         public string Name { get; }
         public StatusVO.HP Hp { get; }
         public Vector2Int Position { get; set; }
-        public IReadOnlyList<EnemyAction> Actions { get; }
+        public IReadOnlyList<EnemyActionPlan> ActionPlans { get; }
 
         /// <summary>
         /// スライムのコンストラクタ。ID、名前、HP、初期位置、行動を初期化する。
@@ -27,31 +28,25 @@ namespace TestCardGame.Charactor.Enemies
             string name,
             StatusVO.HP hp,
             Vector2Int position,
-            IReadOnlyList<EnemyAction> actions = null)
+            IReadOnlyList<EnemyActionPlan> actionPlans = null)
         {
             ID = id;
             Name = name;
             Position = position;
             Hp = hp;
-            Actions = actions ?? new List<EnemyAction>
+            ActionPlans = actionPlans ?? new List<EnemyActionPlan>
             {
-                new AdjacentAttackEnemyAction(10),
-                new MoveTowardTargetEnemyAction(1)
+                new EnemyActionPlan(new ePositionAttack(10, 1), new TargetUnitPositionSelector()),
+                new EnemyActionPlan(new eMove(1), new TargetUnitPositionSelector())
             };
         }
 
         public void ExecuteTurn(EnemyTurnContext context)
         {
             // プレイヤーに接近し、隣接したら攻撃する。
-            foreach (var action in Actions)
+            foreach (var plan in ActionPlans)
             {
-                if (!action.CanExecute(context))
-                {
-                    continue;
-                }
-
-                action.Execute(context);
-                return;
+                if (plan.TryExecute(context)) return;
             }
         }
 

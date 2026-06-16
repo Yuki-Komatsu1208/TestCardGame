@@ -18,12 +18,25 @@ namespace TestCardGame.Actions.Effects
         /// 使用者を指定座標へ移動させる。移動距離はStepで指定。
         /// </summary>
         /// <param name="context"></param>
-        public override void Execute(ActionContext context)
+        public override bool CanExecute(ActionContext context)
         {
             Vector2Int userPos = context.User.Position;
             Vector2Int diff = context.TargetPosition - userPos;
-            if (diff == Vector2Int.zero) return;
+            if (diff == Vector2Int.zero) return false;
 
+            Vector2Int dir = Normalize(diff);
+            int distance = Mathf.Abs(diff.x) >= Mathf.Abs(diff.y) ? Mathf.Abs(diff.x) : Mathf.Abs(diff.y);
+            int actualStep = Mathf.Min(distance, step);
+            Vector2Int destination = userPos + dir * actualStep;
+            return context.MoveService.GetCellAt(destination)?.CanMove == true;
+        }
+
+        public override void Execute(ActionContext context)
+        {
+            if (!CanExecute(context)) return;
+
+            Vector2Int userPos = context.User.Position;
+            Vector2Int diff = context.TargetPosition - userPos;
             Vector2Int dir = Normalize(diff);
             int distance = Mathf.Abs(diff.x) >= Mathf.Abs(diff.y) ? Mathf.Abs(diff.x) : Mathf.Abs(diff.y);
             int actualStep = Mathf.Min(distance, step);

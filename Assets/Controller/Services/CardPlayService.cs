@@ -37,6 +37,14 @@ namespace TestCardGame.Controller.Services
             var context = new ActionContext(moveService, player, targetCellPosition);
             foreach (var effect in card.Effects)
             {
+                if (!effect.CanExecute(context))
+                {
+                    return false;
+                }
+            }
+
+            foreach (var effect in card.Effects)
+            {
                 effect.Execute(context);
             }
 

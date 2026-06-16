@@ -1,5 +1,6 @@
 using System.Collections.Generic;
-using TestCardGame.Charactor.Enemies.Actions;
+using TestCardGame.Actions.Effects;
+using TestCardGame.Charactor.Enemies.Targeting;
 using TestCardGame.Charactor.ValueObjects;
 using TestCardGame.Charactor.StatusVO;
 using UnityEngine;
@@ -16,45 +17,39 @@ namespace TestCardGame.Charactor.Enemies
         public string Name { get; }
         public HP Hp { get; }
         public Vector2Int Position { get; set; }
-        public IReadOnlyList<EnemyAction> Actions { get; }
+        public IReadOnlyList<EnemyActionPlan> ActionPlans { get; }
 
         /// <summary>
         /// 敵のID、表示名、HP、初期位置、行動リストを初期化する。
-        /// actionsを省略した場合は、隣接攻撃と接近行動を持つ。
+        /// actionPlansを省略した場合は、隣接攻撃と接近行動を持つ。
         /// </summary>
         public EnemyTemplate(
             UnitID id,
             string name,
             HP hp,
             Vector2Int position,
-            IReadOnlyList<EnemyAction> actions = null)
+            IReadOnlyList<EnemyActionPlan> actionPlans = null)
         {
             ID = id;
             Name = name;
             Hp = hp;
             Position = position;
-            Actions = actions ?? new List<EnemyAction>
+            ActionPlans = actionPlans ?? new List<EnemyActionPlan>
             {
-                new AdjacentAttackEnemyAction(10),
-                new MoveTowardTargetEnemyAction(1)
+                new EnemyActionPlan(new ePositionAttack(10, 1), new TargetUnitPositionSelector()),
+                new EnemyActionPlan(new eMove(1), new TargetUnitPositionSelector())
             };
         }
 
         /// <summary>
         /// 敵のターン行動を実行する。
-        /// Actionsを上から順番に確認し、実行可能な最初の行動だけを実行する。
+        /// ActionPlansを上から順番に確認し、実行可能な最初の行動だけを実行する。
         /// </summary>
         public void ExecuteTurn(EnemyTurnContext context)
         {
-            foreach (var action in Actions)
+            foreach (var plan in ActionPlans)
             {
-                if (!action.CanExecute(context))
-                {
-                    continue;
-                }
-
-                action.Execute(context);
-                return;
+                if (plan.TryExecute(context)) return;
             }
         }
 

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
-using TestCardGame.Charactor.Enemies.Actions;
+using TestCardGame.Actions.Effects;
+using TestCardGame.Charactor.Enemies.Targeting;
 using TestCardGame.Charactor.ValueObjects;
 using UnityEngine;
 
@@ -18,7 +19,7 @@ namespace TestCardGame.Charactor.Enemies
         public string Name { get; }
         public StatusVO.HP Hp { get; }
         public Vector2Int Position { get; set; }
-        public IReadOnlyList<EnemyAction> Actions { get; }
+        public IReadOnlyList<EnemyActionPlan> ActionPlans { get; }
 
         private int nextActionIndex;
 
@@ -30,17 +31,17 @@ namespace TestCardGame.Charactor.Enemies
             string name,
             StatusVO.HP hp,
             Vector2Int position,
-            IReadOnlyList<EnemyAction> actions = null)
+            IReadOnlyList<EnemyActionPlan> actionPlans = null)
         {
             ID = id;
             Name = name;
             Position = position;
             Hp = hp;
-            Actions = actions ?? new List<EnemyAction>
+            ActionPlans = actionPlans ?? new List<EnemyActionPlan>
             {
-                new MoveTowardTargetEnemyAction(1),
-                new IgniteAroundEnemyAction(2, 5),
-                new SleepEnemyAction()
+                new EnemyActionPlan(new eMove(1), new TargetUnitPositionSelector()),
+                new EnemyActionPlan(new eIgniteAround(2, 5), new SelfPositionSelector()),
+                new EnemyActionPlan(new eSleep(), new SelfPositionSelector())
             };
         }
 
@@ -50,23 +51,17 @@ namespace TestCardGame.Charactor.Enemies
         /// </summary>
         public void ExecuteTurn(EnemyTurnContext context)
         {
-            if (Actions == null || Actions.Count == 0)
+            if (ActionPlans == null || ActionPlans.Count == 0)
             {
                 return;
             }
 
-            for (int attempts = 0; attempts < Actions.Count; attempts++)
+            for (int attempts = 0; attempts < ActionPlans.Count; attempts++)
             {
-                var action = Actions[nextActionIndex];
-                nextActionIndex = (nextActionIndex + 1) % Actions.Count;
+                var plan = ActionPlans[nextActionIndex];
+                nextActionIndex = (nextActionIndex + 1) % ActionPlans.Count;
 
-                if (!action.CanExecute(context))
-                {
-                    continue;
-                }
-
-                action.Execute(context);
-                return;
+                if (plan.TryExecute(context)) return;
             }
         }
 

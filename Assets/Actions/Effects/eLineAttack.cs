@@ -46,15 +46,26 @@ namespace TestCardGame.Actions.Effects
             this.hitType = hitType;
         }
 
-        public override void Execute(ActionContext context)
+        public override bool CanExecute(ActionContext context)
         {
             Vector2Int difference = context.TargetPosition - context.User.Position;
             if (difference == Vector2Int.zero)
+            {
+                return false;
+            }
+
+            return context.MoveService.GetCellAt(context.User.Position + NormalizeDirection(difference)) != null;
+        }
+
+        public override void Execute(ActionContext context)
+        {
+            if (!CanExecute(context))
             {
                 Debug.LogWarning("攻撃方向を指定してください。");
                 return;
             }
 
+            Vector2Int difference = context.TargetPosition - context.User.Position;
             Vector2Int direction = NormalizeDirection(difference);
             bool hitTarget = false;
 

@@ -29,27 +29,27 @@ namespace TestCardGame.Actions.Effects
         /// 使用者からマンハッタン距離2以内の対象マスに炎上効果を付与する。
         /// </summary>
         /// <param name="context">使用者、対象位置、マス取得処理を含む実行コンテキスト。</param>
-        public override void Execute(ActionContext context)
+        public override bool CanExecute(ActionContext context)
         {
             Vector2Int userPos = context.User.Position;
             Vector2Int targetPos = context.TargetPosition;
 
-            // 斜め方向を含めず、縦横の移動量の合計で対象までの距離を判定する。
             int dist = Mathf.Abs(targetPos.x - userPos.x) + Mathf.Abs(targetPos.y - userPos.y);
-            if (dist <= 2)
+            return dist <= 2 && context.MoveService.GetCellAt(targetPos) != null;
+        }
+
+        public override void Execute(ActionContext context)
+        {
+            if (!CanExecute(context))
             {
-                var cell = context.MoveService.GetCellAt(targetPos);
-                if (cell != null)
-                {
-                    // 対象マスに継続ターン数とターンごとのダメージ量を設定する。
-                    cell.ApplyFire(duration, damage);
-                    Debug.Log($"座標（{targetPos.x}, {targetPos.y}）を炎上状態にしました。持続ターン数: {duration}、毎ターンのダメージ: {damage}。");
-                }
+                Debug.LogWarning("炎上効果の対象が盤面外、または遠すぎます。射程は2マス以内です。");
+                return;
             }
-            else
-            {
-                Debug.LogWarning("炎上効果の対象が遠すぎます。射程は2マス以内です。");
-            }
+
+            Vector2Int targetPos = context.TargetPosition;
+            var cell = context.MoveService.GetCellAt(targetPos);
+            cell.ApplyFire(duration, damage);
+            Debug.Log($"座標（{targetPos.x}, {targetPos.y}）を炎上状態にしました。持続ターン数: {duration}、毎ターンのダメージ: {damage}。");
         }
     }
 }

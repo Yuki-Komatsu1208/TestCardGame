@@ -5,7 +5,7 @@
 カードは「カード情報」と「実行する効果」を分離して管理する。
 
 - `CardBase`: 名前、説明、コスト、レベル、効果、エンチャントを保持する。
-- `ActionEffect`: カードや敵行動から実行される効果の基底クラス。
+- `ActionEffect`: カードや敵行動から実行されるActionの基底クラス。実行可否と実行処理を持つ。
 - `ActionContext`: 効果の実行に必要な使用者、対象座標、移動サービスを保持する。
 - `CardModifier`: カードを追加強化するための基底クラス。
 - `CardView` / `HandView`: カード情報の表示のみを担当する。
@@ -60,7 +60,7 @@ flowchart LR
 3. カードのドロップ操作から `GameController.UseCardAtDropScreenPosition` を呼ぶ。
 4. `GameController` がターン、使用回数、マナ、対象座標を検証する。
 5. `ActionContext` を生成する。
-6. `CardBase.Effects` を順番に呼び、各 `ActionEffect.Execute` を実行する。
+6. `CardBase.Effects` を順番に確認し、各 `ActionEffect.CanExecute` が通れば `Execute` を実行する。
 7. コストを消費し、盤面とUIを更新する。
 
 ## CardBaseの制約
@@ -78,11 +78,16 @@ flowchart LR
 ## ActionEffectの方針
 
 カードや敵行動の具体的な処理は `ActionEffect` の派生クラスに実装する。
+実行できるかどうかもAction側の `CanExecute` に閉じ込める。
 
 - `eMove`: 対象方向への移動。
 - `eLineAttack`: 射程と命中方式を指定する直線攻撃。
 - `ePositionAttack`: 指定座標にいる対象への攻撃。
 - `eIgnite`: 射程内のマスへの炎上付与。
+- `eIgniteAround`: 使用者の上下左右4マスへの炎上付与。
+- `eSleep`: 何もせず行動を消費する。
+
+敵は `EnemyActionPlan` で `ActionEffect` と対象指定ロジックを組み合わせる。敵クラスは「どのActionを使うか」と「どの対象指定を使うか」だけを持ち、実行可能かどうかはAction側に任せる。
 
 `eLineAttack` は射程によって近距離と遠距離を表現し、`HitType.FirstTargetOnly` と `HitType.Penetrating` で貫通の有無を切り替える。使用者の位置に依存せず指定座標だけを攻撃する場合は `ePositionAttack` を使用する。
 

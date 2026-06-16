@@ -30,23 +30,29 @@ namespace TestCardGame.Actions.Effects
             this.maxRange = maxRange;
         }
 
-        public override void Execute(ActionContext context)
+        public override bool CanExecute(ActionContext context)
         {
             Vector2Int targetPosition = context.TargetPosition;
             if (context.MoveService.GetCellAt(targetPosition) == null)
             {
-                Debug.LogWarning("指定された攻撃座標は盤面の範囲外です。");
-                return;
+                return false;
             }
 
             int distance = Mathf.Abs(targetPosition.x - context.User.Position.x)
                 + Mathf.Abs(targetPosition.y - context.User.Position.y);
 
-            if (maxRange.HasValue && distance > maxRange.Value)
+            return !maxRange.HasValue || distance <= maxRange.Value;
+        }
+
+        public override void Execute(ActionContext context)
+        {
+            if (!CanExecute(context))
             {
-                Debug.LogWarning($"指定された攻撃座標が射程外です。射程は{maxRange.Value}マス以内です。");
+                Debug.LogWarning("指定された攻撃座標が盤面外、または射程外です。");
                 return;
             }
+
+            Vector2Int targetPosition = context.TargetPosition;
 
             var targetUnit = context.MoveService.GetUnitAt(targetPosition);
             if (targetUnit == null)
