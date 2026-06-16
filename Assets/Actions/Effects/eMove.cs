@@ -1,9 +1,9 @@
-using TestCardGame.Cards.Core;
+using TestCardGame.Actions.Core;
 using UnityEngine;
 
-namespace TestCardGame.Cards.Effects
+namespace TestCardGame.Actions.Effects
 {
-    public sealed class eMove : CardEffect
+    public sealed class eMove : ActionEffect
     {
         /// <summary>
         /// 移動距離
@@ -18,7 +18,7 @@ namespace TestCardGame.Cards.Effects
         /// 使用者を指定座標へ移動させる。移動距離はStepで指定。
         /// </summary>
         /// <param name="context"></param>
-        public override void Execute(CardContext context)
+        public override void Execute(ActionContext context)
         {
             Vector2Int userPos = context.User.Position;
             Vector2Int diff = context.TargetPosition - userPos;

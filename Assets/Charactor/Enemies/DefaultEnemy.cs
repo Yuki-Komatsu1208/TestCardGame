@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using TestCardGame.Charactor.Enemies.Actions;
 using TestCardGame.Charactor.ValueObjects;
 using UnityEngine;
 
@@ -16,17 +18,29 @@ namespace TestCardGame.Charactor.Enemies
         public StatusVO.HP Hp { get; }
         public Vector2Int Position { get; set; }
         public DefaultEnemyAlgorithm Algorithm { get; }
+        public IReadOnlyList<EnemyAction> Actions { get; }
 
         /// <summary>
         /// デフォルトの敵キャラクターのコンストラクタ。ID、名前、HPを初期化する。
         /// </summary>
-        public DefaultEnemy(UnitID id, string name, StatusVO.HP hp, Vector2Int position, DefaultEnemyAlgorithm algorithm = null)
+        public DefaultEnemy(
+            UnitID id,
+            string name,
+            StatusVO.HP hp,
+            Vector2Int position,
+            DefaultEnemyAlgorithm algorithm = null,
+            IReadOnlyList<EnemyAction> actions = null)
         {
             ID = id;
             Name = name;
             Position = position;
             Hp = hp;
-            Algorithm = algorithm ?? new ChaseAndAttackAlgorithm(10);
+            Algorithm = algorithm ?? new ChaseAndAttackAlgorithm();
+            Actions = actions ?? new List<EnemyAction>
+            {
+                new AdjacentAttackEnemyAction(10),
+                new MoveTowardTargetEnemyAction(1)
+            };
         }
 
         public void ExecuteTurn(EnemyTurnContext context)

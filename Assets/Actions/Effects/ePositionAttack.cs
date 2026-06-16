@@ -1,13 +1,13 @@
 using System;
-using TestCardGame.Cards.Core;
+using TestCardGame.Actions.Core;
 using UnityEngine;
 
-namespace TestCardGame.Cards.Effects
+namespace TestCardGame.Actions.Effects
 {
     /// <summary>
     /// 指定座標にいる対象へダメージを与える。
     /// </summary>
-    public sealed class ePositionAttack : CardEffect
+    public sealed class ePositionAttack : ActionEffect
     {
         private readonly int damage;
         private readonly int? maxRange;
@@ -30,7 +30,7 @@ namespace TestCardGame.Cards.Effects
             this.maxRange = maxRange;
         }
 
-        public override void Execute(CardContext context)
+        public override void Execute(ActionContext context)
         {
             Vector2Int targetPosition = context.TargetPosition;
             if (context.MoveService.GetCellAt(targetPosition) == null)

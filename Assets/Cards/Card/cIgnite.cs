@@ -1,6 +1,6 @@
 using System.Collections.Generic;
+using TestCardGame.Actions.Effects;
 using TestCardGame.Cards.Core;
-using TestCardGame.Cards.Effects;
 using TestCardGame.Cards.Modifiers;
 using TestCardGame.Cards.VOs;
 
@@ -16,7 +16,7 @@ namespace TestCardGame.Cards.Card
             $"任意の2マス先までに炎上効果を付与する（毎ターン{GetDamage(level)}ダメージ、{GetTurns(level)}ターン持続）",
             _baseCost,
             level,
-            new List<CardEffect> { new eIgnite(GetTurns(level), GetDamage(level)) },
+            new List<ActionEffect> { new eIgnite(GetTurns(level), GetDamage(level)) },
             enchants
         )
         {

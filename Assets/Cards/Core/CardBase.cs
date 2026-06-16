@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using TestCardGame.Cards.Effects;
+using TestCardGame.Actions.Effects;
 using TestCardGame.Cards.Modifiers;
 using TestCardGame.Cards.VOs;
 
@@ -15,7 +15,7 @@ namespace TestCardGame.Cards.Core
         public string Description { get; protected set; }
         public int Cost { get; protected set; }
         public CardLevel Level { get; protected set; }
-        public List<CardEffect> Effects { get; private set;}
+        public List<ActionEffect> Effects { get; private set;}
         public List<CardModifier> Enchants { get; private set;}
 
         protected CardBase(
@@ -23,7 +23,7 @@ namespace TestCardGame.Cards.Core
             string description,
             int cost,
             CardLevel level,
-            List<CardEffect> effects,
+            List<ActionEffect> effects,
             List<CardModifier> enchants = null)
         {
             if (string.IsNullOrEmpty(cardName))

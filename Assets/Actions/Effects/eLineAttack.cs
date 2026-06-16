@@ -1,8 +1,8 @@
 using System;
-using TestCardGame.Cards.Core;
+using TestCardGame.Actions.Core;
 using UnityEngine;
 
-namespace TestCardGame.Cards.Effects
+namespace TestCardGame.Actions.Effects
 {
     /// <summary>
     /// 直線攻撃が対象へ命中した後の処理方式。
@@ -18,7 +18,7 @@ namespace TestCardGame.Cards.Effects
     /// <summary>
     /// 使用者から指定方向へ、設定された射程まで直線攻撃を行う。
     /// </summary>
-    public sealed class eLineAttack : CardEffect
+    public sealed class eLineAttack : ActionEffect
     {
         private readonly int damage;
         private readonly int range;
@@ -46,7 +46,7 @@ namespace TestCardGame.Cards.Effects
             this.hitType = hitType;
         }
 
-        public override void Execute(CardContext context)
+        public override void Execute(ActionContext context)
         {
             Vector2Int difference = context.TargetPosition - context.User.Position;
             if (difference == Vector2Int.zero)

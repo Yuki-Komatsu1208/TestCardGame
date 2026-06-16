@@ -1,12 +1,12 @@
-using TestCardGame.Cards.Core;
+using TestCardGame.Actions.Core;
 using UnityEngine;
 
-namespace TestCardGame.Cards.Effects
+namespace TestCardGame.Actions.Effects
 {
     /// <summary>
     /// 指定したマスに、一定ターン継続してダメージを与える炎上効果を付与する。
     /// </summary>
-    public sealed class eIgnite : CardEffect
+    public sealed class eIgnite : ActionEffect
     {
         // 炎上効果が継続するターン数。
         private readonly int duration;
@@ -29,7 +29,7 @@ namespace TestCardGame.Cards.Effects
         /// 使用者からマンハッタン距離2以内の対象マスに炎上効果を付与する。
         /// </summary>
         /// <param name="context">使用者、対象位置、マス取得処理を含む実行コンテキスト。</param>
-        public override void Execute(CardContext context)
+        public override void Execute(ActionContext context)
         {
             Vector2Int userPos = context.User.Position;
             Vector2Int targetPos = context.TargetPosition;

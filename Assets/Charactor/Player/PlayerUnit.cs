@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using TestCardGame.Cards;
 using TestCardGame.Cards.Card;
 using TestCardGame.Cards.Core;
-using TestCardGame.Cards.Effects;
 using TestCardGame.Cards.Modifiers;
 using TestCardGame.Cards.VOs;
 using TestCardGame.Charactor.StatusVO;

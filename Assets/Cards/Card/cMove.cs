@@ -1,6 +1,6 @@
 using System.Collections.Generic;
+using TestCardGame.Actions.Effects;
 using TestCardGame.Cards.Core;
-using TestCardGame.Cards.Effects;
 using TestCardGame.Cards.Modifiers;
 using TestCardGame.Cards.VOs;
 using UnityEditor;
@@ -18,7 +18,7 @@ namespace TestCardGame.Cards.Card
                 _description,
                 _baseCost,
                 level,
-                new List<CardEffect> { new eMove(level) },
+                new List<ActionEffect> { new eMove(level) },
                 enchants
             )
         {
