@@ -8,6 +8,9 @@ namespace TestCardGame.Definitions.StatusEffects
     [CreateAssetMenu(fileName = "BurnStatusEffect", menuName = "Card Game/Status Effects/Burn")]
     public class BurnStatusEffectSO : StatusEffectSO
     {
+        /// <summary>
+        /// ターン終了時に炎ダメージを与え、残りターンを減らす。
+        /// </summary>
         public override void OnTurnEnd(IUnit unit, StatusEffectInstance instance, StatusEffectService service)
         {
             if (instance.RemainingTurns > 0)

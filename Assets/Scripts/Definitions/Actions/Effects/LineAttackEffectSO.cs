@@ -9,12 +9,18 @@ namespace TestCardGame.Actions.Effects
         public LineAttackLevelData level2 = new LineAttackLevelData { damage = 20, range = 1 };
         public LineAttackLevelData level3 = new LineAttackLevelData { damage = 25, range = 1 };
 
+        /// <summary>
+        /// 指定レベルの直線攻撃効果を作成する。
+        /// </summary>
         public override ActionEffect CreateRuntimeEffect(int level = 1)
         {
             var data = GetDataForLevel(level);
             return new eLineAttack(data.damage, data.range, data.hitType);
         }
 
+        /// <summary>
+        /// 指定レベルに対応する直線攻撃パラメータを取得する。
+        /// </summary>
         private LineAttackLevelData GetDataForLevel(int level)
         {
             switch (ClampLevel(level))

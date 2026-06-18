@@ -25,11 +25,11 @@ namespace TestCardGame.Controller.Services
                 {
                     var cell = board.GetCell(x, y);
 
-                    // 炎上しているマスにユニットが滞在している場合、OnFire状態異常を付与（または更新）する。
+                    // 炎上しているマスにユニットが滞在している場合、炎上状態異常を付与（または更新）する。
                     if (cell.IsOnFire && cell.Occupant != null)
                     {
                         statusEffectService?.ApplyBurn(cell.Occupant, cell.FireTurns, cell.FireDamage);
-                        Debug.Log($"盤面効果：炎上マス（{cell.X}, {cell.Y}）に滞在しているため、{cell.Occupant.Name}にOnFire状態異常（{cell.FireTurns}ターン、ダメージ: {cell.FireDamage}）を適用しました。");
+                        Debug.Log($"盤面効果: 炎上マス（{cell.X}, {cell.Y}）に滞在しているため、{cell.Occupant.Name}に炎上状態（{cell.FireTurns}ターン、ダメージ: {cell.FireDamage}）を適用しました。");
                     }
 
                     cell.TickFire(out int damage);

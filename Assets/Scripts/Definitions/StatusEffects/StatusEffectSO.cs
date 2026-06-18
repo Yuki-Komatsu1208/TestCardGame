@@ -15,6 +15,9 @@ namespace TestCardGame.Definitions.StatusEffects
         public string DisplayName => displayName;
         public string Description => description;
 
+        /// <summary>
+        /// エディタ外から状態異常の基本表示情報を設定する。
+        /// </summary>
         public void Configure(string id, string name, string desc)
         {
             effectId = id;

@@ -8,11 +8,17 @@ namespace TestCardGame.Definitions.StatusEffects
     [CreateAssetMenu(fileName = "SleepStatusEffect", menuName = "Card Game/Status Effects/Sleep")]
     public class SleepStatusEffectSO : StatusEffectSO
     {
+        /// <summary>
+        /// 睡眠中は行動不能として扱う。
+        /// </summary>
         public override bool CanAct(IUnit unit, StatusEffectInstance instance)
         {
-            return false; // Cannot act while sleeping
+            return false;
         }
 
+        /// <summary>
+        /// ターン終了時に睡眠の残りターンを減らす。
+        /// </summary>
         public override void OnTurnEnd(IUnit unit, StatusEffectInstance instance, StatusEffectService service)
         {
             if (instance.RemainingTurns > 0)

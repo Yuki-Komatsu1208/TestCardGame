@@ -46,7 +46,7 @@ namespace TestCardGame.Controller
         public event Action<UnitID, Vector2Int, string> MoveRejected;
         public event Action<BattleResult> BattleEnded;
 
-        public string CurrentStageName { get; private set; } = "Fallback Stage";
+        public string CurrentStageName { get; private set; } = "予備ステージ";
         public BattleResult CurrentBattleResult { get; private set; } = BattleResult.None;
         public BattleState CurrentBattleState { get; private set; } = BattleState.Playing;
 
@@ -82,13 +82,13 @@ namespace TestCardGame.Controller
             }
             if (cellBuilder == null)
             {
-                Debug.LogError("GameController: CellBuilder was not found in scene.", this);
+                Debug.LogError("GameController: シーン内に CellBuilder が見つかりません。", this);
                 return false;
             }
 
             if (!cellBuilder.Initialize())
             {
-                Debug.LogError("GameController: CellBuilder initialization failed.", this);
+                Debug.LogError("GameController: CellBuilder の初期化に失敗しました。", this);
                 return false;
             }
 
@@ -106,13 +106,13 @@ namespace TestCardGame.Controller
             }
             if (cellBuilder == null)
             {
-                Debug.LogError("GameController: CellBuilder was not found in scene.", this);
+                Debug.LogError("GameController: シーン内に CellBuilder が見つかりません。", this);
                 return false;
             }
 
             if (!cellBuilder.InitializeStage(stageDef, runState))
             {
-                Debug.LogError("GameController: CellBuilder stage initialization failed.", this);
+                Debug.LogError("GameController: CellBuilder のステージ初期化に失敗しました。", this);
                 return false;
             }
 
@@ -121,18 +121,18 @@ namespace TestCardGame.Controller
 
         private bool InitializeStageInternal(Stage.StageDefinitionSO stageDef, Run.RunState runState)
         {
-            CurrentStageName = stageDef != null ? stageDef.stageName : "Fallback Stage";
+            CurrentStageName = stageDef != null ? stageDef.stageName : "予備ステージ";
             CurrentBattleResult = BattleResult.None;
             CurrentBattleState = BattleState.Playing;
 
             var board = cellBuilder.Board;
             if (board == null)
             {
-                Debug.LogError("GameController: Board was not initialized.", this);
+                Debug.LogError("GameController: Board が初期化されていません。", this);
                 return false;
             }
 
-            // Cleanup old move service listeners if they exist
+            // 既存の移動サービス購読があれば解除する。
             if (moveService != null)
             {
                 moveService.MoveStarted -= OnMoveStarted;
@@ -184,11 +184,11 @@ namespace TestCardGame.Controller
             initialized = true;
             viewMoveService.SyncAllViewsFromModel();
 
-            // Set positions
+            // ユニットの初期位置を配置する。
             var placed = moveService.RequestMoveAbsolute(cellBuilder.Player.ID, new Vector2Int(2, 1));
             if (!placed)
             {
-                Debug.LogWarning("GameController: failed to place player at (2,1), placing at (0,0).");
+                Debug.LogWarning("GameController: プレイヤーを (2,1) に配置できませんでした。(0,0) に配置します。");
                 moveService.RequestMoveAbsolute(cellBuilder.Player.ID, new Vector2Int(0, 0));
             }
 
@@ -201,7 +201,7 @@ namespace TestCardGame.Controller
                     var placedEnemy = moveService.RequestMoveAbsolute(enemy.ID, spawnPos);
                     if (!placedEnemy)
                     {
-                        Debug.LogError($"GameController: failed to place enemy {enemy.Name} at {spawnPos}.");
+                        Debug.LogError($"GameController: 敵 {enemy.Name} を {spawnPos} に配置できませんでした。");
                     }
                 }
             }
@@ -210,7 +210,7 @@ namespace TestCardGame.Controller
                 var placedEnemy = moveService.RequestMoveAbsolute(cellBuilder.Enemy.ID, new Vector2Int(2, 3));
                 if (!placedEnemy)
                 {
-                    Debug.LogError("GameController: failed to place enemy at (2,3).");
+                    Debug.LogError("GameController: 敵を (2,3) に配置できませんでした。");
                 }
             }
 
@@ -235,6 +235,9 @@ namespace TestCardGame.Controller
         public PlayerUnit PlayerUnitInstance => cellBuilder?.Player as PlayerUnit;
         public TestCardGame.Character.Enemies.IEnemy EnemyUnitInstance => cellBuilder?.Enemy as TestCardGame.Character.Enemies.IEnemy;
 
+        /// <summary>
+        /// ドロップ位置を対象としてカードを使用する。
+        /// </summary>
         public bool UseCardAtDropScreenPosition(CardBase card, Vector2 screenPosition)
         {
             var player = PlayerUnitInstance;
@@ -257,6 +260,9 @@ namespace TestCardGame.Controller
             return true;
         }
 
+        /// <summary>
+        /// プレイヤーターンを終了し、生存している敵の行動を実行する。
+        /// </summary>
         public void EndPlayerTurn()
         {
             if (turnService == null)
@@ -283,6 +289,9 @@ namespace TestCardGame.Controller
             RefreshBattleViews();
         }
 
+        /// <summary>
+        /// 現在のHP状況からバトルの勝敗を判定する。
+        /// </summary>
         public void CheckBattleResolution()
         {
             if (CurrentBattleResult != BattleResult.None)
@@ -316,6 +325,9 @@ namespace TestCardGame.Controller
             }
         }
 
+        /// <summary>
+        /// HPが0以下になった敵を盤面と表示から取り除く。
+        /// </summary>
         private void HandleUnitDeaths()
         {
             foreach (var enemy in Enemies)
@@ -361,13 +373,13 @@ namespace TestCardGame.Controller
         {
             if (!initialized)
             {
-                MoveRejected?.Invoke(unitId, relativeDelta, "Controller is not initialized.");
+                MoveRejected?.Invoke(unitId, relativeDelta, "コントローラーが初期化されていません。");
                 return false;
             }
 
             if (moveService == null)
             {
-                MoveRejected?.Invoke(unitId, relativeDelta, "Move service is not initialized.");
+                MoveRejected?.Invoke(unitId, relativeDelta, "移動サービスが初期化されていません。");
                 return false;
             }
 
@@ -407,20 +419,20 @@ namespace TestCardGame.Controller
         {
             if (!initialized)
             {
-                MoveRejected?.Invoke(unitId, default, "Controller is not initialized.");
+                MoveRejected?.Invoke(unitId, default, "コントローラーが初期化されていません。");
                 return false;
             }
 
             if (moveCount <= 0)
             {
-                MoveRejected?.Invoke(unitId, default, "Move count must be positive.");
+                MoveRejected?.Invoke(unitId, default, "移動数は1以上である必要があります。");
                 return false;
             }
 
             var offset = BoardTargetingService.NormalizeCardinalDirection(direction);
             if (offset == Vector2Int.zero)
             {
-                MoveRejected?.Invoke(unitId, offset, "Direction must not be zero.");
+                MoveRejected?.Invoke(unitId, offset, "移動方向を指定してください。");
                 return false;
             }
 
@@ -428,6 +440,9 @@ namespace TestCardGame.Controller
         }
        
 
+        /// <summary>
+        /// 現在のプレイヤーが所持しているカード一覧を返す。
+        /// </summary>
         public IReadOnlyList<CardBase> GetPlayerCards()
         {
             if (cellBuilder?.Player is PlayerUnit player)

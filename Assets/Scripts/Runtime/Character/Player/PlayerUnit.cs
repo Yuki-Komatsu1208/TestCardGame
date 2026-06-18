@@ -29,6 +29,9 @@ namespace TestCardGame.Character.Player
         private readonly List<StatusEffectInstance> statusEffects = new();
         public IReadOnlyList<StatusEffectInstance> StatusEffects => statusEffects;
 
+        /// <summary>
+        /// 状態異常を付与する。同種の状態異常がある場合は既存効果へマージする。
+        /// </summary>
         public void ApplyStatusEffect(StatusEffectInstance effect)
         {
             if (effect == null) return;
@@ -46,6 +49,9 @@ namespace TestCardGame.Character.Player
             }
         }
 
+        /// <summary>
+        /// 持続ターンが切れた状態異常を削除する。
+        /// </summary>
         public void CleanExpiredStatusEffects()
         {
             for (int i = statusEffects.Count - 1; i >= 0; i--)
@@ -59,6 +65,9 @@ namespace TestCardGame.Character.Player
             }
         }
 
+        /// <summary>
+        /// 付与中の状態異常をもとに、現在行動できるかを返す。
+        /// </summary>
         public bool CanAct
         {
             get
@@ -74,6 +83,9 @@ namespace TestCardGame.Character.Player
             }
         }
 
+        /// <summary>
+        /// プレイヤーの座標を直接更新する。
+        /// </summary>
         public void MoveTo(int x, int y)
         {
             Position = new Vector2Int(x, y);
@@ -94,6 +106,9 @@ namespace TestCardGame.Character.Player
             Cards = new List<CardBase>();
         }
 
+        /// <summary>
+        /// 実行時カード一覧を指定してプレイヤーを作成する。
+        /// </summary>
         public PlayerUnit(UnitID id, string name, HP hp, Vector2Int position, List<CardBase> cards)
         {
             ID = id;
@@ -105,6 +120,9 @@ namespace TestCardGame.Character.Player
             Cards = cards ?? new List<CardBase>();
         }
 
+        /// <summary>
+        /// カード定義一覧からレベル1カードを作成してプレイヤーを初期化する。
+        /// </summary>
         public PlayerUnit(UnitID id, string name, HP hp, Vector2Int position, List<CardDefinitionSO> cardDefinitions)
         {
             ID = id;
@@ -126,6 +144,9 @@ namespace TestCardGame.Character.Player
             }
         }
 
+        /// <summary>
+        /// PlayerDefinitionSOの初期設定からプレイヤーを作成する。
+        /// </summary>
         public PlayerUnit(UnitID id, PlayerDefinitionSO definition, Vector2Int position)
         {
             ID = id;
@@ -151,4 +172,3 @@ namespace TestCardGame.Character.Player
         }
     }
 }
-

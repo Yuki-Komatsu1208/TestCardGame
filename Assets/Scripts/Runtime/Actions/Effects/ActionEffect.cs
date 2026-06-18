@@ -14,9 +14,13 @@ namespace TestCardGame.Actions.Effects
         public virtual bool CanExecute(ActionContext context) => true;
 
         /// <summary>
-        /// 効果を発動。
+        /// 効果を発動する。
         /// </summary>
         public virtual void Execute(ActionContext context){}
+
+        /// <summary>
+        /// 明示的な対象座標を指定して効果を発動する。
+        /// </summary>
         public virtual void Execute(ActionContext context, Vector2Int targetPosition){}
     }
 }

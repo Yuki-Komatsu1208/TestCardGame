@@ -48,26 +48,16 @@ public class Board
     }
 
     /// <summary>
-    /// 指定した座標が座標内にあるかを判定する
+    /// 指定した座標が盤面内にあるかを判定する。
     /// </summary>
-    /// <param name="x"></param>
-    /// <param name="y"></param>
-    /// <returns></returns>
     public bool IsInside(int x, int y)
     {
         return x >= 0 && x < Width &&
                y >= 0 && y < Height;
     }
-
-
-
     /// <summary>
-    /// 指定したユニットを指定した座標のセルに配置する。
+    /// 指定したユニットを指定座標へ移動する。
     /// </summary>
-    /// <param name="unit"></param>
-    /// <param name="x"></param>
-    /// <param name="y"></param>
-    /// <exception cref="System.InvalidOperationException"></exception>
     public bool TryMoveUnit(IUnit unit, int x, int y)
     {
         if (!IsInside(x, y))

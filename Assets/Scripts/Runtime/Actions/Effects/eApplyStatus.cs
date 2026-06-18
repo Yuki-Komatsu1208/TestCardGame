@@ -10,6 +10,9 @@ namespace TestCardGame.Actions.Effects
         private readonly int duration;
         private readonly int value;
 
+        /// <summary>
+        /// 付与する状態異常、持続ターン、補助値を指定して効果を作成する。
+        /// </summary>
         public eApplyStatus(StatusEffectSO statusEffect, int duration, int value = 0)
         {
             this.statusEffect = statusEffect;
@@ -17,11 +20,17 @@ namespace TestCardGame.Actions.Effects
             this.value = value;
         }
 
+        /// <summary>
+        /// 対象マスが盤面上に存在するか判定する。
+        /// </summary>
         public override bool CanExecute(ActionContext context)
         {
             return context.MoveService.GetCellAt(context.TargetPosition) != null;
         }
 
+        /// <summary>
+        /// 対象マスのユニットへ状態異常を付与する。
+        /// </summary>
         public override void Execute(ActionContext context)
         {
             var cell = context.MoveService.GetCellAt(context.TargetPosition);

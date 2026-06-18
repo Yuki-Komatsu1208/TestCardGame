@@ -9,6 +9,9 @@ using UnityEngine;
 
 namespace TestCardGame.Character.Enemies
 {
+    /// <summary>
+    /// バトル中に存在する敵ユニットの実体。
+    /// </summary>
     public class EnemyUnit : IEnemy
     {
         public UnitID ID { get; }
@@ -20,6 +23,9 @@ namespace TestCardGame.Character.Enemies
         private readonly List<StatusEffectInstance> statusEffects = new();
         public IReadOnlyList<StatusEffectInstance> StatusEffects => statusEffects;
 
+        /// <summary>
+        /// 状態異常を付与する。同種の状態異常がある場合は既存効果へマージする。
+        /// </summary>
         public void ApplyStatusEffect(StatusEffectInstance effect)
         {
             if (effect == null) return;
@@ -37,6 +43,9 @@ namespace TestCardGame.Character.Enemies
             }
         }
 
+        /// <summary>
+        /// 持続ターンが切れた状態異常を削除する。
+        /// </summary>
         public void CleanExpiredStatusEffects()
         {
             for (int i = statusEffects.Count - 1; i >= 0; i--)
@@ -50,6 +59,9 @@ namespace TestCardGame.Character.Enemies
             }
         }
 
+        /// <summary>
+        /// 付与中の状態異常をもとに、現在行動できるかを返す。
+        /// </summary>
         public bool CanAct
         {
             get
@@ -68,6 +80,9 @@ namespace TestCardGame.Character.Enemies
         private readonly BehaviorPattern behaviorPattern;
         private int nextActionIndex;
 
+        /// <summary>
+        /// 敵定義からHP、行動パターン、行動計画を作成する。
+        /// </summary>
         public EnemyUnit(UnitID id, EnemyDefinitionSO definition, Vector2Int position)
         {
             ID = id;
@@ -101,6 +116,9 @@ namespace TestCardGame.Character.Enemies
             ActionPlans = plans;
         }
 
+        /// <summary>
+        /// 行動パターンに従って、この敵のターン行動を実行する。
+        /// </summary>
         public void ExecuteTurn(EnemyTurnContext context)
         {
             if (!CanAct)
@@ -133,6 +151,9 @@ namespace TestCardGame.Character.Enemies
             }
         }
 
+        /// <summary>
+        /// 敵の座標を直接更新する。
+        /// </summary>
         public void MoveTo(int x, int y)
         {
             Position = new Vector2Int(x, y);

@@ -25,6 +25,9 @@ namespace TestCardGame.Controller.Services
             this.statusEffectService = statusEffectService;
         }
 
+        /// <summary>
+        /// 指定座標にいるユニットを取得する。
+        /// </summary>
         public IUnit GetUnitAt(Vector2Int pos)
         {
             if (board.IsInside(pos.x, pos.y))
@@ -34,6 +37,9 @@ namespace TestCardGame.Controller.Services
             return null;
         }
 
+        /// <summary>
+        /// 指定座標のセルを取得する。
+        /// </summary>
         public Cell GetCellAt(Vector2Int pos)
         {
             if (board.IsInside(pos.x, pos.y))
@@ -84,13 +90,13 @@ namespace TestCardGame.Controller.Services
             var from = unit.Position;
             var to = target;
 
-            // Check if destination is valid (inside and CanMove)
+            // 目的地が有効ならそのまま移動する。
             if (board.IsInside(to.x, to.y) && board.GetCell(to.x, to.y).CanMove)
             {
                 return RequestMoveAbsoluteInternal(unitId, unit, from, to);
             }
 
-            // Target is blocked or outside. Find nearest walkable cell to "to"
+            // 目的地が無効なら、目的地に最も近い移動可能セルを探す。
             Vector2Int nearestWalkable = from;
             int minDistance = int.MaxValue;
             bool found = false;
@@ -115,12 +121,12 @@ namespace TestCardGame.Controller.Services
 
             if (found && nearestWalkable != from)
             {
-                Debug.Log($"ForcedMove: Target {to} was blocked/outside. Correcting destination to nearest walkable {nearestWalkable}");
+                Debug.Log($"強制移動: 目的地 {to} が使用できないため、最寄りの移動可能セル {nearestWalkable} に補正します。");
                 return RequestMoveAbsoluteInternal(unitId, unit, from, nearestWalkable);
             }
 
-            Debug.LogWarning($"ForcedMove: Target {to} was blocked/outside and no alternative walkable cell was found.");
-            MoveRejected?.Invoke(unitId, to, "Forced move failed (no walkable destination).");
+            Debug.LogWarning($"強制移動: 目的地 {to} が使用できず、代替の移動可能セルも見つかりませんでした。");
+            MoveRejected?.Invoke(unitId, to, "強制移動に失敗しました（移動可能な目的地がありません）。");
             return false;
         }
         
@@ -133,36 +139,39 @@ namespace TestCardGame.Controller.Services
 
             if (board == null)
             {
-                MoveRejected?.Invoke(unitId, targetForError, "Board is not initialized.");
+                MoveRejected?.Invoke(unitId, targetForError, "盤面が初期化されていません。");
                 return false;
             }
 
             if (isBusy)
             {
-                MoveRejected?.Invoke(unitId, targetForError, "Move service is busy.");
+                MoveRejected?.Invoke(unitId, targetForError, "移動サービスが処理中です。");
                 return false;
             }
 
             if (unitsById == null || !unitsById.TryGetValue(unitId, out unit))
             {
-                MoveRejected?.Invoke(unitId, targetForError, "Unit not found.");
+                MoveRejected?.Invoke(unitId, targetForError, "指定されたユニットが見つかりません。");
                 return false;
             }
 
             return true;
         }
 
+        /// <summary>
+        /// モデル上の絶対座標移動を実行し、移動イベントと炎上マス処理を行う。
+        /// </summary>
         private bool RequestMoveAbsoluteInternal(UnitID unitId, IUnit unit, Vector2Int from, Vector2Int to)
         {
             if (from == to)
             {
-                MoveRejected?.Invoke(unitId, to, "Already at target.");
+                MoveRejected?.Invoke(unitId, to, "すでに目的地にいます。");
                 return false;
             }
 
             if (!board.IsInside(to.x, to.y))
             {
-                MoveRejected?.Invoke(unitId, to, "Target is outside board.");
+                MoveRejected?.Invoke(unitId, to, "目的地が盤面外です。");
                 return false;
             }
 
@@ -172,7 +181,7 @@ namespace TestCardGame.Controller.Services
             if (!board.TryMoveUnit(unit, to.x, to.y))
             {
                 isBusy = false;
-                MoveRejected?.Invoke(unitId, to, "Move failed in model.");
+                MoveRejected?.Invoke(unitId, to, "盤面モデル上の移動に失敗しました。");
                 return false;
             }
 
@@ -183,7 +192,7 @@ namespace TestCardGame.Controller.Services
             if (targetCell.IsOnFire && unit != null)
             {
                 statusEffectService?.ApplyBurn(unit, targetCell.FireTurns, targetCell.FireDamage);
-                Debug.Log($"移動効果：炎上マス（{to.x}, {to.y}）に進入したため、{unit.Name}にOnFire状態異常（{targetCell.FireTurns}ターン、ダメージ: {targetCell.FireDamage}）を適用しました。");
+                Debug.Log($"移動効果: 炎上マス（{to.x}, {to.y}）に進入したため、{unit.Name}に炎上状態（{targetCell.FireTurns}ターン、ダメージ: {targetCell.FireDamage}）を適用しました。");
             }
 
             MoveCompleted?.Invoke(unitId, from, to);

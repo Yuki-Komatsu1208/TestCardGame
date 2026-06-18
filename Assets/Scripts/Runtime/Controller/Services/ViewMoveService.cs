@@ -6,6 +6,9 @@ using System;
 
 namespace TestCardGame.Controller.Services
 {
+    /// <summary>
+    /// ユニットのモデル座標に合わせて、対応するViewをセル位置へ移動するサービス。
+    /// </summary>
     public class ViewMoveService
     {
         private readonly IReadOnlyDictionary<Vector2Int, RectTransform> cellRects;
@@ -15,6 +18,9 @@ namespace TestCardGame.Controller.Services
 
         public event Action<UnitID, Vector2Int, Vector2Int> ViewMoved;
 
+        /// <summary>
+        /// セル表示、ユニットView、ユニット実体の対応表を受け取ってサービスを作成する。
+        /// </summary>
         public ViewMoveService(
             IReadOnlyDictionary<Vector2Int, RectTransform> cellRects,
             IReadOnlyDictionary<UnitID, UnitView> viewByUnitId,
@@ -25,6 +31,9 @@ namespace TestCardGame.Controller.Services
             this.unitsById = unitsById;
         }
 
+        /// <summary>
+        /// 移動サービスの完了イベントを購読し、View移動を連動させる。
+        /// </summary>
         public void Bind(UnitMoveService unitMoveService)
         {
             if (this.unitMoveService != null)
@@ -39,6 +48,9 @@ namespace TestCardGame.Controller.Services
             }
         }
 
+        /// <summary>
+        /// 全ユニットViewを現在のモデル座標へ同期する。
+        /// </summary>
         public void SyncAllViewsFromModel()
         {
             if (unitsById == null)
@@ -52,6 +64,9 @@ namespace TestCardGame.Controller.Services
             }
         }
 
+        /// <summary>
+        /// モデル移動完了時に該当ユニットのViewを更新する。
+        /// </summary>
         private void OnMoveCompleted(UnitID unitId, Vector2Int from, Vector2Int to)
         {
             if (unitsById == null || !unitsById.TryGetValue(unitId, out var unit))
@@ -63,6 +78,9 @@ namespace TestCardGame.Controller.Services
             ViewMoved?.Invoke(unitId, from, to);
         }
 
+        /// <summary>
+        /// 指定ユニットのViewを現在位置のセルへ移動する。
+        /// </summary>
         private void MoveUnitView(IUnit unit)
         {
             if (unit == null)
@@ -83,6 +101,9 @@ namespace TestCardGame.Controller.Services
             unitView.MoveToCell(cellRect);
         }
 
+        /// <summary>
+        /// 購読中の移動イベントを解除する。
+        /// </summary>
         public void Dispose()
         {
             if (unitMoveService != null)

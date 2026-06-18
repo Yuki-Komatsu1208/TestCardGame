@@ -18,22 +18,25 @@ namespace TestCardGame.Controller
         private TextMeshProUGUI statusText;
         private Button endTurnButton;
 
-        // Custom UI GameObjects for dynamic overlays
+        // 報酬やRun終了を表示する動的UI。
         private GameObject rewardsPanel;
         private GameObject endRunPanel;
         private TextMeshProUGUI rewardsTitleText;
         private List<Button> rewardButtons = new();
 
+        /// <summary>
+        /// バトルUIを構築し、RunControllerのイベント購読を開始する。
+        /// </summary>
         public void Initialize(GameController controller)
         {
             this.gameController = controller;
             this.runController = FindAnyObjectByType<RunController>();
 
-            // Clean up existing UI panels under canvas if recreating
+            // 再生成時に古い動的UIを削除する。
             var canvas = FindAnyObjectByType<Canvas>();
             if (canvas == null)
             {
-                Debug.LogError("BattleUI: No Canvas found in the scene.");
+                Debug.LogError("BattleUI: シーン内に Canvas が見つかりません。");
                 return;
             }
 
@@ -45,19 +48,19 @@ namespace TestCardGame.Controller
                 }
             }
 
-            // Create status UI panel
+            // ステータス表示パネルを作成する。
             GameObject panelObj = new GameObject("BattleUIPanel", typeof(RectTransform));
             panelObj.transform.SetParent(canvas.transform, false);
             var panelRect = panelObj.GetComponent<RectTransform>();
             
-            // Position at top center
+            // 画面上部中央に配置する。
             panelRect.anchorMin = new Vector2(0f, 0.75f);
             panelRect.anchorMax = new Vector2(1f, 1f);
             panelRect.pivot = new Vector2(0.5f, 1f);
             panelRect.anchoredPosition = new Vector2(0f, -20f);
             panelRect.sizeDelta = new Vector2(0f, 150f);
 
-            // Add Status Text
+            // ステータステキストを追加する。
             GameObject textObj = new GameObject("StatusText", typeof(RectTransform));
             textObj.transform.SetParent(panelRect, false);
             var textRect = textObj.GetComponent<RectTransform>();
@@ -69,9 +72,9 @@ namespace TestCardGame.Controller
             statusText.fontSize = 20;
             statusText.alignment = TextAlignmentOptions.Center;
             statusText.color = Color.white;
-            statusText.text = "Initializing Battle...";
+            statusText.text = "バトルを初期化しています...";
 
-            // Add End Turn Button
+            // ターン終了ボタンを追加する。
             GameObject buttonObj = new GameObject("EndTurnButton", typeof(RectTransform), typeof(Image), typeof(Button));
             buttonObj.transform.SetParent(canvas.transform, false);
             var buttonRect = buttonObj.GetComponent<RectTransform>();
@@ -83,7 +86,7 @@ namespace TestCardGame.Controller
             buttonRect.sizeDelta = new Vector2(160f, 60f);
 
             var btnImage = buttonObj.GetComponent<Image>();
-            btnImage.color = new Color(0.2f, 0.6f, 0.2f, 1.0f); // Green
+            btnImage.color = new Color(0.2f, 0.6f, 0.2f, 1.0f);
 
             endTurnButton = buttonObj.GetComponent<Button>();
             endTurnButton.onClick.AddListener(OnEndTurnClicked);
@@ -101,13 +104,13 @@ namespace TestCardGame.Controller
             btnText.color = Color.white;
             btnText.text = "ターン終了";
 
-            // Build dynamic rewards panel
+            // 報酬パネルを作成する。
             CreateRewardsPanel(canvas);
 
-            // Build dynamic game over / run win panel
+            // Run終了パネルを作成する。
             CreateEndRunPanel(canvas);
 
-            // Subscribe to RunController events to toggle rewards panel
+            // RunControllerのイベントで報酬/終了UIを切り替える。
             if (runController != null)
             {
                 runController.RewardScreenOpened += OnRewardScreenOpened;
@@ -119,6 +122,9 @@ namespace TestCardGame.Controller
             Refresh();
         }
 
+        /// <summary>
+        /// ステージ勝利後に表示するカード報酬パネルを作成する。
+        /// </summary>
         private void CreateRewardsPanel(Canvas canvas)
         {
             rewardsPanel = new GameObject("RewardsPanel", typeof(RectTransform), typeof(Image));
@@ -130,7 +136,7 @@ namespace TestCardGame.Controller
 
             rewardsPanel.GetComponent<Image>().color = new Color(0.1f, 0.1f, 0.15f, 0.95f);
 
-            // Title
+            // タイトルを作成する。
             GameObject titleObj = new GameObject("Title", typeof(RectTransform));
             titleObj.transform.SetParent(rewardsPanel.transform, false);
             var titleRect = titleObj.GetComponent<RectTransform>();
@@ -142,9 +148,9 @@ namespace TestCardGame.Controller
             rewardsTitleText.fontSize = 28;
             rewardsTitleText.alignment = TextAlignmentOptions.Center;
             rewardsTitleText.color = Color.yellow;
-            rewardsTitleText.text = "STAGE WON! Choose a Card Reward:";
+            rewardsTitleText.text = "ステージクリア！報酬カードを選んでください";
 
-            // Grid for cards
+            // 報酬カードを並べる領域を作成する。
             GameObject cardsGrid = new GameObject("CardsGrid", typeof(RectTransform), typeof(HorizontalLayoutGroup));
             cardsGrid.transform.SetParent(rewardsPanel.transform, false);
             var gridRect = cardsGrid.GetComponent<RectTransform>();
@@ -159,7 +165,7 @@ namespace TestCardGame.Controller
             layout.childForceExpandHeight = true;
             layout.childForceExpandWidth = true;
 
-            // Spawn 3 Reward Buttons
+            // 最大3つの報酬ボタンを作成する。
             rewardButtons.Clear();
             for (int i = 0; i < 3; i++)
             {
@@ -181,7 +187,7 @@ namespace TestCardGame.Controller
                 txtComp.fontSize = 18;
                 txtComp.alignment = TextAlignmentOptions.Center;
                 txtComp.color = Color.white;
-                txtComp.text = "Card Reward";
+                txtComp.text = "報酬カード";
 
                 var btn = cardBtnObj.GetComponent<Button>();
                 rewardButtons.Add(btn);
@@ -190,6 +196,9 @@ namespace TestCardGame.Controller
             rewardsPanel.SetActive(false);
         }
 
+        /// <summary>
+        /// Run勝利または敗北時に表示する終了パネルを作成する。
+        /// </summary>
         private void CreateEndRunPanel(Canvas canvas)
         {
             endRunPanel = new GameObject("EndRunPanel", typeof(RectTransform), typeof(Image));
@@ -212,11 +221,14 @@ namespace TestCardGame.Controller
             txt.fontSize = 32;
             txt.alignment = TextAlignmentOptions.Center;
             txt.color = Color.red;
-            txt.text = "RUN LOST\nYour HP reached 0.";
+            txt.text = "ラン失敗\nプレイヤーのHPが0になりました。";
 
             endRunPanel.SetActive(false);
         }
 
+        /// <summary>
+        /// 現在のバトル状態をテキストとボタン状態に反映する。
+        /// </summary>
         public void Refresh()
         {
             if (gameController == null || statusText == null) return;
@@ -224,13 +236,10 @@ namespace TestCardGame.Controller
             var player = gameController.PlayerUnitInstance;
             if (player == null) return;
 
-            // Compute active stage name
             string stageName = gameController.CurrentStageName;
 
-            // Compute player statuses
             string playerStatusStr = GetStatusEffectsString(player);
 
-            // Compute enemies list HP & statuses
             string enemiesInfo = "";
             int livingEnemiesCount = 0;
             foreach (var enemy in gameController.Enemies)
@@ -244,7 +253,7 @@ namespace TestCardGame.Controller
                 }
                 else
                 {
-                    enemiesInfo += $"\n<s>{enemy.Name} (DEAD)</s>";
+                    enemiesInfo += $"\n<s>{enemy.Name}（撃破済み）</s>";
                 }
             }
 
@@ -252,7 +261,7 @@ namespace TestCardGame.Controller
             statusText.text = $"<b>{stageName}</b> (残り敵: {livingEnemiesCount}体)\n" +
                              $"{turnName}\n" +
                              $"プレイヤーマナ: {player.Mana}/{player.MaxMana}\n" +
-                             $"Player HP: {player.Hp.CurrentValue} {playerStatusStr}" +
+                             $"プレイヤーHP: {player.Hp.CurrentValue} {playerStatusStr}" +
                              $"{enemiesInfo}";
 
             if (endTurnButton != null)
@@ -261,6 +270,9 @@ namespace TestCardGame.Controller
             }
         }
 
+        /// <summary>
+        /// ユニットに付与されている状態異常を表示用文字列に変換する。
+        /// </summary>
         private string GetStatusEffectsString(IUnit unit)
         {
             if (unit == null || unit.StatusEffects == null || unit.StatusEffects.Count == 0) return "";
@@ -272,6 +284,9 @@ namespace TestCardGame.Controller
             return "[" + string.Join(", ", list) + "]";
         }
 
+        /// <summary>
+        /// ターン終了ボタンが押されたときにプレイヤーターン終了を要求する。
+        /// </summary>
         private void OnEndTurnClicked()
         {
             if (gameController != null && gameController.IsPlayerTurn)
@@ -280,7 +295,9 @@ namespace TestCardGame.Controller
             }
         }
 
-        // RunController Event Handlers
+        /// <summary>
+        /// ステージ開始時に報酬/終了パネルを閉じて表示を更新する。
+        /// </summary>
         private void OnStageStarted(StageDefinitionSO stageDef, RunState runState)
         {
             if (rewardsPanel != null) rewardsPanel.SetActive(false);
@@ -288,6 +305,9 @@ namespace TestCardGame.Controller
             Refresh();
         }
 
+        /// <summary>
+        /// 報酬候補をボタンへ割り当て、報酬選択パネルを表示する。
+        /// </summary>
         private void OnRewardScreenOpened(List<CardDefinitionSO> choices)
         {
             if (rewardsPanel == null) return;
@@ -320,30 +340,39 @@ namespace TestCardGame.Controller
             }
         }
 
+        /// <summary>
+        /// Run勝利時の終了パネルを表示する。
+        /// </summary>
         private void OnRunWon()
         {
             if (endRunPanel == null) return;
             endRunPanel.SetActive(true);
             var imageComp = endRunPanel.GetComponent<Image>();
-            imageComp.color = new Color(0.05f, 0.2f, 0.05f, 0.98f); // Green success background
+            imageComp.color = new Color(0.05f, 0.2f, 0.05f, 0.98f);
 
             var txt = endRunPanel.GetComponentInChildren<TextMeshProUGUI>();
             txt.color = Color.yellow;
-            txt.text = "RUN COMPLETED!\n\nAll stages cleared successfully!\nThank you for playing!";
+            txt.text = "ランクリア！\n\nすべてのステージを突破しました。";
         }
 
+        /// <summary>
+        /// Run敗北時の終了パネルを表示する。
+        /// </summary>
         private void OnRunLost()
         {
             if (endRunPanel == null) return;
             endRunPanel.SetActive(true);
             var imageComp = endRunPanel.GetComponent<Image>();
-            imageComp.color = new Color(0.2f, 0.05f, 0.05f, 0.98f); // Red failure background
+            imageComp.color = new Color(0.2f, 0.05f, 0.05f, 0.98f);
 
             var txt = endRunPanel.GetComponentInChildren<TextMeshProUGUI>();
             txt.color = Color.red;
-            txt.text = "GAME OVER\n\nYour HP has reached 0.\nTry again!";
+            txt.text = "ゲームオーバー\n\nプレイヤーのHPが0になりました。";
         }
 
+        /// <summary>
+        /// 破棄時にRunControllerのイベント購読を解除する。
+        /// </summary>
         private void OnDestroy()
         {
             if (runController != null)

@@ -7,9 +7,11 @@ namespace TestCardGame.Actions.Effects
     {
         [SerializeField] private int baseDuration = 1;
 
+        /// <summary>
+        /// レベルに応じた持続ターンの睡眠効果を作成する。
+        /// </summary>
         public override ActionEffect CreateRuntimeEffect(int level = 1)
         {
-            // Level 1 = baseDuration, Level 2 = baseDuration + 1, Level 3 = baseDuration + 2
             int duration = baseDuration + (level - 1);
             return new eSleep(duration);
         }

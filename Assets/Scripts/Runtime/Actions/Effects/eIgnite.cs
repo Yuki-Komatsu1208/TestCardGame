@@ -52,11 +52,11 @@ namespace TestCardGame.Actions.Effects
             cell.ApplyFire(duration, damage);
             Debug.Log($"座標（{targetPos.x}, {targetPos.y}）を炎上状態にしました。持続ターン数: {duration}、毎ターンのダメージ: {damage}。");
 
-            // 対象マスにユニットが既に立っている場合、その場でOnFire状態異常を付与する。
+            // 対象マスにユニットが既に立っている場合、その場で炎上状態異常を付与する。
             if (cell.Occupant != null)
             {
                 context.StatusEffectService?.ApplyBurn(cell.Occupant, duration, damage);
-                Debug.Log($"炎上効果：対象マスにユニットが既に立っていたため、{cell.Occupant.Name}にその場でOnFire状態異常（{duration}ターン、ダメージ: {damage}）を適用しました。");
+                Debug.Log($"炎上効果: 対象マスにユニットが既に立っていたため、{cell.Occupant.Name}にその場で炎上状態（{duration}ターン、ダメージ: {damage}）を適用しました。");
             }
         }
     }

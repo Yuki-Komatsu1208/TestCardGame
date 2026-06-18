@@ -7,6 +7,9 @@ namespace TestCardGame.Actions.Effects
     {
         [SerializeField] private int baseDistance = 1;
 
+        /// <summary>
+        /// レベルに応じた距離の押し出し効果を作成する。
+        /// </summary>
         public override ActionEffect CreateRuntimeEffect(int level = 1)
         {
             int distance = baseDistance + (level - 1);

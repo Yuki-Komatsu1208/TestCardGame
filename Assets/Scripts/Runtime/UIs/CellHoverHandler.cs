@@ -9,11 +9,17 @@ public class CellHoverHandler : MonoBehaviour, IPointerEnterHandler, IPointerExi
 
     private TooltipView _tooltipView;
 
+    /// <summary>
+    /// シーン内のツールチップ表示を取得する。
+    /// </summary>
     private void Start()
     {
         _tooltipView = FindAnyObjectByType<TooltipView>();
     }
 
+    /// <summary>
+    /// セルにマウスが乗ったときに説明ツールチップを表示する。
+    /// </summary>
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (_tooltipView == null) return;
@@ -22,6 +28,9 @@ public class CellHoverHandler : MonoBehaviour, IPointerEnterHandler, IPointerExi
         _tooltipView.Show($"{cellName}\n{description}", screenPos);
     }
 
+    /// <summary>
+    /// セルからマウスが離れたときにツールチップを閉じる。
+    /// </summary>
     public void OnPointerExit(PointerEventData eventData)
     {
         if (_tooltipView == null) return;

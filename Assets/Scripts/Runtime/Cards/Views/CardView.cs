@@ -13,6 +13,9 @@ namespace TestCardGame.Cards.Views
 
         private CardBase card;
 
+        /// <summary>
+        /// カード実体の情報をUI表示へ反映する。
+        /// </summary>
         public void Bind(CardBase card)
         {
             this.card = card;

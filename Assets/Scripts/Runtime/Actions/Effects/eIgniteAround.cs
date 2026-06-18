@@ -18,11 +18,17 @@ namespace TestCardGame.Actions.Effects
 
         private readonly eIgnite ignite;
 
+        /// <summary>
+        /// 周囲に付与する炎上の持続ターンとダメージを指定して効果を作成する。
+        /// </summary>
         public eIgniteAround(int duration, int damage)
         {
             ignite = new eIgnite(duration, damage);
         }
 
+        /// <summary>
+        /// 使用者の上下左右に盤面セルが1つ以上あるか判定する。
+        /// </summary>
         public override bool CanExecute(ActionContext context)
         {
             foreach (var offset in AroundOffsets)
@@ -36,6 +42,9 @@ namespace TestCardGame.Actions.Effects
             return false;
         }
 
+        /// <summary>
+        /// 使用者の上下左右4マスへ炎上効果を順番に適用する。
+        /// </summary>
         public override void Execute(ActionContext context)
         {
             foreach (var offset in AroundOffsets)

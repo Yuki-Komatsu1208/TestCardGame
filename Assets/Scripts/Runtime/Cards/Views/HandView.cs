@@ -12,11 +12,14 @@ public class HandView : MonoBehaviour
     [SerializeField] private float bottomPadding = 12f;
     [SerializeField] private float sidePadding = 16f;
 
+    /// <summary>
+    /// 渡されたカード一覧を手札UIとして表示する。
+    /// </summary>
     public void ShowCards(IReadOnlyList<CardBase> cards)
     {
         if (cardPrefab == null)
         {
-            Debug.LogError("HandView: cardPrefab is not assigned.", this);
+            Debug.LogError("HandView: cardPrefab が設定されていません。", this);
             return;
         }
 
@@ -37,6 +40,9 @@ public class HandView : MonoBehaviour
         LayoutCards(parent);
     }
 
+    /// <summary>
+    /// 手札表示領域の既存カードUIをすべて削除する。
+    /// </summary>
     private static void ClearCards(Transform parent)
     {
         for (var i = parent.childCount - 1; i >= 0; i--)
@@ -47,6 +53,9 @@ public class HandView : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 生成済みカードUIを手札エリア内に横並びで配置する。
+    /// </summary>
     private void LayoutCards(Transform parent)
     {
         if (parent is not RectTransform parentRect)

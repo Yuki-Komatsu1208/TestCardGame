@@ -17,6 +17,9 @@ namespace TestCardGame.Controller.Services
     /// </summary>
     public class DamageService
     {
+        /// <summary>
+        /// 状態異常などの補正を計算したうえで、対象へダメージを適用する。
+        /// </summary>
         public void DealDamage(IUnit source, IUnit target, int amount, DamageType damageType)
         {
             if (target == null) return;
@@ -57,7 +60,23 @@ namespace TestCardGame.Controller.Services
             target.Hp.TakeDamage(finalAmount);
 
             string sourceName = source != null ? source.Name : "状態異常/環境効果";
-            UnityEngine.Debug.Log($"{sourceName}は{target.Name}に {finalAmount} (元: {amount}) ポイントの [{damageType}] ダメージを与えました。残りHP: {target.Hp.CurrentValue}");
+            UnityEngine.Debug.Log($"{sourceName}は{target.Name}に {finalAmount} (元: {amount}) ポイントの [{GetDamageTypeLabel(damageType)}] ダメージを与えました。残りHP: {target.Hp.CurrentValue}");
+        }
+
+        /// <summary>
+        /// ダメージ種別を表示用の日本語名に変換する。
+        /// </summary>
+        private static string GetDamageTypeLabel(DamageType damageType)
+        {
+            switch (damageType)
+            {
+                case DamageType.Fire:
+                    return "炎";
+                case DamageType.Poison:
+                    return "毒";
+                default:
+                    return "通常";
+            }
         }
     }
 }

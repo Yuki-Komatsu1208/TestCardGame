@@ -6,6 +6,9 @@ public class GameStarter : MonoBehaviour
     [SerializeField] private GameController gameController;
     [SerializeField] private HandView handView;
 
+    /// <summary>
+    /// シーン起動時にバトルまたはRunを開始する。
+    /// </summary>
     private void Start()
     {
         if (gameController == null)
@@ -15,22 +18,22 @@ public class GameStarter : MonoBehaviour
 
         if (gameController == null)
         {
-            Debug.LogError("GameStarter: GameController was not found in the scene.", this);
+            Debug.LogError("GameStarter: シーン内に GameController が見つかりません。", this);
             return;
         }
 
-        // If there is an active RunController with a definition, let it handle starting the run and stages
+        // RunControllerが有効な場合は、RunControllerに開始処理を任せる。
         var runController = FindAnyObjectByType<TestCardGame.Controller.RunController>();
         if (runController != null && runController.RunDefinition != null)
         {
-            Debug.Log("GameStarter: RunController detected. Handoff control to RunController.");
+            Debug.Log("GameStarter: RunController を検出しました。開始処理を RunController に委譲します。");
             return;
         }
 
         var ok = gameController.Initialize();
         if (!ok)
         {
-            Debug.LogError("GameStarter: GameController initialization failed.", this);
+            Debug.LogError("GameStarter: GameController の初期化に失敗しました。", this);
             return;
         }
 
@@ -41,7 +44,7 @@ public class GameStarter : MonoBehaviour
 
         if (handView == null)
         {
-            Debug.LogWarning("GameStarter: HandView was not found in the scene.", this);
+            Debug.LogWarning("GameStarter: シーン内に HandView が見つかりません。", this);
             return;
         }
 

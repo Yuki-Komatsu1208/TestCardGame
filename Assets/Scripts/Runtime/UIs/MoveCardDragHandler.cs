@@ -16,6 +16,9 @@ public class MoveCardDragHandler : MonoBehaviour, IPointerDownHandler, IDragHand
     private bool isDragging;
     private CardView cardView;
 
+    /// <summary>
+    /// 必要な参照を取得し、カードの初期位置を記録する。
+    /// </summary>
     private void Awake()
     {
         if (cardRect == null)
@@ -37,6 +40,9 @@ public class MoveCardDragHandler : MonoBehaviour, IPointerDownHandler, IDragHand
         cardView = GetComponent<CardView>();
     }
 
+    /// <summary>
+    /// ポインター押下時にドラッグ開始位置を記録する。
+    /// </summary>
     public void OnPointerDown(PointerEventData eventData)
     {
         if (cardRect != null)
@@ -48,6 +54,9 @@ public class MoveCardDragHandler : MonoBehaviour, IPointerDownHandler, IDragHand
         isDragging = true;
     }
 
+    /// <summary>
+    /// ドラッグ中のカードUI位置をポインター移動に追従させる。
+    /// </summary>
     public void OnDrag(PointerEventData eventData)
     {
         if (!isDragging || cardRect == null)
@@ -59,6 +68,9 @@ public class MoveCardDragHandler : MonoBehaviour, IPointerDownHandler, IDragHand
         cardRect.anchoredPosition += eventData.delta / scale;
     }
 
+    /// <summary>
+    /// ドロップ位置に応じてカード使用または移動リクエストを実行する。
+    /// </summary>
     public void OnPointerUp(PointerEventData eventData)
     {
         if (!isDragging)
@@ -83,7 +95,7 @@ public class MoveCardDragHandler : MonoBehaviour, IPointerDownHandler, IDragHand
 
         if (gameController == null)
         {
-            Debug.LogError("MoveCardDragHandler: GameController was not found in scene.", this);
+            Debug.LogError("MoveCardDragHandler: シーン内に GameController が見つかりません。", this);
             return;
         }
 
@@ -97,6 +109,9 @@ public class MoveCardDragHandler : MonoBehaviour, IPointerDownHandler, IDragHand
         }
     }
 
+    /// <summary>
+    /// カードUIをドラッグ開始前の位置へ戻す。
+    /// </summary>
     private void ResetCardPosition()
     {
         if (cardRect == null)
@@ -107,6 +122,9 @@ public class MoveCardDragHandler : MonoBehaviour, IPointerDownHandler, IDragHand
         cardRect.anchoredPosition = initialAnchoredPos;
     }
 
+    /// <summary>
+    /// ドラッグ操作に必要な参照とパラメータを外部から設定する。
+    /// </summary>
     public void Configure(GameController controller, int count, float threshold, RectTransform rect = null)
     {
         gameController = controller;

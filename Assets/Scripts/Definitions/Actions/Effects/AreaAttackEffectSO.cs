@@ -8,6 +8,9 @@ namespace TestCardGame.Actions.Effects
         [SerializeField] private int baseDamage = 10;
         [SerializeField] private int baseRadius = 1;
 
+        /// <summary>
+        /// レベルに応じたダメージを持つ範囲攻撃効果を作成する。
+        /// </summary>
         public override ActionEffect CreateRuntimeEffect(int level = 1)
         {
             int damage = baseDamage + (level - 1) * 5;

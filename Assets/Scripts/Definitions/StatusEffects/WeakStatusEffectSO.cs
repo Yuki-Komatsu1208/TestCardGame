@@ -8,6 +8,9 @@ namespace TestCardGame.Definitions.StatusEffects
     [CreateAssetMenu(fileName = "WeakStatusEffect", menuName = "Card Game/Status Effects/Weak")]
     public class WeakStatusEffectSO : StatusEffectSO
     {
+        /// <summary>
+        /// ターン終了時に弱体化の残りターンを減らす。
+        /// </summary>
         public override void OnTurnEnd(IUnit unit, StatusEffectInstance instance, StatusEffectService service)
         {
             if (instance.RemainingTurns > 0)

@@ -34,13 +34,13 @@ namespace TestCardGame.Controller.Services
         {
             if (!IsPlayerTurn)
             {
-                Debug.LogWarning("It is not the player's turn.");
+                Debug.LogWarning("現在はプレイヤーのターンではありません。");
                 return false;
             }
 
             if (HasPlayedCardThisTurn)
             {
-                Debug.LogWarning("You can only play one card per turn.");
+                Debug.LogWarning("カードは1ターンに1枚だけ使用できます。");
                 return false;
             }
 
@@ -51,7 +51,7 @@ namespace TestCardGame.Controller.Services
 
             if (player.Mana < card.Cost)
             {
-                Debug.LogWarning("Not enough Mana!");
+                Debug.LogWarning("マナが足りません。");
                 return false;
             }
 

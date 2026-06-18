@@ -42,6 +42,9 @@ namespace TestCardGame.BoardManage
         public IUnit Enemy => enemies.Count > 0 ? enemies[0] : null;
         public UnitView EnemyUnitView => enemies.Count > 0 && enemyUnitViews.TryGetValue(enemies[0].ID, out var view) ? view : null;
 
+        /// <summary>
+        /// シリアライズされた単体敵情報から互換用の初期ステージを作成して初期化する。
+        /// </summary>
         public bool Initialize()
         {
             if (initialized)
@@ -51,13 +54,13 @@ namespace TestCardGame.BoardManage
 
             if (cellPrefab == null || playerView == null || playerDefinition == null || enemyDefinition == null)
             {
-                Debug.LogError("CellBuilder: Serialized fields are missing.", this);
+                Debug.LogError("CellBuilder: 必要なシリアライズ項目が設定されていません。", this);
                 return false;
             }
 
-            // Create a default stage definition with our single serialized enemy
+            // シリアライズされた単体敵から、互換用のデフォルトステージを作成する。
             var defaultStage = ScriptableObject.CreateInstance<StageDefinitionSO>();
-            defaultStage.stageName = "Fallback Stage";
+            defaultStage.stageName = "予備ステージ";
             defaultStage.boardSize = new Vector2Int(5, 5);
             defaultStage.enemies = new List<EnemySpawnDefinition>
             {
@@ -67,9 +70,12 @@ namespace TestCardGame.BoardManage
             return InitializeStage(defaultStage, null);
         }
 
+        /// <summary>
+        /// ステージ定義とRun状態をもとに盤面、プレイヤー、敵ビューを再構築する。
+        /// </summary>
         public bool InitializeStage(StageDefinitionSO stageDef, Run.RunState runState)
         {
-            // 1. Cleanup previous cells and views
+            // 以前のセルと敵ビューを破棄する。
             foreach (var cellObj in cellRects.Values)
             {
                 if (cellObj != null)
@@ -89,7 +95,7 @@ namespace TestCardGame.BoardManage
             enemyUnitViews.Clear();
             enemies.Clear();
 
-            // 2. Setup PlayerUnit
+            // プレイヤーユニットを作成する。
             if (runState != null)
             {
                 var cards = new List<CardBase>();
@@ -108,7 +114,7 @@ namespace TestCardGame.BoardManage
                 playerUnit = new PlayerUnit(UnitID.defaultPlayerUnit, playerDefinition, new Vector2Int(0, 0));
             }
 
-            // 3. Setup Board
+            // 盤面を作成する。
             int boardW = stageDef != null ? stageDef.boardSize.x : 5;
             int boardH = stageDef != null ? stageDef.boardSize.y : 5;
             board = new Board(boardW, boardH);
@@ -127,7 +133,7 @@ namespace TestCardGame.BoardManage
                     }
                     else
                     {
-                        Debug.LogError($"CellBuilder: RectTransform is missing on cell {position}.", obj);
+                        Debug.LogError($"CellBuilder: セル {position} に RectTransform がありません。", obj);
                     }
 
                     RegisterCellClick(obj, position.x, position.y);
@@ -136,7 +142,7 @@ namespace TestCardGame.BoardManage
 
             PreparePlayerView();
 
-            // 4. Setup Enemies
+            // ステージ定義に基づいて敵を作成する。
             if (stageDef != null && stageDef.enemies != null)
             {
                 int enemyIndex = 1;
@@ -181,7 +187,7 @@ namespace TestCardGame.BoardManage
             }
             else
             {
-                // Fallback default single enemy slime
+                // 予備処理として単体敵を作成する。
                 CharacterID charID = CharacterID.Slime;
                 if (CharacterID.characterIDs.TryGetValue(enemyDefinition.characterCode, out var cid))
                 {
@@ -198,6 +204,9 @@ namespace TestCardGame.BoardManage
             return true;
         }
 
+        /// <summary>
+        /// 互換用の単体敵ビューを作成する。
+        /// </summary>
         private void PrepareEnemyView_Fallback()
         {
             var eview = Instantiate(playerView, playerView.parent);
@@ -218,7 +227,7 @@ namespace TestCardGame.BoardManage
                 }
                 else
                 {
-                    image.color = new Color(0.957f, 0.263f, 0.212f, 1f); // Fallback Red
+                    image.color = new Color(0.957f, 0.263f, 0.212f, 1f);
                 }
             }
 
@@ -239,11 +248,14 @@ namespace TestCardGame.BoardManage
             enemyUnitViews[enemies[0].ID] = eUnitView;
         }
 
+        /// <summary>
+        /// セルのButtonクリックを座標イベントへ変換する。
+        /// </summary>
         private void RegisterCellClick(GameObject cellObject, int x, int y)
         {
             if (!cellObject.TryGetComponent<Button>(out var button))
             {
-                Debug.LogError("CellBuilder: Cell prefab is missing a Button component.", cellObject);
+                Debug.LogError("CellBuilder: セルPrefabに Button コンポーネントがありません。", cellObject);
                 return;
             }
 
@@ -257,6 +269,9 @@ namespace TestCardGame.BoardManage
             });
         }
 
+        /// <summary>
+        /// プレイヤー用ビューを初期化し、画像と表示文字を設定する。
+        /// </summary>
         private void PreparePlayerView()
         {
             playerView.gameObject.SetActive(true);
