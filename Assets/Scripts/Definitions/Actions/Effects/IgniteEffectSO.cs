@@ -5,40 +5,23 @@ namespace TestCardGame.Actions.Effects
     [CreateAssetMenu(fileName = "NewIgniteEffect", menuName = "Card Game/Effects/Ignite")]
     public class IgniteEffectSO : ActionEffectSO
     {
-        public IgniteLevelData level1 = new IgniteLevelData { duration = 2, damage = 5 };
-        public IgniteLevelData level2 = new IgniteLevelData { duration = 3, damage = 10 };
-        public IgniteLevelData level3 = new IgniteLevelData { duration = 4, damage = 15 };
+        [SerializeField, Min(1)] private int defaultDuration = 2;
+        [SerializeField, Min(0)] private int defaultDamage = 5;
 
-        /// <summary>
-        /// 指定レベルの炎上効果を作成する。
-        /// </summary>
-        public override ActionEffect CreateRuntimeEffect(int level = 1)
+        public override string[] ParameterFields => new[] { "duration", "damage" };
+
+        public override void SetDefaultParameters(ActionEffectParameters parameters)
         {
-            var data = GetDataForLevel(level);
-            return new eIgnite(data.duration, data.damage);
+            parameters.duration = defaultDuration;
+            parameters.damage = defaultDamage;
         }
 
-        /// <summary>
-        /// 指定レベルに対応する炎上パラメータを取得する。
-        /// </summary>
-        private IgniteLevelData GetDataForLevel(int level)
+        public override ActionEffect CreateRuntimeEffect(ActionEffectParameters parameters, int level = 1)
         {
-            switch (ClampLevel(level))
-            {
-                case 1: return level1;
-                case 2: return level2;
-                default: return level3;
-            }
+            var defaults = CreateDefaultParameters(level);
+            int duration = Mathf.Max(1, parameters?.duration ?? defaults.duration);
+            int damage = Mathf.Max(0, parameters?.damage ?? defaults.damage);
+            return new eIgnite(duration, damage);
         }
-    }
-
-    [System.Serializable]
-    public class IgniteLevelData
-    {
-        [Min(1)]
-        public int duration = 1;
-
-        [Min(0)]
-        public int damage = 1;
     }
 }

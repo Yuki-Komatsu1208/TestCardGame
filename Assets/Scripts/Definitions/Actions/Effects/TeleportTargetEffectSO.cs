@@ -8,7 +8,7 @@ namespace TestCardGame.Actions.Effects
         /// <summary>
         /// 対象転移効果を作成する。
         /// </summary>
-        public override ActionEffect CreateRuntimeEffect(int level = 1)
+        public override ActionEffect CreateRuntimeEffect(ActionEffectParameters parameters, int level = 1)
         {
             return new eTeleportTarget();
         }

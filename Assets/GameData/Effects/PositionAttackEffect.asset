@@ -12,12 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f000000000000000000000000000215, type: 3}
   m_Name: PositionAttackEffect
   m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Actions.Effects.PositionAttackEffectSO
-  level1:
-    damage: 10
-    maxRange: 1
-  level2:
-    damage: 10
-    maxRange: 1
-  level3:
-    damage: 10
-    maxRange: 1
+  defaultDamage: 10
+  defaultMaxRange: 1

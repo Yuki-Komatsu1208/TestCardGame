@@ -12,6 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f000000000000000000000000000211, type: 3}
   m_Name: MoveEffect
   m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Actions.Effects.MoveEffectSO
-  level1Step: 1
-  level2Step: 2
-  level3Step: 3
+  defaultStep: 1

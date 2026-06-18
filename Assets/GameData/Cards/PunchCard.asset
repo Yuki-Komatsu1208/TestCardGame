@@ -17,14 +17,47 @@ MonoBehaviour:
     description: "\u524D\u65B9\u306E\u6575\u306B15\u30C0\u30E1\u30FC\u30B8\u3092\u4E0E\u3048\u308B\u3002"
     cost: 1
     effects:
-    - {fileID: 11400000, guid: a1000000000000000000000000000003, type: 2}
+    - effect: {fileID: 11400000, guid: a1000000000000000000000000000003, type: 2}
+      parameters:
+        step: 1
+        damage: 15
+        duration: 1
+        range: 1
+        hitType: 0
+        radius: 1
+        distance: 1
+        maxRange: 0
+        statusEffect: {fileID: 0}
+        value: 0
   level2:
     description: "\u524D\u65B9\u306E\u6575\u306B20\u30C0\u30E1\u30FC\u30B8\u3092\u4E0E\u3048\u308B\u3002"
     cost: 1
     effects:
-    - {fileID: 11400000, guid: a1000000000000000000000000000003, type: 2}
+    - effect: {fileID: 11400000, guid: a1000000000000000000000000000003, type: 2}
+      parameters:
+        step: 1
+        damage: 20
+        duration: 1
+        range: 1
+        hitType: 0
+        radius: 1
+        distance: 1
+        maxRange: 0
+        statusEffect: {fileID: 0}
+        value: 0
   level3:
     description: "\u524D\u65B9\u306E\u6575\u306B25\u30C0\u30E1\u30FC\u30B8\u3092\u4E0E\u3048\u308B\u3002"
     cost: 1
     effects:
-    - {fileID: 11400000, guid: a1000000000000000000000000000003, type: 2}
+    - effect: {fileID: 11400000, guid: a1000000000000000000000000000003, type: 2}
+      parameters:
+        step: 1
+        damage: 25
+        duration: 1
+        range: 1
+        hitType: 0
+        radius: 1
+        distance: 1
+        maxRange: 0
+        statusEffect: {fileID: 0}
+        value: 0

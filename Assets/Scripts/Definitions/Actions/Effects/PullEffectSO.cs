@@ -5,14 +5,19 @@ namespace TestCardGame.Actions.Effects
     [CreateAssetMenu(fileName = "NewPullEffect", menuName = "Card Game/Effects/Pull")]
     public class PullEffectSO : ActionEffectSO
     {
-        [SerializeField] private int baseDistance = 1;
+        [SerializeField, Min(1)] private int defaultDistance = 1;
 
-        /// <summary>
-        /// レベルに応じた距離の引き寄せ効果を作成する。
-        /// </summary>
-        public override ActionEffect CreateRuntimeEffect(int level = 1)
+        public override string[] ParameterFields => new[] { "distance" };
+
+        public override void SetDefaultParameters(ActionEffectParameters parameters)
         {
-            int distance = baseDistance + (level - 1);
+            parameters.distance = defaultDistance;
+        }
+
+        public override ActionEffect CreateRuntimeEffect(ActionEffectParameters parameters, int level = 1)
+        {
+            var defaults = CreateDefaultParameters(level);
+            int distance = Mathf.Max(1, parameters?.distance ?? defaults.distance);
             return new ePull(distance);
         }
     }

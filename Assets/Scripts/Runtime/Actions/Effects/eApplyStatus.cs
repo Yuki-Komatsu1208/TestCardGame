@@ -25,7 +25,7 @@ namespace TestCardGame.Actions.Effects
         /// </summary>
         public override bool CanExecute(ActionContext context)
         {
-            return context.MoveService.GetCellAt(context.TargetPosition) != null;
+            return statusEffect != null && context.MoveService.GetCellAt(context.TargetPosition) != null;
         }
 
         /// <summary>
@@ -33,6 +33,12 @@ namespace TestCardGame.Actions.Effects
         /// </summary>
         public override void Execute(ActionContext context)
         {
+            if (statusEffect == null)
+            {
+                Debug.LogWarning("状態異常付与効果の状態異常定義が設定されていません。");
+                return;
+            }
+
             var cell = context.MoveService.GetCellAt(context.TargetPosition);
             if (cell != null && cell.Occupant != null)
             {

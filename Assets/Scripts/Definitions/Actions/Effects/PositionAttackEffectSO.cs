@@ -5,40 +5,23 @@ namespace TestCardGame.Actions.Effects
     [CreateAssetMenu(fileName = "NewPositionAttackEffect", menuName = "Card Game/Effects/Position Attack")]
     public class PositionAttackEffectSO : ActionEffectSO
     {
-        public PositionAttackLevelData level1 = new PositionAttackLevelData { damage = 10, maxRange = 1 };
-        public PositionAttackLevelData level2 = new PositionAttackLevelData { damage = 10, maxRange = 1 };
-        public PositionAttackLevelData level3 = new PositionAttackLevelData { damage = 10, maxRange = 1 };
+        [SerializeField, Min(1)] private int defaultDamage = 10;
+        [SerializeField, Min(0)] private int defaultMaxRange = 1;
 
-        /// <summary>
-        /// 指定レベルの座標攻撃効果を作成する。
-        /// </summary>
-        public override ActionEffect CreateRuntimeEffect(int level = 1)
+        public override string[] ParameterFields => new[] { "damage", "maxRange" };
+
+        public override void SetDefaultParameters(ActionEffectParameters parameters)
         {
-            var data = GetDataForLevel(level);
-            return new ePositionAttack(data.damage, data.maxRange > 0 ? (int?)data.maxRange : null);
+            parameters.damage = defaultDamage;
+            parameters.maxRange = defaultMaxRange;
         }
 
-        /// <summary>
-        /// 指定レベルに対応する座標攻撃パラメータを取得する。
-        /// </summary>
-        private PositionAttackLevelData GetDataForLevel(int level)
+        public override ActionEffect CreateRuntimeEffect(ActionEffectParameters parameters, int level = 1)
         {
-            switch (ClampLevel(level))
-            {
-                case 1: return level1;
-                case 2: return level2;
-                default: return level3;
-            }
+            var defaults = CreateDefaultParameters(level);
+            int damage = Mathf.Max(1, parameters?.damage ?? defaults.damage);
+            int maxRange = Mathf.Max(0, parameters?.maxRange ?? defaults.maxRange);
+            return new ePositionAttack(damage, maxRange > 0 ? (int?)maxRange : null);
         }
-    }
-
-    [System.Serializable]
-    public class PositionAttackLevelData
-    {
-        [Min(1)]
-        public int damage = 1;
-
-        [Min(0)]
-        public int maxRange;
     }
 }

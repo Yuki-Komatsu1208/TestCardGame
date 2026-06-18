@@ -5,42 +5,26 @@ namespace TestCardGame.Actions.Effects
     [CreateAssetMenu(fileName = "NewLineAttackEffect", menuName = "Card Game/Effects/Line Attack")]
     public class LineAttackEffectSO : ActionEffectSO
     {
-        public LineAttackLevelData level1 = new LineAttackLevelData { damage = 15, range = 1 };
-        public LineAttackLevelData level2 = new LineAttackLevelData { damage = 20, range = 1 };
-        public LineAttackLevelData level3 = new LineAttackLevelData { damage = 25, range = 1 };
+        [SerializeField, Min(0)] private int defaultDamage = 15;
+        [SerializeField, Min(1)] private int defaultRange = 1;
+        [SerializeField] private HitType defaultHitType = HitType.FirstTargetOnly;
 
-        /// <summary>
-        /// 指定レベルの直線攻撃効果を作成する。
-        /// </summary>
-        public override ActionEffect CreateRuntimeEffect(int level = 1)
+        public override string[] ParameterFields => new[] { "damage", "range", "hitType" };
+
+        public override void SetDefaultParameters(ActionEffectParameters parameters)
         {
-            var data = GetDataForLevel(level);
-            return new eLineAttack(data.damage, data.range, data.hitType);
+            parameters.damage = defaultDamage;
+            parameters.range = defaultRange;
+            parameters.hitType = defaultHitType;
         }
 
-        /// <summary>
-        /// 指定レベルに対応する直線攻撃パラメータを取得する。
-        /// </summary>
-        private LineAttackLevelData GetDataForLevel(int level)
+        public override ActionEffect CreateRuntimeEffect(ActionEffectParameters parameters, int level = 1)
         {
-            switch (ClampLevel(level))
-            {
-                case 1: return level1;
-                case 2: return level2;
-                default: return level3;
-            }
+            var defaults = CreateDefaultParameters(level);
+            int damage = Mathf.Max(0, parameters?.damage ?? defaults.damage);
+            int range = Mathf.Max(1, parameters?.range ?? defaults.range);
+            var hitType = parameters?.hitType ?? defaults.hitType;
+            return new eLineAttack(damage, range, hitType);
         }
-    }
-
-    [System.Serializable]
-    public class LineAttackLevelData
-    {
-        [Min(0)]
-        public int damage = 1;
-
-        [Min(1)]
-        public int range = 1;
-
-        public HitType hitType = HitType.FirstTargetOnly;
     }
 }

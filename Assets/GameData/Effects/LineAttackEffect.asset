@@ -12,15 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f000000000000000000000000000214, type: 3}
   m_Name: LineAttackEffect
   m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Actions.Effects.LineAttackEffectSO
-  level1:
-    damage: 15
-    range: 1
-    hitType: 0
-  level2:
-    damage: 20
-    range: 1
-    hitType: 0
-  level3:
-    damage: 25
-    range: 1
-    hitType: 0
+  defaultDamage: 15
+  defaultRange: 1
+  defaultHitType: 0

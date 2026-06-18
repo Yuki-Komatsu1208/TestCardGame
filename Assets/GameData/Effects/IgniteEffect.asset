@@ -12,12 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f000000000000000000000000000212, type: 3}
   m_Name: IgniteEffect
   m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Actions.Effects.IgniteEffectSO
-  level1:
-    duration: 2
-    damage: 5
-  level2:
-    duration: 3
-    damage: 10
-  level3:
-    duration: 4
-    damage: 15
+  defaultDuration: 2
+  defaultDamage: 5

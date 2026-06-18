@@ -33,11 +33,12 @@ namespace TestCardGame.Cards.Core
                         var levelData = Definition.GetDataForLevel(Level.Level);
                         if (levelData != null && levelData.effects != null)
                         {
-                            foreach (var effectAsset in levelData.effects)
+                            foreach (var effectEntry in levelData.effects)
                             {
-                                if (effectAsset != null)
+                                var effect = effectEntry?.CreateRuntimeEffect(Level.Level);
+                                if (effect != null)
                                 {
-                                    _cachedEffects.Add(effectAsset.CreateRuntimeEffect(Level.Level));
+                                    _cachedEffects.Add(effect);
                                 }
                             }
                         }

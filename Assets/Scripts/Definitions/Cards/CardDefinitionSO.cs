@@ -10,7 +10,7 @@ namespace TestCardGame.Cards.Core
     {
         public string description;
         public int cost;
-        public List<ActionEffectSO> effects;
+        public List<CardEffectEntry> effects;
     }
 
     [CreateAssetMenu(fileName = "NewCardDefinition", menuName = "Card Game/Card Definition")]

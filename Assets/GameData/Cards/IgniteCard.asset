@@ -17,14 +17,47 @@ MonoBehaviour:
     description: "\u6575\u30922\u30BF\u30FC\u30F3\u306E\u9593\u767A\u706B\u3055\u305B\u3001\u6BCE\u30BF\u30FC\u30F35\u30C0\u30E1\u30FC\u30B8\u3092\u4E0E\u3048\u308B\u3002"
     cost: 1
     effects:
-    - {fileID: 11400000, guid: a1000000000000000000000000000002, type: 2}
+    - effect: {fileID: 11400000, guid: a1000000000000000000000000000002, type: 2}
+      parameters:
+        step: 1
+        damage: 5
+        duration: 2
+        range: 1
+        hitType: 0
+        radius: 1
+        distance: 1
+        maxRange: 0
+        statusEffect: {fileID: 0}
+        value: 0
   level2:
     description: "\u6575\u30923\u30BF\u30FC\u30F3\u306E\u9593\u767A\u706B\u3055\u305B\u3001\u6BCE\u30BF\u30FC\u30F310\u30C0\u30E1\u30FC\u30B8\u3092\u4E0E\u3048\u308B\u3002"
     cost: 1
     effects:
-    - {fileID: 11400000, guid: a1000000000000000000000000000002, type: 2}
+    - effect: {fileID: 11400000, guid: a1000000000000000000000000000002, type: 2}
+      parameters:
+        step: 1
+        damage: 10
+        duration: 3
+        range: 1
+        hitType: 0
+        radius: 1
+        distance: 1
+        maxRange: 0
+        statusEffect: {fileID: 0}
+        value: 0
   level3:
     description: "\u6575\u30924\u30BF\u30FC\u30F3\u306E\u9593\u767A\u706B\u3055\u305B\u3001\u6BCE\u30BF\u30FC\u30F315\u30C0\u30E1\u30FC\u30B8\u3092\u4E0E\u3048\u308B\u3002"
     cost: 1
     effects:
-    - {fileID: 11400000, guid: a1000000000000000000000000000002, type: 2}
+    - effect: {fileID: 11400000, guid: a1000000000000000000000000000002, type: 2}
+      parameters:
+        step: 1
+        damage: 15
+        duration: 4
+        range: 1
+        hitType: 0
+        radius: 1
+        distance: 1
+        maxRange: 0
+        statusEffect: {fileID: 0}
+        value: 0

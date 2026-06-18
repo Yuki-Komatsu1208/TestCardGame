@@ -5,35 +5,19 @@ namespace TestCardGame.Actions.Effects
     [CreateAssetMenu(fileName = "NewMoveEffect", menuName = "Card Game/Effects/Move")]
     public class MoveEffectSO : ActionEffectSO
     {
-        [Min(1)]
-        public int level1Step = 1;
+        [SerializeField, Min(1)] private int defaultStep = 1;
 
-        [Min(1)]
-        public int level2Step = 2;
+        public override string[] ParameterFields => new[] { "step" };
 
-        [Min(1)]
-        public int level3Step = 3;
-
-        /// <summary>
-        /// 指定レベルの移動効果を作成する。
-        /// </summary>
-        public override ActionEffect CreateRuntimeEffect(int level = 1)
+        public override void SetDefaultParameters(ActionEffectParameters parameters)
         {
-            var step = GetStepForLevel(level);
-            return new eMove(step);
+            parameters.step = defaultStep;
         }
 
-        /// <summary>
-        /// 指定レベルに対応する移動歩数を取得する。
-        /// </summary>
-        private int GetStepForLevel(int level)
+        public override ActionEffect CreateRuntimeEffect(ActionEffectParameters parameters, int level = 1)
         {
-            switch (ClampLevel(level))
-            {
-                case 1: return level1Step;
-                case 2: return level2Step;
-                default: return level3Step;
-            }
+            var defaults = CreateDefaultParameters(level);
+            return new eMove(Mathf.Max(1, parameters?.step ?? defaults.step));
         }
     }
 }
