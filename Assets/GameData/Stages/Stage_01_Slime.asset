@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb9ee71d385c649a283391b647e0dad9, type: 3}
+  m_Name: Stage_01_Slime
+  m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Stage.StageDefinitionSO
+  stageName: 'Stage 1: Slime Green'
+  boardSize: {x: 5, y: 5}
+  enemies:
+  - enemy: {fileID: 11400000, guid: 882cda6c936782344813c002bb3f8d58, type: 2}
+    position: {x: 2, y: 3}
+  rewardPool: {fileID: 11400000, guid: 778f8ba6033ab40f89d1376fa7c9b6c9, type: 2}

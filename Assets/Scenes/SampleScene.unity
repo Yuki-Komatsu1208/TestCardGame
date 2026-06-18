@@ -129,6 +129,7 @@ GameObject:
   m_Component:
   - component: {fileID: 377012209}
   - component: {fileID: 377012210}
+  - component: {fileID: 377012211}
   m_Layer: 5
   m_Name: GameController
   m_TagString: Untagged
@@ -168,6 +169,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cellBuilder: {fileID: 0}
+  burnDefinition: {fileID: 11400000, guid: b1f8ef58889274a4687b76c23d10535f, type: 2}
+  sleepDefinition: {fileID: 11400000, guid: 45a91b2b10eed4a41bfe5a8e4031c8a5, type: 2}
+  weakDefinition: {fileID: 11400000, guid: a35906478928e4bc4863595955293baa, type: 2}
+--- !u!114 &377012211
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 377012208}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 533d9907731314eaa864ddd33a6937af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Controller.RunController
+  runDefinition: {fileID: 11400000, guid: 8310672070dc54092984d73e385cf98c, type: 2}
+  gameController: {fileID: 377012210}
+  handView: {fileID: 0}
 --- !u!1 &444064540
 GameObject:
   m_ObjectHideFlags: 0
