@@ -12,17 +12,18 @@ namespace TestCardGame.Controller
 {
     public class BattleUI : MonoBehaviour
     {
-        private GameController gameController;
-        private RunController runController;
-
-        private TextMeshProUGUI statusText;
-        private Button endTurnButton;
+        [Header("Pre-configured UI References")]
+        [SerializeField] private TextMeshProUGUI statusText;
+        [SerializeField] private Button endTurnButton;
 
         // 報酬やRun終了を表示する動的UI。
-        private GameObject rewardsPanel;
-        private GameObject endRunPanel;
-        private TextMeshProUGUI rewardsTitleText;
-        private List<Button> rewardButtons = new();
+        [SerializeField] private GameObject rewardsPanel;
+        [SerializeField] private GameObject endRunPanel;
+        [SerializeField] private TextMeshProUGUI rewardsTitleText;
+        [SerializeField] private List<Button> rewardButtons = new();
+
+        private GameController gameController;
+        private RunController runController;
 
         /// <summary>
         /// バトルUIを構築し、RunControllerのイベント購読を開始する。
@@ -32,90 +33,116 @@ namespace TestCardGame.Controller
             this.gameController = controller;
             this.runController = FindAnyObjectByType<RunController>();
 
-            // 再生成時に古い動的UIを削除する。
-            var canvas = FindAnyObjectByType<Canvas>();
-            if (canvas == null)
-            {
-                Debug.LogError("BattleUI: シーン内に Canvas が見つかりません。");
-                return;
-            }
+            // 事前配置UIがアサインされているか確認
+            bool hasPreconfiguredUI = statusText != null && endTurnButton != null && rewardsPanel != null && endRunPanel != null;
 
-            foreach (Transform child in canvas.transform)
+            if (!hasPreconfiguredUI)
             {
-                if (child.name == "BattleUIPanel" || child.name == "EndTurnButton" || child.name == "RewardsPanel" || child.name == "EndRunPanel")
+                Debug.Log("BattleUI: 事前配置されたUIが不完全なため、動的にUIを生成します。");
+
+                // 再生成時に古い動的UIを削除する。
+                var canvas = FindAnyObjectByType<Canvas>();
+                if (canvas == null)
                 {
-                    Destroy(child.gameObject);
+                    Debug.LogError("BattleUI: シーン内に Canvas が見つかりません。");
+                    return;
                 }
+
+                foreach (Transform child in canvas.transform)
+                {
+                    if (child.name == "BattleUIPanel" || child.name == "EndTurnButton" || child.name == "RewardsPanel" || child.name == "EndRunPanel")
+                    {
+                        Destroy(child.gameObject);
+                    }
+                }
+
+                // ステータス表示パネルを作成する。
+                GameObject panelObj = new GameObject("BattleUIPanel", typeof(RectTransform));
+                panelObj.transform.SetParent(canvas.transform, false);
+                var panelRect = panelObj.GetComponent<RectTransform>();
+                
+                // 画面上部中央に配置する。
+                panelRect.anchorMin = new Vector2(0f, 0.75f);
+                panelRect.anchorMax = new Vector2(1f, 1f);
+                panelRect.pivot = new Vector2(0.5f, 1f);
+                panelRect.anchoredPosition = new Vector2(0f, -20f);
+                panelRect.sizeDelta = new Vector2(0f, 150f);
+
+                // ステータステキストを追加する。
+                GameObject textObj = new GameObject("StatusText", typeof(RectTransform));
+                textObj.transform.SetParent(panelRect, false);
+                var textRect = textObj.GetComponent<RectTransform>();
+                textRect.anchorMin = Vector2.zero;
+                textRect.anchorMax = Vector2.one;
+                textRect.sizeDelta = Vector2.zero;
+                
+                statusText = textObj.AddComponent<TextMeshProUGUI>();
+                statusText.fontSize = 20;
+                statusText.alignment = TextAlignmentOptions.Center;
+                statusText.color = Color.white;
+                statusText.text = "バトルを初期化しています...";
+
+                // ターン終了ボタンを追加する。
+                GameObject buttonObj = new GameObject("EndTurnButton", typeof(RectTransform), typeof(Image), typeof(Button));
+                buttonObj.transform.SetParent(canvas.transform, false);
+                var buttonRect = buttonObj.GetComponent<RectTransform>();
+                
+                buttonRect.anchorMin = new Vector2(1f, 0f);
+                buttonRect.anchorMax = new Vector2(1f, 0f);
+                buttonRect.pivot = new Vector2(1f, 0f);
+                buttonRect.anchoredPosition = new Vector2(-20f, 20f);
+                buttonRect.sizeDelta = new Vector2(160f, 60f);
+
+                var btnImage = buttonObj.GetComponent<Image>();
+                btnImage.color = new Color(0.2f, 0.6f, 0.2f, 1.0f);
+
+                endTurnButton = buttonObj.GetComponent<Button>();
+                endTurnButton.onClick.AddListener(OnEndTurnClicked);
+
+                GameObject btnTextObj = new GameObject("Text", typeof(RectTransform));
+                btnTextObj.transform.SetParent(buttonRect, false);
+                var btnTextRect = btnTextObj.GetComponent<RectTransform>();
+                btnTextRect.anchorMin = Vector2.zero;
+                btnTextRect.anchorMax = Vector2.one;
+                btnTextRect.sizeDelta = Vector2.zero;
+
+                var btnText = btnTextObj.AddComponent<TextMeshProUGUI>();
+                btnText.fontSize = 20;
+                btnText.alignment = TextAlignmentOptions.Center;
+                btnText.color = Color.white;
+                btnText.text = "ターン終了";
+
+                // 報酬パネルを作成する。
+                CreateRewardsPanel(canvas);
+
+                // Run終了パネルを作成する。
+                CreateEndRunPanel(canvas);
             }
+            else
+            {
+                Debug.Log("BattleUI: 事前配置されたUIを使用します。");
 
-            // ステータス表示パネルを作成する。
-            GameObject panelObj = new GameObject("BattleUIPanel", typeof(RectTransform));
-            panelObj.transform.SetParent(canvas.transform, false);
-            var panelRect = panelObj.GetComponent<RectTransform>();
-            
-            // 画面上部中央に配置する。
-            panelRect.anchorMin = new Vector2(0f, 0.75f);
-            panelRect.anchorMax = new Vector2(1f, 1f);
-            panelRect.pivot = new Vector2(0.5f, 1f);
-            panelRect.anchoredPosition = new Vector2(0f, -20f);
-            panelRect.sizeDelta = new Vector2(0f, 150f);
+                // ボタンのイベント登録を設定
+                endTurnButton.onClick.RemoveListener(OnEndTurnClicked);
+                endTurnButton.onClick.AddListener(OnEndTurnClicked);
 
-            // ステータステキストを追加する。
-            GameObject textObj = new GameObject("StatusText", typeof(RectTransform));
-            textObj.transform.SetParent(panelRect, false);
-            var textRect = textObj.GetComponent<RectTransform>();
-            textRect.anchorMin = Vector2.zero;
-            textRect.anchorMax = Vector2.one;
-            textRect.sizeDelta = Vector2.zero;
-            
-            statusText = textObj.AddComponent<TextMeshProUGUI>();
-            statusText.fontSize = 20;
-            statusText.alignment = TextAlignmentOptions.Center;
-            statusText.color = Color.white;
-            statusText.text = "バトルを初期化しています...";
-
-            // ターン終了ボタンを追加する。
-            GameObject buttonObj = new GameObject("EndTurnButton", typeof(RectTransform), typeof(Image), typeof(Button));
-            buttonObj.transform.SetParent(canvas.transform, false);
-            var buttonRect = buttonObj.GetComponent<RectTransform>();
-            
-            buttonRect.anchorMin = new Vector2(1f, 0f);
-            buttonRect.anchorMax = new Vector2(1f, 0f);
-            buttonRect.pivot = new Vector2(1f, 0f);
-            buttonRect.anchoredPosition = new Vector2(-20f, 20f);
-            buttonRect.sizeDelta = new Vector2(160f, 60f);
-
-            var btnImage = buttonObj.GetComponent<Image>();
-            btnImage.color = new Color(0.2f, 0.6f, 0.2f, 1.0f);
-
-            endTurnButton = buttonObj.GetComponent<Button>();
-            endTurnButton.onClick.AddListener(OnEndTurnClicked);
-
-            GameObject btnTextObj = new GameObject("Text", typeof(RectTransform));
-            btnTextObj.transform.SetParent(buttonRect, false);
-            var btnTextRect = btnTextObj.GetComponent<RectTransform>();
-            btnTextRect.anchorMin = Vector2.zero;
-            btnTextRect.anchorMax = Vector2.one;
-            btnTextRect.sizeDelta = Vector2.zero;
-
-            var btnText = btnTextObj.AddComponent<TextMeshProUGUI>();
-            btnText.fontSize = 20;
-            btnText.alignment = TextAlignmentOptions.Center;
-            btnText.color = Color.white;
-            btnText.text = "ターン終了";
-
-            // 報酬パネルを作成する。
-            CreateRewardsPanel(canvas);
-
-            // Run終了パネルを作成する。
-            CreateEndRunPanel(canvas);
+                if (rewardsPanel != null) rewardsPanel.SetActive(false);
+                if (endRunPanel != null) endRunPanel.SetActive(false);
+            }
 
             // RunControllerのイベントで報酬/終了UIを切り替える。
             if (runController != null)
             {
+                runController.RewardScreenOpened -= OnRewardScreenOpened;
                 runController.RewardScreenOpened += OnRewardScreenOpened;
+
+                runController.StageStarted -= OnStageStarted;
                 runController.StageStarted += OnStageStarted;
+
+                runController.RunWon -= OnRunWon;
                 runController.RunWon += OnRunWon;
+
+                runController.RunLost -= OnRunLost;
                 runController.RunLost += OnRunLost;
             }
 

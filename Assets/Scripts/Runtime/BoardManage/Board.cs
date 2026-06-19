@@ -65,13 +65,26 @@ public class Board
             return false;
         }
 
+        var targetCell = GetCell(x, y);
+
         var from = unit.Position;
         if (from.x == x && from.y == y)
         {
-            return false;
+            if (targetCell.Occupant == unit)
+            {
+                return false;
+            }
+
+            if (!targetCell.CanMove)
+            {
+                return false;
+            }
+
+            targetCell.Place(unit);
+            unit.MoveTo(x, y);
+            return true;
         }
 
-        var targetCell = GetCell(x, y);
         if (!targetCell.CanMove)
         {
             return false;

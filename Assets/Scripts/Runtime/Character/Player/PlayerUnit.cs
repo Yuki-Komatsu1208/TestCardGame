@@ -26,27 +26,15 @@ namespace TestCardGame.Character.Player
         public int Mana { get; set; }
         public int MaxMana { get; set; }
         public Vector2Int Position { get; set; }
-        private readonly List<StatusEffectInstance> statusEffects = new();
-        public IReadOnlyList<StatusEffectInstance> StatusEffects => statusEffects;
+        private readonly StatusEffectCollection statusEffects = new();
+        public IReadOnlyList<StatusEffectInstance> StatusEffects => statusEffects.Effects;
 
         /// <summary>
         /// 状態異常を付与する。同種の状態異常がある場合は既存効果へマージする。
         /// </summary>
         public void ApplyStatusEffect(StatusEffectInstance effect)
         {
-            if (effect == null) return;
-
-            var existing = statusEffects.Find(e => e.Definition.EffectId == effect.Definition.EffectId);
-            if (existing != null)
-            {
-                existing.Merge(effect);
-                Debug.Log($"{Name}の既存の状態異常 {effect.Definition.DisplayName} が更新されました（残り持続: {existing.RemainingTurns}ターン）。");
-            }
-            else
-            {
-                statusEffects.Add(effect);
-                Debug.Log($"{Name}に状態異常 {effect.Definition.DisplayName} が付与されました（持続: {effect.RemainingTurns}ターン）。");
-            }
+            statusEffects.Apply(this, effect);
         }
 
         /// <summary>
@@ -54,15 +42,7 @@ namespace TestCardGame.Character.Player
         /// </summary>
         public void CleanExpiredStatusEffects()
         {
-            for (int i = statusEffects.Count - 1; i >= 0; i--)
-            {
-                var effect = statusEffects[i];
-                if (effect.IsExpired)
-                {
-                    statusEffects.RemoveAt(i);
-                    Debug.Log($"{Name}の状態異常 {effect.Definition.DisplayName} が終了しました。");
-                }
-            }
+            statusEffects.CleanExpired(this);
         }
 
         /// <summary>
@@ -70,17 +50,7 @@ namespace TestCardGame.Character.Player
         /// </summary>
         public bool CanAct
         {
-            get
-            {
-                foreach (var effect in statusEffects)
-                {
-                    if (!effect.CanAct(this))
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
+            get { return statusEffects.CanAct(this); }
         }
 
         /// <summary>

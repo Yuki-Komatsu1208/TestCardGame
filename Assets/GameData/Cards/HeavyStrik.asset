@@ -12,16 +12,88 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c908b67c4bbf4b54fbdadee6b3525c30, type: 3}
   m_Name: HeavyStrik
   m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Cards.Core.CardDefinitionSO
-  cardName: 
+  cardName: "\u3078\u30F4\u30A3\u30B9\u30C8\u30E9\u30A4\u30AF"
   level1:
-    description: 
-    cost: 0
-    effects: []
+    description: "\u76F8\u624B\u3092\uFF11\u30BF\u30FC\u30F3\u7720\u3089\u305B\u308B"
+    cost: 2
+    effects:
+    - effect: {fileID: 11400000, guid: a1000000000000000000000000000004, type: 2}
+      parameters:
+        step: 1
+        damage: 10
+        duration: 1
+        range: 1
+        hitType: 0
+        radius: 1
+        distance: 1
+        maxRange: 1
+        statusEffect: {fileID: 0}
+        value: 0
+    - effect: {fileID: 11400000, guid: a0000000000000000000000000000051, type: 2}
+      parameters:
+        step: 1
+        damage: 1
+        duration: 1
+        range: 1
+        hitType: 0
+        radius: 1
+        distance: 1
+        maxRange: 0
+        statusEffect: {fileID: 11400000, guid: 45a91b2b10eed4a41bfe5a8e4031c8a5, type: 2}
+        value: 0
   level2:
-    description: 
-    cost: 0
-    effects: []
+    description: "\u76F8\u624B\u3092\uFF11\u30BF\u30FC\u30F3\u7720\u3089\u305B\u308B"
+    cost: 2
+    effects:
+    - effect: {fileID: 11400000, guid: a1000000000000000000000000000004, type: 2}
+      parameters:
+        step: 1
+        damage: 10
+        duration: 1
+        range: 1
+        hitType: 0
+        radius: 1
+        distance: 1
+        maxRange: 1
+        statusEffect: {fileID: 0}
+        value: 0
+    - effect: {fileID: 11400000, guid: a0000000000000000000000000000051, type: 2}
+      parameters:
+        step: 1
+        damage: 1
+        duration: 1
+        range: 1
+        hitType: 0
+        radius: 1
+        distance: 1
+        maxRange: 0
+        statusEffect: {fileID: 11400000, guid: 45a91b2b10eed4a41bfe5a8e4031c8a5, type: 2}
+        value: 0
   level3:
-    description: 
-    cost: 0
-    effects: []
+    description: "\u76F8\u624B\u3092\uFF11\u30BF\u30FC\u30F3\u7720\u3089\u305B\u308B"
+    cost: 2
+    effects:
+    - effect: {fileID: 11400000, guid: a1000000000000000000000000000004, type: 2}
+      parameters:
+        step: 1
+        damage: 10
+        duration: 1
+        range: 1
+        hitType: 0
+        radius: 1
+        distance: 1
+        maxRange: 1
+        statusEffect: {fileID: 0}
+        value: 0
+    - effect: {fileID: 11400000, guid: a0000000000000000000000000000051, type: 2}
+      parameters:
+        step: 1
+        damage: 1
+        duration: 1
+        range: 1
+        hitType: 0
+        radius: 1
+        distance: 1
+        maxRange: 0
+        statusEffect: {fileID: 11400000, guid: 45a91b2b10eed4a41bfe5a8e4031c8a5, type: 2}
+        value: 0

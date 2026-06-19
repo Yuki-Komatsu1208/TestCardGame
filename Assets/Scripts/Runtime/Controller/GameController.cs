@@ -219,6 +219,10 @@ namespace TestCardGame.Controller
                 battleUIInstance = GetComponent<BattleUI>();
                 if (battleUIInstance == null)
                 {
+                    battleUIInstance = FindAnyObjectByType<BattleUI>();
+                }
+                if (battleUIInstance == null)
+                {
                     battleUIInstance = gameObject.AddComponent<BattleUI>();
                 }
             }
@@ -229,7 +233,7 @@ namespace TestCardGame.Controller
             return true;
         }
 
-        private BattleUI battleUIInstance;
+        [SerializeField] private BattleUI battleUIInstance;
 
         public bool IsPlayerTurn => turnService?.IsPlayerTurn ?? true;
         public PlayerUnit PlayerUnitInstance => cellBuilder?.Player as PlayerUnit;

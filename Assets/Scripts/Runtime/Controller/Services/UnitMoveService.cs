@@ -163,16 +163,35 @@ namespace TestCardGame.Controller.Services
         /// </summary>
         private bool RequestMoveAbsoluteInternal(UnitID unitId, IUnit unit, Vector2Int from, Vector2Int to)
         {
-            if (from == to)
-            {
-                MoveRejected?.Invoke(unitId, to, "すでに目的地にいます。");
-                return false;
-            }
-
             if (!board.IsInside(to.x, to.y))
             {
                 MoveRejected?.Invoke(unitId, to, "目的地が盤面外です。");
                 return false;
+            }
+
+            if (from == to)
+            {
+                var sameCell = board.GetCell(to.x, to.y);
+                if (sameCell.Occupant == unit)
+                {
+                    MoveRejected?.Invoke(unitId, to, "すでに目的地にいます。");
+                    return false;
+                }
+
+                if (!sameCell.CanMove)
+                {
+                    MoveRejected?.Invoke(unitId, to, "目的地に移動できません。");
+                    return false;
+                }
+
+                if (!board.TryMoveUnit(unit, to.x, to.y))
+                {
+                    MoveRejected?.Invoke(unitId, to, "盤面モデル上の初期配置に失敗しました。");
+                    return false;
+                }
+
+                MoveCompleted?.Invoke(unitId, from, to);
+                return true;
             }
 
             MoveStarted?.Invoke(unitId, from, to);

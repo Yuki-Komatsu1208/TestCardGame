@@ -25,7 +25,8 @@ namespace TestCardGame.Actions.Effects
         /// </summary>
         public override bool CanExecute(ActionContext context)
         {
-            return statusEffect != null && context.MoveService.GetCellAt(context.TargetPosition) != null;
+            var cell = context.MoveService.GetCellAt(context.TargetPosition);
+            return statusEffect != null && cell != null && cell.Occupant != null;
         }
 
         /// <summary>
