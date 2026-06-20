@@ -26,7 +26,6 @@ namespace TestCardGame.BoardManage
         private readonly Dictionary<Vector2Int, RectTransform> cellRects = new();
         private PlayerUnit playerUnit;
         private bool initialized;
-        public event System.Action<int, int> CellClicked;
 
         private readonly List<EnemyUnit> enemies = new();
         private readonly Dictionary<UnitID, UnitView> enemyUnitViews = new();
@@ -135,8 +134,6 @@ namespace TestCardGame.BoardManage
                     {
                         Debug.LogError($"CellBuilder: セル {position} に RectTransform がありません。", obj);
                     }
-
-                    RegisterCellClick(obj, position.x, position.y);
                 }
             }
 
@@ -246,27 +243,6 @@ namespace TestCardGame.BoardManage
 
             eUnitView.Initialize(null);
             enemyUnitViews[enemies[0].ID] = eUnitView;
-        }
-
-        /// <summary>
-        /// セルのButtonクリックを座標イベントへ変換する。
-        /// </summary>
-        private void RegisterCellClick(GameObject cellObject, int x, int y)
-        {
-            if (!cellObject.TryGetComponent<Button>(out var button))
-            {
-                Debug.LogError("CellBuilder: セルPrefabに Button コンポーネントがありません。", cellObject);
-                return;
-            }
-
-            button.onClick.AddListener(() =>
-            {
-                if (!initialized)
-                {
-                    return;
-                }
-                CellClicked?.Invoke(x, y);
-            });
         }
 
         /// <summary>
