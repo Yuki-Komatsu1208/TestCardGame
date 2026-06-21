@@ -12,6 +12,9 @@ namespace TestCardGame.Actions.Effects
         private readonly int damage;
         private readonly int? maxRange;
 
+        /// <summary>
+        /// ダメージと必要なら最大射程を指定して作成する。
+        /// </summary>
         /// <param name="damage">対象へ与えるダメージ。</param>
         /// <param name="maxRange">使用者からの最大射程。nullの場合は距離を制限しない。</param>
         public ePositionAttack(int damage, int? maxRange = null)
@@ -30,6 +33,9 @@ namespace TestCardGame.Actions.Effects
             this.maxRange = maxRange;
         }
 
+        /// <summary>
+        /// 対象座標が盤面内かつ射程内か判定する。
+        /// </summary>
         public override bool CanExecute(ActionContext context)
         {
             Vector2Int targetPosition = context.TargetPosition;
@@ -44,6 +50,9 @@ namespace TestCardGame.Actions.Effects
             return !maxRange.HasValue || distance <= maxRange.Value;
         }
 
+        /// <summary>
+        /// 指定座標のユニットへダメージを与える。
+        /// </summary>
         public override void Execute(ActionContext context)
         {
             if (!CanExecute(context))
@@ -61,8 +70,15 @@ namespace TestCardGame.Actions.Effects
                 return;
             }
 
-            targetUnit.Hp.TakeDamage(damage);
-            Debug.Log($"{context.User.Name}は座標（{targetPosition.x}, {targetPosition.y}）の{targetUnit.Name}に{damage}ポイントのダメージを与えました。");
+            if (context.StatusEffectService?.DamageService != null)
+            {
+                context.StatusEffectService.DamageService.DealDamage(context.User, targetUnit, damage, TestCardGame.Controller.Services.DamageType.Normal);
+            }
+            else
+            {
+                targetUnit.Hp.TakeDamage(damage);
+                Debug.Log($"{context.User.Name}は座標（{targetPosition.x}, {targetPosition.y}）の{targetUnit.Name}に{damage}ポイントのダメージを与えました。");
+            }
         }
     }
 }

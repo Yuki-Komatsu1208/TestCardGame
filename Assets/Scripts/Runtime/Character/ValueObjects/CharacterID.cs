@@ -36,6 +36,11 @@ namespace TestCardGame.Character.ValueObjects
         public static CharacterID DefaultPlayer = new CharacterID(1, 1);
         public static CharacterID Slime = new CharacterID(2, 2);
         public static CharacterID FireSlime = new CharacterID(3, 2);
+        public static CharacterID GoblinArcher = new CharacterID(4, 3);
+        public static CharacterID GoblinFighter = new CharacterID(5, 3);
+        public static CharacterID GoblinKing = new CharacterID(6, 3);
+        public static CharacterID SlimeKing = new CharacterID(7, 2);
+        public static CharacterID MiniGoblin = new CharacterID(8, 3);
 
         /// <summary>
         /// 全てのキャラクターIDを管理する辞書。キーはキャラクターコード、値はCharacterIDオブジェクト。
@@ -45,6 +50,11 @@ namespace TestCardGame.Character.ValueObjects
             {DefaultPlayer.Code, DefaultPlayer},
             {Slime.Code, Slime},
             {FireSlime.Code, FireSlime},
+            {GoblinArcher.Code, GoblinArcher},
+            {GoblinFighter.Code, GoblinFighter},
+            {GoblinKing.Code, GoblinKing},
+            {SlimeKing.Code, SlimeKing},
+            {MiniGoblin.Code, MiniGoblin},
             // 他のキャラクターIDもここに追加
         };
     }

@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c908b67c4bbf4b54fbdadee6b3525c30, type: 3}
+  m_Name: ForcedMoveCard
+  m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Cards.Core.CardDefinitionSO
+  cardName: "\u5F37\u5236\u79FB\u52D5"
+  level1:
+    description: "\u6B63\u9762\u306E\u6575\u3092\u96A3\u63A5\u3059\u308B\u30E9\u30F3\u30C0\u30E0\u306A\u7A7A\u304D\u30DE\u30B9\u306B\u5F37\u5236\u79FB\u52D5\u3055\u305B\u308B\u3002"
+    cost: 1
+    effects:
+    - effect: {fileID: 11400000, guid: 417f5890da311b84a83f3b7594e3a82e, type: 2}
+      parameters:
+        step: 1
+        damage: 1
+        duration: 1
+        range: 1
+        hitType: 0
+        radius: 1
+        distance: 1
+        maxRange: 0
+        statusEffect: {fileID: 0}
+        value: 0
+  level2:
+    description: "\u6B63\u9762\u306E\u6575\u3092\u96A3\u63A5\u3059\u308B\u30E9\u30F3\u30C0\u30E0\u306A\u7A7A\u304D\u30DE\u30B9\u306B\u5F37\u5236\u79FB\u52D5\u3055\u305B\u308B\u3002"
+    cost: 1
+    effects:
+    - effect: {fileID: 11400000, guid: 417f5890da311b84a83f3b7594e3a82e, type: 2}
+      parameters:
+        step: 1
+        damage: 1
+        duration: 1
+        range: 1
+        hitType: 0
+        radius: 1
+        distance: 1
+        maxRange: 0
+        statusEffect: {fileID: 0}
+        value: 0
+  level3:
+    description: "\u6B63\u9762\u306E\u6575\u3092\u96A3\u63A5\u3059\u308B\u30E9\u30F3\u30C0\u30E0\u306A\u7A7A\u304D\u30DE\u30B9\u306B\u5F37\u5236\u79FB\u52D5\u3055\u305B\u308B\u3002"
+    cost: 1
+    effects:
+    - effect: {fileID: 11400000, guid: 417f5890da311b84a83f3b7594e3a82e, type: 2}
+      parameters:
+        step: 1
+        damage: 1
+        duration: 1
+        range: 1
+        hitType: 0
+        radius: 1
+        distance: 1
+        maxRange: 0
+        statusEffect: {fileID: 0}
+        value: 0

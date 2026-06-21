@@ -3,6 +3,9 @@ using TestCardGame.Definitions.StatusEffects;
 
 namespace TestCardGame.Actions.Effects
 {
+    /// <summary>
+    /// 状態異常付与効果の設定を持つアセット。
+    /// </summary>
     [CreateAssetMenu(fileName = "NewApplyStatusEffect", menuName = "Card Game/Effects/Apply Status Effect")]
     public class ApplyStatusEffectSO : ActionEffectSO
     {

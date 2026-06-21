@@ -24,6 +24,9 @@ namespace TestCardGame.Actions.Effects
         private readonly int range;
         private readonly HitType hitType;
 
+        /// <summary>
+        /// ダメージ、射程、命中方式を指定して作成する。
+        /// </summary>
         public eLineAttack(int damage, int range, HitType hitType)
         {
             if (damage < 0)
@@ -46,6 +49,9 @@ namespace TestCardGame.Actions.Effects
             this.hitType = hitType;
         }
 
+        /// <summary>
+        /// 攻撃方向に隣接セルがあるか判定する。
+        /// </summary>
         public override bool CanExecute(ActionContext context)
         {
             Vector2Int difference = context.TargetPosition - context.User.Position;
@@ -57,6 +63,9 @@ namespace TestCardGame.Actions.Effects
             return context.MoveService.GetCellAt(context.User.Position + NormalizeDirection(difference)) != null;
         }
 
+        /// <summary>
+        /// 指定方向へ直線上の対象を攻撃する。
+        /// </summary>
         public override void Execute(ActionContext context)
         {
             if (!CanExecute(context))
@@ -83,9 +92,16 @@ namespace TestCardGame.Actions.Effects
                     continue;
                 }
 
-                targetUnit.Hp.TakeDamage(damage);
+                if (context.StatusEffectService?.DamageService != null)
+                {
+                    context.StatusEffectService.DamageService.DealDamage(context.User, targetUnit, damage, TestCardGame.Controller.Services.DamageType.Normal);
+                }
+                else
+                {
+                    targetUnit.Hp.TakeDamage(damage);
+                    Debug.Log($"{context.User.Name}は{targetUnit.Name}に{damage}ポイントのダメージを与えました。");
+                }
                 hitTarget = true;
-                Debug.Log($"{context.User.Name}は{targetUnit.Name}に{damage}ポイントのダメージを与えました。");
 
                 if (hitType == HitType.FirstTargetOnly)
                 {
@@ -99,6 +115,9 @@ namespace TestCardGame.Actions.Effects
             }
         }
 
+        /// <summary>
+        /// 入力方向を上下左右のどれかへ丸める。
+        /// </summary>
         private static Vector2Int NormalizeDirection(Vector2Int difference)
         {
             if (Mathf.Abs(difference.x) >= Mathf.Abs(difference.y))

@@ -2,11 +2,23 @@ using UnityEngine;
 
 namespace TestCardGame.Actions.Effects
 {
+    /// <summary>
+    /// 座標指定攻撃の初期値を持つアセット。
+    /// </summary>
     [CreateAssetMenu(fileName = "NewPositionAttackEffect", menuName = "Card Game/Effects/Position Attack")]
     public class PositionAttackEffectSO : ActionEffectSO
     {
         [SerializeField, Min(1)] private int defaultDamage = 10;
         [SerializeField, Min(0)] private int defaultMaxRange = 1;
+
+        /// <summary>
+        /// 既定のダメージと射程を更新する。
+        /// </summary>
+        public void Configure(int damage, int maxRange)
+        {
+            defaultDamage = damage;
+            defaultMaxRange = maxRange;
+        }
 
         public override string[] ParameterFields => new[] { "damage", "maxRange" };
 

@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace TestCardGame.Actions.Effects
 {
+    /// <summary>
+    /// 移動効果の初期歩数を持つアセット。
+    /// </summary>
     [CreateAssetMenu(fileName = "NewMoveEffect", menuName = "Card Game/Effects/Move")]
     public class MoveEffectSO : ActionEffectSO
     {

@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace TestCardGame.Actions.Effects
 {
+    /// <summary>
+    /// 転移効果を生成するアセット。
+    /// </summary>
     [CreateAssetMenu(fileName = "NewTeleportTargetEffect", menuName = "Card Game/Effects/Teleport Target")]
     public class TeleportTargetEffectSO : ActionEffectSO
     {

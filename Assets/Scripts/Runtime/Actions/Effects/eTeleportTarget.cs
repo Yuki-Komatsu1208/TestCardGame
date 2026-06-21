@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace TestCardGame.Actions.Effects
 {
+    /// <summary>
+    /// 対象ユニット、または使用者を別のマスへ転移させる。
+    /// </summary>
     public sealed class eTeleportTarget : ActionEffect
     {
         /// <summary>

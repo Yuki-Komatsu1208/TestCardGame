@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace TestCardGame.Actions.Effects
 {
+    /// <summary>
+    /// 引き寄せ効果の初期距離を持つアセット。
+    /// </summary>
     [CreateAssetMenu(fileName = "NewPullEffect", menuName = "Card Game/Effects/Pull")]
     public class PullEffectSO : ActionEffectSO
     {

@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace TestCardGame.Actions.Effects
 {
+    /// <summary>
+    /// 直線攻撃効果の初期値を持つアセット。
+    /// </summary>
     [CreateAssetMenu(fileName = "NewLineAttackEffect", menuName = "Card Game/Effects/Line Attack")]
     public class LineAttackEffectSO : ActionEffectSO
     {

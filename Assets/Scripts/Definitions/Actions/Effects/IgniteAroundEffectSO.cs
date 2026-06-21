@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace TestCardGame.Actions.Effects
 {
+    /// <summary>
+    /// 周囲炎上効果の初期値を持つアセット。
+    /// </summary>
     [CreateAssetMenu(fileName = "NewIgniteAroundEffect", menuName = "Card Game/Effects/Ignite Around")]
     public class IgniteAroundEffectSO : ActionEffectSO
     {
