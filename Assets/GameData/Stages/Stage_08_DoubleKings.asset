@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb9ee71d385c649a283391b647e0dad9, type: 3}
+  m_Name: Stage_08_DoubleKings
+  m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Stage.StageDefinitionSO
+  stageName: 'Stage 8: Epic Final Clash'
+  boardSize: {x: 6, y: 6}
+  enemies:
+  - enemy: {fileID: 11400000, guid: a894ca43dbd16e840807b9d7d0741b05, type: 2}
+    position: {x: 2, y: 4}
+  - enemy: {fileID: 11400000, guid: 386d44d0ed2c8634caf0822a7e90b88e, type: 2}
+    position: {x: 3, y: 4}
+  - enemy: {fileID: 11400000, guid: ee8cc646bb275c1449c38e3eb6617bdc, type: 2}
+    position: {x: 1, y: 5}
+  - enemy: {fileID: 11400000, guid: 5e68f265d03ace44fa29310031b4d8a1, type: 2}
+    position: {x: 4, y: 5}
+  rewardPool: {fileID: 11400000, guid: 778f8ba6033ab40f89d1376fa7c9b6c9, type: 2}

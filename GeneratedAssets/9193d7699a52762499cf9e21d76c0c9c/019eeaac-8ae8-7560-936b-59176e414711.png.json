@@ -1,0 +1,31 @@
+{
+    "asset": "9193d7699a52762499cf9e21d76c0c9c",
+    "fileName": "019eeaac-8ae8-7560-936b-59176e414711.png",
+    "prompt": "Full body hero knight character, head to toe, neutral standing pose, side view, facing right, 16-bit retro pixel art style, game sprite, isolated on solid black background",
+    "negativePrompt": "",
+    "model": "gpt-image-1",
+    "modelName": "GPT Image 1",
+    "customSeed": -1,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelatePixelGridSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0,
+    "dimensions": {
+        "width": 1024,
+        "height": 1024
+    },
+    "spriteSheet": false,
+    "duration": 0.0,
+    "dynamicParams": {
+        "serializedData": []
+    }
+}

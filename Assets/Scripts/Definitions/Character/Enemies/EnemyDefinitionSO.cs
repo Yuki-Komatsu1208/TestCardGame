@@ -22,6 +22,8 @@ namespace TestCardGame.Character.Enemies
     {
         public EnemyTargetKind targetKind;
         public ActionEffectSO effect;
+        public bool useCustomParameters;
+        public ActionEffectParameters parameters;
     }
 
     [CreateAssetMenu(fileName = "NewEnemyDefinition", menuName = "Card Game/Enemy Definition")]

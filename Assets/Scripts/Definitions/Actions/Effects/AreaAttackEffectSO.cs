@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace TestCardGame.Actions.Effects
 {
+    /// <summary>
+    /// 範囲攻撃効果の初期値を持つアセット。
+    /// </summary>
     [CreateAssetMenu(fileName = "NewAreaAttackEffect", menuName = "Card Game/Effects/Area Attack")]
     public class AreaAttackEffectSO : ActionEffectSO
     {

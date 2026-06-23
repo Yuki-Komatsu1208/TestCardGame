@@ -16,7 +16,7 @@ MonoBehaviour:
   maxHp: 100
   initialMana: 3
   maxMana: 5
-  playerSprite: {fileID: 21300000, guid: 641043e474048471e978b0ccaa95502e, type: 3}
+  playerSprite: {fileID: 6221534257167143075, guid: e42df1363f7d5664cb6b708ed0e08051, type: 3}
   initialCards:
   - card: {fileID: 11400000, guid: 4ba51b6c2ea9b0c47a137a2d09899309, type: 2}
     level: 2

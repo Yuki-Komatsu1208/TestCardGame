@@ -166,9 +166,14 @@ namespace TestCardGame.BoardManage
                         eUnitView = eview.gameObject.AddComponent<UnitView>();
                     }
 
+                    // Clear player animations on enemy view
+                    eUnitView.IdleFrames = null;
+                    eUnitView.AttackFrames = null;
+
                     if (eview.TryGetComponent<Image>(out var image))
                     {
                         image.enabled = true;
+                        image.sprite = null; // Clear player sprite to restore solid color fallback
                         image.color = spawn.enemy.enemyColor;
                     }
 
@@ -215,9 +220,14 @@ namespace TestCardGame.BoardManage
                 eUnitView = eview.gameObject.AddComponent<UnitView>();
             }
 
+            // Clear player animations on enemy view
+            eUnitView.IdleFrames = null;
+            eUnitView.AttackFrames = null;
+
             if (eview.TryGetComponent<Image>(out var image))
             {
                 image.enabled = true;
+                image.sprite = null; // Clear player sprite
                 if (enemyDefinition != null)
                 {
                     image.color = enemyDefinition.enemyColor;
@@ -243,6 +253,53 @@ namespace TestCardGame.BoardManage
 
             eUnitView.Initialize(null);
             enemyUnitViews[enemies[0].ID] = eUnitView;
+        }
+
+        /// <summary>
+        /// バトル中に動的に敵を召喚し、対応するViewを作成する。
+        /// </summary>
+        public EnemyUnit SpawnEnemyDynamically(EnemyDefinitionSO def, Vector2Int position, int nextIndex)
+        {
+            CharacterID charID = CharacterID.Slime;
+            if (CharacterID.characterIDs.TryGetValue(def.characterCode, out var cid))
+            {
+                charID = cid;
+            }
+
+            var unitID = new UnitID(nextIndex, charID);
+            var enemy = new EnemyUnit(unitID, def, position);
+            enemies.Add(enemy);
+
+            var eview = Instantiate(playerView, playerView.parent);
+            eview.gameObject.name = $"EnemyView_{enemy.Name}_{unitID.Code}";
+            eview.gameObject.SetActive(true);
+
+            if (!eview.TryGetComponent<UnitView>(out var eUnitView))
+            {
+                eUnitView = eview.gameObject.AddComponent<UnitView>();
+            }
+
+            // Clear player animations on enemy view
+            eUnitView.IdleFrames = null;
+            eUnitView.AttackFrames = null;
+
+            if (eview.TryGetComponent<Image>(out var image))
+            {
+                image.enabled = true;
+                image.sprite = null; // Clear player sprite
+                image.color = def.enemyColor;
+            }
+
+            var textComp = eview.GetComponentInChildren<TextMeshProUGUI>();
+            if (textComp != null)
+            {
+                textComp.text = def.enemyName[0].ToString();
+            }
+
+            eUnitView.Initialize(null);
+            enemyUnitViews[unitID] = eUnitView;
+
+            return enemy;
         }
 
         /// <summary>

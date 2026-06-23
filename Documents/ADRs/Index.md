@@ -17,5 +17,7 @@ ADR番号はカテゴリフォルダごとに `ADR-001` から採番します。
 ## GameDesign
 
 * [ADR-001: 固定手札・コスト連動クールタイム・Modifier中心成長を第一案とする](GameDesign/ADR-001-fixed-hand-cooldown-modifier-growth.md)
-* [ADR-002: カードレベル・マナコスト・クールタイムを独立した調整軸にする](GameDesign/ADR-002-independent-card-level-cost-cooldown.md)
-* [ADR-003: 一般戦闘報酬はMOD中心の三択強化にする](GameDesign/ADR-003-battle-reward-design.md)
+* [ADR-002: シールドカードは永続シールドを前提に、上限付きで扱う第一案とする](GameDesign/ADR-002-shield-card-role-and-stacking-rule.md)
+* [ADR-003: 職業を先に固定せず、カード軸とレリック主導でビルドを成立させる第一案とする](GameDesign/ADR-003-build-first-card-axis-over-class.md)
+* [ADR-004: カードレベル・マナコスト・クールタイムを独立した調整軸にする](GameDesign/ADR-004-independent-card-level-cost-cooldown.md)
+* [ADR-005: 一般戦闘報酬はMOD中心の三択強化にする](GameDesign/ADR-005-battle-reward-design.md)

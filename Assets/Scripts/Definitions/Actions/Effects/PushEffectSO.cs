@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace TestCardGame.Actions.Effects
 {
+    /// <summary>
+    /// 押し出し効果の初期距離を持つアセット。
+    /// </summary>
     [CreateAssetMenu(fileName = "NewPushEffect", menuName = "Card Game/Effects/Push")]
     public class PushEffectSO : ActionEffectSO
     {

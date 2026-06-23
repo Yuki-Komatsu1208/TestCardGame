@@ -20,5 +20,29 @@ MonoBehaviour:
   actionPlans:
   - targetKind: 1
     effect: {fileID: 11400000, guid: a1000000000000000000000000000004, type: 2}
+    useCustomParameters: 0
+    parameters:
+      step: 1
+      damage: 10
+      duration: 1
+      range: 1
+      hitType: 0
+      radius: 1
+      distance: 1
+      maxRange: 1
+      statusEffect: {fileID: 0}
+      value: 0
   - targetKind: 1
     effect: {fileID: 11400000, guid: a1000000000000000000000000000001, type: 2}
+    useCustomParameters: 0
+    parameters:
+      step: 1
+      damage: 1
+      duration: 1
+      range: 1
+      hitType: 0
+      radius: 1
+      distance: 1
+      maxRange: 0
+      statusEffect: {fileID: 0}
+      value: 0

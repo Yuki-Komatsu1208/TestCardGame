@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace TestCardGame.Actions.Effects
 {
+    /// <summary>
+    /// 単体炎上効果の初期値を持つアセット。
+    /// </summary>
     [CreateAssetMenu(fileName = "NewIgniteEffect", menuName = "Card Game/Effects/Ignite")]
     public class IgniteEffectSO : ActionEffectSO
     {

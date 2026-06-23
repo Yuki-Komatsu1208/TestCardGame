@@ -17,6 +17,13 @@ namespace TestCardGame.Controller
     /// </summary>
     public class GameController : MonoBehaviour
     {
+        public static GameController Instance { get; private set; }
+
+        private void Awake()
+        {
+            Instance = this;
+        }
+
         [SerializeField] private CellBuilder cellBuilder;
         [SerializeField] private StatusEffectSO burnDefinition;
         [SerializeField] private StatusEffectSO sleepDefinition;
@@ -255,6 +262,12 @@ namespace TestCardGame.Controller
                 return false;
             }
 
+            // プレイヤーの攻撃アニメーションをトリガーする
+            if (viewByUnitId.TryGetValue(player.ID, out var pView))
+            {
+                pView.PlayAttack();
+            }
+
             turnService.MarkCardPlayed(card, player);
 
             CheckBattleResolution();
@@ -262,6 +275,41 @@ namespace TestCardGame.Controller
             RefreshBattleViews();
 
             return true;
+        }
+
+        /// <summary>
+        /// バトル中に敵を動的に召喚する。
+        /// </summary>
+        public void SpawnEnemyDuringBattle(Character.Enemies.EnemyDefinitionSO enemyDefinition, Vector2Int position)
+        {
+            if (cellBuilder == null) return;
+
+            // IDが重複しないようにEnemiesのカウントに下限100をオフセット
+            int nextIndex = Enemies.Count + 101;
+            var enemy = cellBuilder.SpawnEnemyDynamically(enemyDefinition, position, nextIndex);
+
+            unitsById[enemy.ID] = enemy;
+            if (cellBuilder.EnemyUnitViews.TryGetValue(enemy.ID, out var view))
+            {
+                viewByUnitId[enemy.ID] = view;
+            }
+
+            // 盤面モデルに配置してView位置を同期する
+            moveService.RequestMoveAbsolute(enemy.ID, position);
+            viewMoveService?.SyncAllViewsFromModel();
+
+            RefreshBattleViews();
+        }
+
+        /// <summary>
+        /// 指定したユニットの攻撃アニメーションを再生する。
+        /// </summary>
+        public void PlayUnitAttackAnimation(UnitID unitId)
+        {
+            if (viewByUnitId.TryGetValue(unitId, out var view))
+            {
+                view.PlayAttack();
+            }
         }
 
         /// <summary>

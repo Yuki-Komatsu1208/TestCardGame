@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7223c5d2edba346408947569ba0c4216, type: 3}
+  m_Name: GoblinFighterEnemy
+  m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Character.Enemies.EnemyDefinitionSO
+  enemyName: "\u30B4\u30D6\u30EA\u30F3\u30D5\u30A1\u30A4\u30BF\u30FC"
+  maxHp: 45
+  characterCode: 5
+  enemyColor: {r: 0.25, g: 0.32, b: 0.71, a: 1}
+  behaviorPattern: 1
+  actionPlans:
+  - targetKind: 0
+    effect: {fileID: 11400000, guid: 305af9155dbf0554190b6c1437f93a60, type: 2}
+    useCustomParameters: 1
+    parameters:
+      step: 1
+      damage: 1
+      duration: 1
+      range: 1
+      hitType: 0
+      radius: 1
+      distance: 1
+      maxRange: 0
+      statusEffect: {fileID: 0}
+      value: 0
+  - targetKind: 1
+    effect: {fileID: 11400000, guid: a1000000000000000000000000000004, type: 2}
+    useCustomParameters: 1
+    parameters:
+      step: 1
+      damage: 25
+      duration: 1
+      range: 1
+      hitType: 0
+      radius: 1
+      distance: 1
+      maxRange: 1
+      statusEffect: {fileID: 0}
+      value: 0
+  - targetKind: 1
+    effect: {fileID: 11400000, guid: b1a91a014125a854dbb537a9ae6c26ab, type: 2}
+    useCustomParameters: 1
+    parameters:
+      step: 1
+      damage: 12
+      duration: 1
+      range: 1
+      hitType: 0
+      radius: 1
+      distance: 2
+      maxRange: 0
+      statusEffect: {fileID: 0}
+      value: 0

@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace TestCardGame.Actions.Effects
 {
+    /// <summary>
+    /// 対象ユニットを使用者から遠ざける効果。
+    /// </summary>
     public sealed class ePush : ActionEffect
     {
         private readonly int distance;

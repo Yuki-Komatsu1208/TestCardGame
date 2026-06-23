@@ -57,6 +57,38 @@ namespace TestCardGame.Controller.Services
             }
 
             int finalAmount = Mathf.Max(0, Mathf.RoundToInt(calculatedAmount));
+
+            if (finalAmount > 0)
+            {
+                bool shieldModified = false;
+                for (int i = 0; i < target.StatusEffects.Count; i++)
+                {
+                    var effect = target.StatusEffects[i];
+                    if (effect.Definition is ShieldStatusEffectSO || effect.Definition.EffectId == "Shield")
+                    {
+                        if (effect.RemainingTurns > 0 && effect.Value > 0)
+                        {
+                            shieldModified = true;
+                            if (finalAmount >= effect.Value)
+                            {
+                                finalAmount -= effect.Value;
+                                effect.Value = 0;
+                                effect.RemainingTurns = 0;
+                            }
+                            else
+                            {
+                                effect.Value -= finalAmount;
+                                finalAmount = 0;
+                            }
+                        }
+                    }
+                }
+                if (shieldModified)
+                {
+                    target.CleanExpiredStatusEffects();
+                }
+            }
+
             target.Hp.TakeDamage(finalAmount);
 
             string sourceName = source != null ? source.Name : "状態異常/環境効果";

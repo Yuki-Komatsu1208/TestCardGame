@@ -2,8 +2,14 @@ using UnityEngine;
 
 namespace TestCardGame.Actions.Effects
 {
+    /// <summary>
+    /// 実行時のActionEffectを生成する定義アセット。
+    /// </summary>
     public abstract class ActionEffectSO : ScriptableObject
     {
+        /// <summary>
+        /// インスペクタで編集するパラメータ名の一覧。
+        /// </summary>
         public virtual string[] ParameterFields => System.Array.Empty<string>();
 
         /// <summary>

@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace TestCardGame.Actions.Effects
 {
+    /// <summary>
+    /// 対象ユニットを使用者の近くへ引き寄せる効果。
+    /// </summary>
     public sealed class ePull : ActionEffect
     {
         private readonly int distance;

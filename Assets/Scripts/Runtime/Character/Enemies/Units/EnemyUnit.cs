@@ -72,7 +72,10 @@ namespace TestCardGame.Character.Enemies
                         continue;
                     }
 
-                    var effect = config.effect.CreateRuntimeEffect();
+                    var effect = config.useCustomParameters
+                        ? config.effect.CreateRuntimeEffect(config.parameters)
+                        : config.effect.CreateRuntimeEffect();
+
                     if (config.targetKind == EnemyTargetKind.Self)
                     {
                         plans.Add(EnemyActionPlan.Self(effect));

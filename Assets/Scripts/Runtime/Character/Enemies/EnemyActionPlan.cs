@@ -62,6 +62,13 @@ namespace TestCardGame.Character.Enemies
             }
 
             Action.Execute(actionContext);
+
+            // アクションが成功したら、攻撃アニメーションを再生する
+            if (TestCardGame.Controller.GameController.Instance != null)
+            {
+                TestCardGame.Controller.GameController.Instance.PlayUnitAttackAnimation(context.Enemy.ID);
+            }
+
             return true;
         }
 
