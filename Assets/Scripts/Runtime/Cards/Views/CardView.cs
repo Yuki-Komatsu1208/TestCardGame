@@ -20,8 +20,10 @@ namespace TestCardGame.Cards.Views
         {
             this.card = card;
             nameText.text = card.CardName;
-            costText.text = card.Cost.ToString();
-            descriptionText.text = card.Description;
+            costText.text = $"M:{card.GetCost(null).Amount} CT:{card.GetCooldown(null).Turns}";
+            descriptionText.text = card.IsCoolingDown
+                ? $"{card.Description}\n残りCT: {card.RemainingCooldown.Turns}"
+                : card.Description;
 
             if (TryGetComponent<MoveCardDragHandler>(out var dragHandler))
             {

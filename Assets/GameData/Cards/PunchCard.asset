@@ -15,7 +15,11 @@ MonoBehaviour:
   cardName: "\u30D1\u30F3\u30C1"
   level1:
     description: "\u524D\u65B9\u306E\u6575\u306B15\u30C0\u30E1\u30FC\u30B8\u3092\u4E0E\u3048\u308B\u3002"
-    cost: 1
+    cost:
+      amount: 1
+    cooldown:
+      turns: 1
+    modifiers: []
     effects:
     - effect: {fileID: 11400000, guid: a1000000000000000000000000000003, type: 2}
       parameters:
@@ -31,7 +35,11 @@ MonoBehaviour:
         value: 0
   level2:
     description: "\u524D\u65B9\u306E\u6575\u306B20\u30C0\u30E1\u30FC\u30B8\u3092\u4E0E\u3048\u308B\u3002"
-    cost: 1
+    cost:
+      amount: 1
+    cooldown:
+      turns: 1
+    modifiers: []
     effects:
     - effect: {fileID: 11400000, guid: a1000000000000000000000000000003, type: 2}
       parameters:
@@ -47,7 +55,11 @@ MonoBehaviour:
         value: 0
   level3:
     description: "\u524D\u65B9\u306E\u6575\u306B25\u30C0\u30E1\u30FC\u30B8\u3092\u4E0E\u3048\u308B\u3002"
-    cost: 1
+    cost:
+      amount: 1
+    cooldown:
+      turns: 1
+    modifiers: []
     effects:
     - effect: {fileID: 11400000, guid: a1000000000000000000000000000003, type: 2}
       parameters:

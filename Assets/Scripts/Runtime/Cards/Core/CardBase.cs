@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TestCardGame.Actions.Effects;
 using TestCardGame.Cards.Modifiers;
 using TestCardGame.Cards.VOs;
+using TestCardGame.Character.Player;
 
 namespace TestCardGame.Cards.Core
 {
@@ -16,10 +17,14 @@ namespace TestCardGame.Cards.Core
         public List<CardModifier> Enchants { get; private set; }
 
         private List<ActionEffect> _cachedEffects;
+        private List<CardModifier> _cachedDefinitionModifiers;
 
         public string CardName => Definition != null ? Definition.cardName : string.Empty;
         public string Description => Definition != null ? Definition.GetDataForLevel(Level.Level).description : string.Empty;
-        public int Cost => Definition != null ? Definition.GetDataForLevel(Level.Level).cost : 0;
+        public ManaCost Cost => Definition != null ? Definition.GetDataForLevel(Level.Level).Cost : ManaCost.Zero;
+        public CardCooldown Cooldown => Definition != null ? Definition.GetDataForLevel(Level.Level).Cooldown : CardCooldown.None;
+        public CardCooldown RemainingCooldown { get; private set; } = CardCooldown.None;
+        public bool IsCoolingDown => RemainingCooldown.IsActive;
 
         public List<ActionEffect> Effects
         {
@@ -48,6 +53,42 @@ namespace TestCardGame.Cards.Core
             }
         }
 
+        public IReadOnlyList<CardModifier> Modifiers
+        {
+            get
+            {
+                if (_cachedDefinitionModifiers == null)
+                {
+                    _cachedDefinitionModifiers = new List<CardModifier>();
+                    if (Definition != null)
+                    {
+                        var levelData = Definition.GetDataForLevel(Level.Level);
+                        if (levelData?.modifiers != null)
+                        {
+                            foreach (var modifierDefinition in levelData.modifiers)
+                            {
+                                var modifier = modifierDefinition != null ? modifierDefinition.CreateRuntimeModifier() : null;
+                                if (modifier != null)
+                                {
+                                    _cachedDefinitionModifiers.Add(modifier);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (Enchants == null || Enchants.Count == 0)
+                {
+                    return _cachedDefinitionModifiers;
+                }
+
+                var merged = new List<CardModifier>(_cachedDefinitionModifiers.Count + Enchants.Count);
+                merged.AddRange(_cachedDefinitionModifiers);
+                merged.AddRange(Enchants);
+                return merged;
+            }
+        }
+
         public CardBase(
             CardDefinitionSO definition,
             CardLevel level,
@@ -67,6 +108,8 @@ namespace TestCardGame.Cards.Core
             {
                 Level = Level.Upgrade();
                 _cachedEffects = null;
+                _cachedDefinitionModifiers = null;
+                RemainingCooldown = RemainingCooldown.ClampTo(Cooldown);
             }
         }
 
@@ -79,6 +122,77 @@ namespace TestCardGame.Cards.Core
             {
                 Level = Level.Downgrade();
                 _cachedEffects = null;
+                _cachedDefinitionModifiers = null;
+                RemainingCooldown = RemainingCooldown.ClampTo(Cooldown);
+            }
+        }
+
+        public ManaCost GetCost(PlayerUnit player)
+        {
+            var context = new CardModifierContext(this, player);
+            var cost = Cost;
+            foreach (var modifier in Modifiers)
+            {
+                cost = modifier.ModifyCost(cost, context);
+            }
+
+            return cost;
+        }
+
+        public CardCooldown GetCooldown(PlayerUnit player)
+        {
+            var context = new CardModifierContext(this, player);
+            var cooldown = Cooldown;
+            foreach (var modifier in Modifiers)
+            {
+                cooldown = modifier.ModifyCooldown(cooldown, context);
+            }
+
+            return cooldown;
+        }
+
+        /// <summary>
+        /// カード使用後に、このカードの現在レベルに応じたクールタイムを開始する。
+        /// </summary>
+        public void StartCooldown()
+        {
+            RemainingCooldown = RemainingCooldown.StartFrom(Cooldown);
+        }
+
+        public void StartCooldown(PlayerUnit player)
+        {
+            RemainingCooldown = RemainingCooldown.StartFrom(GetCooldown(player));
+        }
+
+        /// <summary>
+        /// ターン進行に合わせて残りクールタイムを1減らす。
+        /// </summary>
+        public void TickCooldown()
+        {
+            RemainingCooldown = RemainingCooldown.Tick();
+        }
+
+        public void OnBeforeCardUse(CardModifierContext context)
+        {
+            foreach (var modifier in Modifiers)
+            {
+                modifier.OnBeforeCardUse(context);
+            }
+        }
+
+        public void OnAfterCardUse(CardModifierContext context)
+        {
+            foreach (var modifier in Modifiers)
+            {
+                modifier.OnAfterCardUse(context);
+            }
+        }
+
+        public void OnCooldownReady(CardModifierContext context)
+        {
+            foreach (var modifier in Modifiers)
+            {
+                modifier.OnCooldownReady(context);
             }
         }
 

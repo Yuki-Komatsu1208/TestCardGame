@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using TestCardGame.Actions.Effects;
+using TestCardGame.Cards.Core.Modifiers;
+using TestCardGame.Cards.VOs;
 using UnityEngine;
 
 namespace TestCardGame.Cards.Core
@@ -9,8 +11,13 @@ namespace TestCardGame.Cards.Core
     public class CardLevelData
     {
         public string description;
-        public int cost;
+        public ManaCost cost = ManaCost.Zero;
+        public CardCooldown cooldown = CardCooldown.None;
+        public List<CardModifierSO> modifiers;
         public List<CardEffectEntry> effects;
+
+        public ManaCost Cost => cost ?? ManaCost.Zero;
+        public CardCooldown Cooldown => cooldown ?? CardCooldown.None;
     }
 
     [CreateAssetMenu(fileName = "NewCardDefinition", menuName = "Card Game/Card Definition")]

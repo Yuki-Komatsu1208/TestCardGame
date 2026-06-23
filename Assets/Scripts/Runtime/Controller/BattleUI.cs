@@ -351,7 +351,7 @@ namespace TestCardGame.Controller
                     var cardDef = choices[i];
                     var levelData = cardDef.GetDataForLevel(1);
                     btn.gameObject.SetActive(true);
-                    textComp.text = $"<b>{cardDef.cardName}</b>\nコスト: {levelData.cost}\n{levelData.description}";
+                    textComp.text = $"<b>{cardDef.cardName}</b>\nコスト: {levelData.Cost.Amount} / CT: {levelData.Cooldown.Turns}\n{levelData.description}";
 
                     btn.onClick.RemoveAllListeners();
                     btn.onClick.AddListener(() =>

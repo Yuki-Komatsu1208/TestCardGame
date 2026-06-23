@@ -1,5 +1,6 @@
 using TestCardGame.Actions.Core;
 using TestCardGame.Cards.Core;
+using TestCardGame.Cards.Modifiers;
 using TestCardGame.Character.Player;
 using UnityEngine;
 
@@ -37,6 +38,8 @@ namespace TestCardGame.Controller.Services
             }
 
             var context = new ActionContext(moveService, player, targetCellPosition, statusEffectService);
+            var modifierContext = new CardModifierContext(card, player, context);
+
             foreach (var effect in card.Effects)
             {
                 if (!effect.CanExecute(context))
@@ -45,10 +48,14 @@ namespace TestCardGame.Controller.Services
                 }
             }
 
+            card.OnBeforeCardUse(modifierContext);
+
             foreach (var effect in card.Effects)
             {
                 effect.Execute(context);
             }
+
+            card.OnAfterCardUse(modifierContext);
 
             return true;
         }
