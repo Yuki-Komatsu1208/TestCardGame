@@ -3,7 +3,6 @@ using UnityEngine;
 using TestCardGame.Run;
 using TestCardGame.Stage;
 using TestCardGame.Rewards;
-using TestCardGame.Cards.Core;
 
 namespace TestCardGame.Controller
 {
@@ -12,29 +11,39 @@ namespace TestCardGame.Controller
         [SerializeField] private RunDefinitionSO runDefinition;
         [SerializeField] private GameController gameController;
         [SerializeField] private HandView handView;
+        [SerializeField] private RewardController rewardController;
 
         private RunState runState;
-        [SerializeField] private List<Cards.Core.Modifiers.CardModifierSO> modifierPool = new();
-        private List<RewardChoice> rewardSelectionChoices = new();
 
         public RunState RunState => runState;
         public RunDefinitionSO RunDefinition => runDefinition;
-        public IReadOnlyList<RewardChoice> RewardSelectionChoices => rewardSelectionChoices;
+        public IReadOnlyList<RewardChoice> RewardSelectionChoices => rewardController != null
+            ? rewardController.RewardSelectionChoices
+            : System.Array.Empty<RewardChoice>();
 
         public event System.Action<RunState> RunStarted;
         public event System.Action<StageDefinitionSO, RunState> StageStarted;
-        public event System.Action<List<RewardChoice>> RewardScreenOpened;
         public event System.Action RunWon;
         public event System.Action RunLost;
 
         /// <summary>
-        /// シーン開始時に依存コンポーネントを解決し、Run定義があれば自動開始する。
+        /// シーン初期化時に依存コンポーネントとイベント購読を解決する。
         /// </summary>
-        private void Start()
+        private void Awake()
         {
             if (gameController == null)
             {
                 gameController = FindAnyObjectByType<GameController>();
+            }
+
+            if (rewardController == null)
+            {
+                rewardController = GetComponent<RewardController>();
+            }
+
+            if (rewardController == null)
+            {
+                rewardController = gameObject.AddComponent<RewardController>();
             }
 
             if (gameController != null)
@@ -42,7 +51,18 @@ namespace TestCardGame.Controller
                 gameController.BattleEnded += OnBattleEnded;
             }
 
-            // シーンにRun定義が設定されている場合は自動的に開始する。
+            // 報酬の確定後だけ、Runの進行を再開する。
+            rewardController.SetGameController(gameController);
+            rewardController.RewardResolved -= AdvanceToNextStage;
+            rewardController.RewardResolved += AdvanceToNextStage;
+
+        }
+
+        /// <summary>
+        /// 依存解決後、Run定義があれば自動開始する。
+        /// </summary>
+        private void Start()
+        {
             if (runDefinition != null)
             {
                 StartRun();
@@ -104,6 +124,11 @@ namespace TestCardGame.Controller
                 gameController.InitializeStage(currentStage, runState);
             }
 
+            if (rewardController != null)
+            {
+                rewardController.SetGameController(gameController);
+            }
+
             if (handView == null)
             {
                 handView = FindAnyObjectByType<HandView>();
@@ -137,14 +162,14 @@ namespace TestCardGame.Controller
         /// </summary>
         public void CompleteStage()
         {
-            // プレイヤーの現在HPをRun状態へ戻す。
             if (gameController != null && gameController.PlayerUnitInstance != null)
             {
                 runState.currentHp = gameController.PlayerUnitInstance.Hp.CurrentValue;
             }
 
             Debug.Log("ステージクリア: 報酬を選択します。");
-            OpenRewardScreen();
+            // 報酬内容の生成と選択UI通知はRewardControllerへ委譲する。
+            rewardController?.OpenRewardScreen(runState, MaxHp);
         }
 
         /// <summary>
@@ -168,135 +193,9 @@ namespace TestCardGame.Controller
             }
         }
 
-        private bool IsHpReduced => runState != null && runState.currentHp < MaxHp;
-
         /// <summary>
-        /// 現在ステージの報酬プールから候補カードを抽選し、報酬画面を開く。
+        /// 報酬確定後にステージ番号を進め、次ステージまたは Run 終了へ遷移する。
         /// </summary>
-        private void OpenRewardScreen()
-        {
-            rewardSelectionChoices.Clear();
-
-            // 1. Guaranteed MOD 1
-            var selectedMods = new List<Cards.Core.Modifiers.CardModifierSO>();
-            Cards.Core.Modifiers.CardModifierSO mod1 = GetRandomUniqueModifier(selectedMods);
-            if (mod1 != null)
-            {
-                selectedMods.Add(mod1);
-                rewardSelectionChoices.Add(new RewardChoice(RewardType.Mod, mod1));
-            }
-
-            // 2. Guaranteed MOD 2
-            Cards.Core.Modifiers.CardModifierSO mod2 = GetRandomUniqueModifier(selectedMods);
-            if (mod2 != null)
-            {
-                selectedMods.Add(mod2);
-                rewardSelectionChoices.Add(new RewardChoice(RewardType.Mod, mod2));
-            }
-
-            // 3. Option 3: HP recovery or Level Up (or MOD if Level Up rolls false)
-            if (IsHpReduced)
-            {
-                rewardSelectionChoices.Add(new RewardChoice(RewardType.Heal));
-            }
-            else
-            {
-                // Level Up has low probability (e.g. 20%). Otherwise show MOD 3.
-                if (Random.value < 0.20f)
-                {
-                    rewardSelectionChoices.Add(new RewardChoice(RewardType.LevelUp));
-                }
-                else
-                {
-                    Cards.Core.Modifiers.CardModifierSO mod3 = GetRandomUniqueModifier(selectedMods);
-                    if (mod3 != null)
-                    {
-                        rewardSelectionChoices.Add(new RewardChoice(RewardType.Mod, mod3));
-                    }
-                }
-            }
-
-            RewardScreenOpened?.Invoke(rewardSelectionChoices);
-        }
-
-        private Cards.Core.Modifiers.CardModifierSO GetRandomUniqueModifier(List<Cards.Core.Modifiers.CardModifierSO> excludeList)
-        {
-            var available = new List<Cards.Core.Modifiers.CardModifierSO>();
-            foreach (var mod in modifierPool)
-            {
-                if (mod != null && !excludeList.Contains(mod))
-                {
-                    available.Add(mod);
-                }
-            }
-
-            if (available.Count == 0)
-            {
-                // Fallback: If no unique modifiers are left, pick any from pool
-                if (modifierPool.Count > 0)
-                {
-                    return modifierPool[Random.Range(0, modifierPool.Count)];
-                }
-                return null;
-            }
-
-            return available[Random.Range(0, available.Count)];
-        }
-
-        /// <summary>
-        /// HP回復報酬を適用する。
-        /// </summary>
-        public void ChooseHealReward()
-        {
-            int maxHp = MaxHp;
-            int healAmount = Mathf.RoundToInt(maxHp * 0.25f);
-            
-            if (gameController != null && gameController.PlayerUnitInstance != null)
-            {
-                var hp = gameController.PlayerUnitInstance.Hp;
-                hp.Heal(healAmount);
-                if (hp.CurrentValue > hp.InitialValue)
-                {
-                    int excess = hp.CurrentValue - hp.InitialValue;
-                    hp.TakeDamage(excess);
-                }
-                runState.currentHp = hp.CurrentValue;
-            }
-            else
-            {
-                runState.currentHp = Mathf.Min(maxHp, runState.currentHp + healAmount);
-            }
-            
-            Debug.Log($"HP回復報酬選択: HPが {healAmount} 回復しました。現在HP: {runState.currentHp}/{maxHp}");
-            
-            AdvanceToNextStage();
-        }
-
-        /// <summary>
-        /// MODまたはレベルアップ報酬を特定のカードに適用する。
-        /// </summary>
-        public void ChooseDeckCardForReward(int deckCardIndex, RewardChoice choice)
-        {
-            if (runState == null || deckCardIndex < 0 || deckCardIndex >= runState.playerDeck.Count) return;
-            var deckCard = runState.playerDeck[deckCardIndex];
-
-            if (choice.Type == RewardType.Mod)
-            {
-                if (choice.Modifier != null)
-                {
-                    deckCard.modifiers.Add(choice.Modifier);
-                    Debug.Log($"MOD付与報酬選択: カード「{deckCard.card.cardName}」にMOD「{choice.Modifier.DisplayName}」を付与しました。");
-                }
-            }
-            else if (choice.Type == RewardType.LevelUp)
-            {
-                deckCard.level++;
-                Debug.Log($"レベルアップ報酬選択: カード「{deckCard.card.cardName}」のレベルが {deckCard.level} に上がりました。");
-            }
-
-            AdvanceToNextStage();
-        }
-
         private void AdvanceToNextStage()
         {
             runState.currentStageIndex++;
@@ -310,33 +209,6 @@ namespace TestCardGame.Controller
                 StartCurrentStage();
             }
         }
-
-#if UNITY_EDITOR
-        private void OnValidate()
-        {
-            if (modifierPool == null || modifierPool.Count == 0)
-            {
-                PopulateModifierPool();
-            }
-        }
-
-        [ContextMenu("Populate Modifier Pool")]
-        public void PopulateModifierPool()
-        {
-            modifierPool.Clear();
-            string[] guids = UnityEditor.AssetDatabase.FindAssets("t:CardModifierSO");
-            foreach (string guid in guids)
-            {
-                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-                var modifier = UnityEditor.AssetDatabase.LoadAssetAtPath<Cards.Core.Modifiers.CardModifierSO>(path);
-                if (modifier != null)
-                {
-                    modifierPool.Add(modifier);
-                }
-            }
-            UnityEditor.EditorUtility.SetDirty(this);
-        }
-#endif
 
         /// <summary>
         /// 全ステージクリアを通知する。
@@ -355,6 +227,11 @@ namespace TestCardGame.Controller
             if (gameController != null)
             {
                 gameController.BattleEnded -= OnBattleEnded;
+            }
+
+            if (rewardController != null)
+            {
+                rewardController.RewardResolved -= AdvanceToNextStage;
             }
         }
     }
