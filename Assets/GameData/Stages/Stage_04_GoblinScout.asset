@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb9ee71d385c649a283391b647e0dad9, type: 3}
   m_Name: Stage_04_GoblinScout
   m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Stage.StageDefinitionSO
-  stageName: 'Stage 4: Goblin Scout'
+  stageName: "\u30B9\u30C6\u30FC\u30B84\uFF1A\u30B4\u30D6\u30EA\u30F3\u5075\u5BDF\u968A"
   boardSize: {x: 5, y: 5}
   enemies:
   - enemy: {fileID: 11400000, guid: ee8cc646bb275c1449c38e3eb6617bdc, type: 2}

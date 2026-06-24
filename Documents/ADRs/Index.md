@@ -21,3 +21,4 @@ ADR番号はカテゴリフォルダごとに `ADR-001` から採番します。
 * [ADR-003: 職業を先に固定せず、カード軸とレリック主導でビルドを成立させる第一案とする](GameDesign/ADR-003-build-first-card-axis-over-class.md)
 * [ADR-004: カードレベル・マナコスト・クールタイムを独立した調整軸にする](GameDesign/ADR-004-independent-card-level-cost-cooldown.md)
 * [ADR-005: 一般戦闘報酬はMOD中心の三択強化にする](GameDesign/ADR-005-battle-reward-design.md)
+* [ADR-006: RUNは複数遠征で構成し、遠征クリア後に帰還か続行を選ぶ](GameDesign/ADR-006-expedition-return-and-push-forward-structure.md)

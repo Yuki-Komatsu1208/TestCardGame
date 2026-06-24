@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: SleepStatusEffect
   m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Definitions.StatusEffects.SleepStatusEffectSO
   effectId: Sleep
-  displayName: Sleep
-  description: Cannot act while asleep.
+  displayName: "\u7761\u7720"
+  description: "\u7761\u7720\u4E2D\u306F\u884C\u52D5\u3067\u304D\u306A\u3044"

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de7f7699c594451f8c05884be44ebed2, type: 3}
   m_Name: Reprieve
   m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Cards.Core.Modifiers.HealOnCooldownReadyModifierSO
-  displayName: Reprieve
-  description: Heal 3 HP when this card's cooldown reaches 0.
+  displayName: "\u518D\u8D77"
+  description: "\u3053\u306E\u30AB\u30FC\u30C9\u306E\u30AF\u30FC\u30EB\u30BF\u30A4\u30E0\u304C0\u306B\u306A\u3063\u305F\u6642\u3001HP\u30923\u56DE\u5FA9\u3059\u308B\u3002"
   timing: 3
   healAmount: 3

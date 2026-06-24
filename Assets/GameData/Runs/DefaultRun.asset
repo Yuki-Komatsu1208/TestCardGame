@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1dd1ef1e12fb423abc02c53e07a6429, type: 3}
   m_Name: DefaultRun
   m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Run.RunDefinitionSO
-  runName: Default Slime Run
+  runName: "\u30B9\u30E9\u30A4\u30E0\u9060\u5F81"
   playerDefinition: {fileID: 11400000, guid: 473d0e891eec4e74b94125d03bce4645, type: 2}
   stages:
   - {fileID: 11400000, guid: 0b19816796f4148d3a1d7d2169465bb5, type: 2}

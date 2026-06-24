@@ -14,15 +14,16 @@ namespace TestCardGame.Controller
         [SerializeField] private HandView handView;
 
         private RunState runState;
-        private List<CardDefinitionSO> rewardSelectionChoices = new();
+        [SerializeField] private List<Cards.Core.Modifiers.CardModifierSO> modifierPool = new();
+        private List<RewardChoice> rewardSelectionChoices = new();
 
         public RunState RunState => runState;
         public RunDefinitionSO RunDefinition => runDefinition;
-        public IReadOnlyList<CardDefinitionSO> RewardSelectionChoices => rewardSelectionChoices;
+        public IReadOnlyList<RewardChoice> RewardSelectionChoices => rewardSelectionChoices;
 
         public event System.Action<RunState> RunStarted;
         public event System.Action<StageDefinitionSO, RunState> StageStarted;
-        public event System.Action<List<CardDefinitionSO>> RewardScreenOpened;
+        public event System.Action<List<RewardChoice>> RewardScreenOpened;
         public event System.Action RunWon;
         public event System.Action RunLost;
 
@@ -155,56 +156,149 @@ namespace TestCardGame.Controller
             RunLost?.Invoke();
         }
 
+        private int MaxHp
+        {
+            get
+            {
+                if (gameController != null && gameController.PlayerUnitInstance != null)
+                {
+                    return gameController.PlayerUnitInstance.Hp.InitialValue;
+                }
+                return runDefinition != null && runDefinition.playerDefinition != null ? runDefinition.playerDefinition.maxHp : 100;
+            }
+        }
+
+        private bool IsHpReduced => runState != null && runState.currentHp < MaxHp;
+
         /// <summary>
         /// 現在ステージの報酬プールから候補カードを抽選し、報酬画面を開く。
         /// </summary>
         private void OpenRewardScreen()
         {
             rewardSelectionChoices.Clear();
-            var currentStage = runDefinition.stages[runState.currentStageIndex];
 
-            if (currentStage.rewardPool != null && currentStage.rewardPool.candidates != null && currentStage.rewardPool.candidates.Count > 0)
+            // 1. Guaranteed MOD 1
+            var selectedMods = new List<Cards.Core.Modifiers.CardModifierSO>();
+            Cards.Core.Modifiers.CardModifierSO mod1 = GetRandomUniqueModifier(selectedMods);
+            if (mod1 != null)
             {
-                // 報酬候補を最大3枚抽選する。
-                var candidatesList = new List<CardDefinitionSO>();
-                foreach (var entry in currentStage.rewardPool.candidates)
-                {
-                    if (entry != null && entry.card != null)
-                    {
-                        candidatesList.Add(entry.card);
-                    }
-                }
-
-                int count = Mathf.Min(3, candidatesList.Count);
-                for (int i = 0; i < count; i++)
-                {
-                    int index = Random.Range(0, candidatesList.Count);
-                    rewardSelectionChoices.Add(candidatesList[index]);
-                    candidatesList.RemoveAt(index);
-                }
+                selectedMods.Add(mod1);
+                rewardSelectionChoices.Add(new RewardChoice(RewardType.Mod, mod1));
             }
 
-            // 報酬プールが空の場合の予備処理。
-            if (rewardSelectionChoices.Count == 0 && gameController != null && gameController.PlayerUnitInstance != null)
+            // 2. Guaranteed MOD 2
+            Cards.Core.Modifiers.CardModifierSO mod2 = GetRandomUniqueModifier(selectedMods);
+            if (mod2 != null)
             {
-                // 現時点では予備報酬は設定しない。
+                selectedMods.Add(mod2);
+                rewardSelectionChoices.Add(new RewardChoice(RewardType.Mod, mod2));
+            }
+
+            // 3. Option 3: HP recovery or Level Up (or MOD if Level Up rolls false)
+            if (IsHpReduced)
+            {
+                rewardSelectionChoices.Add(new RewardChoice(RewardType.Heal));
+            }
+            else
+            {
+                // Level Up has low probability (e.g. 20%). Otherwise show MOD 3.
+                if (Random.value < 0.20f)
+                {
+                    rewardSelectionChoices.Add(new RewardChoice(RewardType.LevelUp));
+                }
+                else
+                {
+                    Cards.Core.Modifiers.CardModifierSO mod3 = GetRandomUniqueModifier(selectedMods);
+                    if (mod3 != null)
+                    {
+                        rewardSelectionChoices.Add(new RewardChoice(RewardType.Mod, mod3));
+                    }
+                }
             }
 
             RewardScreenOpened?.Invoke(rewardSelectionChoices);
         }
 
-        /// <summary>
-        /// 選択した報酬カードをデッキへ追加し、次ステージまたはRun勝利へ進める。
-        /// </summary>
-        public void ChooseRewardCard(CardDefinitionSO selectedCard)
+        private Cards.Core.Modifiers.CardModifierSO GetRandomUniqueModifier(List<Cards.Core.Modifiers.CardModifierSO> excludeList)
         {
-            if (selectedCard != null)
+            var available = new List<Cards.Core.Modifiers.CardModifierSO>();
+            foreach (var mod in modifierPool)
             {
-                runState.playerDeck.Add(new DeckCardEntry(selectedCard, 1));
-                Debug.Log($"報酬カード選択: {selectedCard.cardName} をデッキへ追加します。");
+                if (mod != null && !excludeList.Contains(mod))
+                {
+                    available.Add(mod);
+                }
             }
 
-            // 次ステージへ進める。
+            if (available.Count == 0)
+            {
+                // Fallback: If no unique modifiers are left, pick any from pool
+                if (modifierPool.Count > 0)
+                {
+                    return modifierPool[Random.Range(0, modifierPool.Count)];
+                }
+                return null;
+            }
+
+            return available[Random.Range(0, available.Count)];
+        }
+
+        /// <summary>
+        /// HP回復報酬を適用する。
+        /// </summary>
+        public void ChooseHealReward()
+        {
+            int maxHp = MaxHp;
+            int healAmount = Mathf.RoundToInt(maxHp * 0.25f);
+            
+            if (gameController != null && gameController.PlayerUnitInstance != null)
+            {
+                var hp = gameController.PlayerUnitInstance.Hp;
+                hp.Heal(healAmount);
+                if (hp.CurrentValue > hp.InitialValue)
+                {
+                    int excess = hp.CurrentValue - hp.InitialValue;
+                    hp.TakeDamage(excess);
+                }
+                runState.currentHp = hp.CurrentValue;
+            }
+            else
+            {
+                runState.currentHp = Mathf.Min(maxHp, runState.currentHp + healAmount);
+            }
+            
+            Debug.Log($"HP回復報酬選択: HPが {healAmount} 回復しました。現在HP: {runState.currentHp}/{maxHp}");
+            
+            AdvanceToNextStage();
+        }
+
+        /// <summary>
+        /// MODまたはレベルアップ報酬を特定のカードに適用する。
+        /// </summary>
+        public void ChooseDeckCardForReward(int deckCardIndex, RewardChoice choice)
+        {
+            if (runState == null || deckCardIndex < 0 || deckCardIndex >= runState.playerDeck.Count) return;
+            var deckCard = runState.playerDeck[deckCardIndex];
+
+            if (choice.Type == RewardType.Mod)
+            {
+                if (choice.Modifier != null)
+                {
+                    deckCard.modifiers.Add(choice.Modifier);
+                    Debug.Log($"MOD付与報酬選択: カード「{deckCard.card.cardName}」にMOD「{choice.Modifier.DisplayName}」を付与しました。");
+                }
+            }
+            else if (choice.Type == RewardType.LevelUp)
+            {
+                deckCard.level++;
+                Debug.Log($"レベルアップ報酬選択: カード「{deckCard.card.cardName}」のレベルが {deckCard.level} に上がりました。");
+            }
+
+            AdvanceToNextStage();
+        }
+
+        private void AdvanceToNextStage()
+        {
             runState.currentStageIndex++;
 
             if (runState.currentStageIndex >= runDefinition.stages.Count)
@@ -216,6 +310,33 @@ namespace TestCardGame.Controller
                 StartCurrentStage();
             }
         }
+
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            if (modifierPool == null || modifierPool.Count == 0)
+            {
+                PopulateModifierPool();
+            }
+        }
+
+        [ContextMenu("Populate Modifier Pool")]
+        public void PopulateModifierPool()
+        {
+            modifierPool.Clear();
+            string[] guids = UnityEditor.AssetDatabase.FindAssets("t:CardModifierSO");
+            foreach (string guid in guids)
+            {
+                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+                var modifier = UnityEditor.AssetDatabase.LoadAssetAtPath<Cards.Core.Modifiers.CardModifierSO>(path);
+                if (modifier != null)
+                {
+                    modifierPool.Add(modifier);
+                }
+            }
+            UnityEditor.EditorUtility.SetDirty(this);
+        }
+#endif
 
         /// <summary>
         /// 全ステージクリアを通知する。

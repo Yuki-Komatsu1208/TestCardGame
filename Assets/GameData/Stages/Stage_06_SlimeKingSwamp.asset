@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb9ee71d385c649a283391b647e0dad9, type: 3}
   m_Name: Stage_06_SlimeKingSwamp
   m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Stage.StageDefinitionSO
-  stageName: 'Stage 6: Slime King''s Swamp'
+  stageName: "\u30B9\u30C6\u30FC\u30B86\uFF1A\u30B9\u30E9\u30A4\u30E0\u738B\u306E\u6CBC"
   boardSize: {x: 5, y: 5}
   enemies:
   - enemy: {fileID: 11400000, guid: a894ca43dbd16e840807b9d7d0741b05, type: 2}

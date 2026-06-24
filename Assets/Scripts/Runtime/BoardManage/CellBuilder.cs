@@ -102,7 +102,18 @@ namespace TestCardGame.BoardManage
                 {
                     if (entry != null && entry.card != null)
                     {
-                        cards.Add(new CardBase(entry.card, new CardLevel(entry.level)));
+                        var cardBase = new CardBase(entry.card, new CardLevel(entry.level));
+                        if (entry.modifiers != null)
+                        {
+                            foreach (var modSO in entry.modifiers)
+                            {
+                                if (modSO != null)
+                                {
+                                    cardBase.AddEnchant(modSO.CreateRuntimeModifier());
+                                }
+                            }
+                        }
+                        cards.Add(cardBase);
                     }
                 }
                 playerUnit = new PlayerUnit(UnitID.defaultPlayerUnit, playerDefinition.playerName, new HP(playerDefinition.maxHp), new Vector2Int(0, 0), cards);

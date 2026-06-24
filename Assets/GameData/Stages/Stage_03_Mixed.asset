@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb9ee71d385c649a283391b647e0dad9, type: 3}
   m_Name: Stage_03_Mixed
   m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Stage.StageDefinitionSO
-  stageName: 'Stage 3: Slime and Heat'
+  stageName: "\u30B9\u30C6\u30FC\u30B83\uFF1A\u30B9\u30E9\u30A4\u30E0\u3068\u71B1\u6C17"
   boardSize: {x: 5, y: 5}
   enemies:
   - enemy: {fileID: 11400000, guid: 882cda6c936782344813c002bb3f8d58, type: 2}

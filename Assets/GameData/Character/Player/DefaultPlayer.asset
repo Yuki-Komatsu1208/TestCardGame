@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1b7eb198950d644aad38b60e104a5fb, type: 3}
   m_Name: DefaultPlayer
   m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Character.Player.PlayerDefinitionSO
-  playerName: Hero
+  playerName: "\u52C7\u8005"
   maxHp: 100
   initialMana: 3
   maxMana: 5

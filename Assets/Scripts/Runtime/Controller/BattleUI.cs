@@ -7,6 +7,7 @@ using TestCardGame.Character.Player;
 using TestCardGame.Stage;
 using TestCardGame.Run;
 using TestCardGame.Cards.Core;
+using TestCardGame.Rewards;
 
 namespace TestCardGame.Controller
 {
@@ -21,6 +22,10 @@ namespace TestCardGame.Controller
         [SerializeField] private GameObject endRunPanel;
         [SerializeField] private TextMeshProUGUI rewardsTitleText;
         [SerializeField] private List<Button> rewardButtons = new();
+
+        [Header("Deck overlay & view references")]
+        [SerializeField] private Button checkDeckButton;
+        [SerializeField] private UIs.CardListSelectionOverlay cardListOverlay;
 
         private GameController gameController;
         private RunController runController;
@@ -130,6 +135,34 @@ namespace TestCardGame.Controller
                 if (endRunPanel != null) endRunPanel.SetActive(false);
             }
 
+            // Find overlay and deck button if not assigned via Inspector
+            if (cardListOverlay == null)
+            {
+                cardListOverlay = FindAnyObjectByType<UIs.CardListSelectionOverlay>();
+            }
+
+            if (checkDeckButton == null)
+            {
+                var existingBtn = GameObject.Find("CheckDeckButton");
+                if (existingBtn != null)
+                {
+                    checkDeckButton = existingBtn.GetComponent<Button>();
+                }
+            }
+
+            // Wire up the Check Deck button
+            if (checkDeckButton != null)
+            {
+                checkDeckButton.onClick.RemoveAllListeners();
+                checkDeckButton.onClick.AddListener(() =>
+                {
+                    if (runController != null && runController.RunState != null && cardListOverlay != null)
+                    {
+                        cardListOverlay.Show("現在のデッキ一覧", runController.RunState.playerDeck);
+                    }
+                });
+            }
+
             // RunControllerのイベントで報酬/終了UIを切り替える。
             if (runController != null)
             {
@@ -214,7 +247,7 @@ namespace TestCardGame.Controller
                 txtComp.fontSize = 18;
                 txtComp.alignment = TextAlignmentOptions.Center;
                 txtComp.color = Color.white;
-                txtComp.text = "報酬カード";
+                txtComp.text = "報酬選択";
 
                 var btn = cardBtnObj.GetComponent<Button>();
                 rewardButtons.Add(btn);
@@ -335,11 +368,13 @@ namespace TestCardGame.Controller
         /// <summary>
         /// 報酬候補をボタンへ割り当て、報酬選択パネルを表示する。
         /// </summary>
-        private void OnRewardScreenOpened(List<CardDefinitionSO> choices)
+        private void OnRewardScreenOpened(List<RewardChoice> choices)
         {
             if (rewardsPanel == null) return;
 
             rewardsPanel.SetActive(true);
+
+            rewardsTitleText.text = "ステージクリア！報酬を選択してください";
 
             for (int i = 0; i < rewardButtons.Count; i++)
             {
@@ -348,22 +383,81 @@ namespace TestCardGame.Controller
 
                 if (i < choices.Count)
                 {
-                    var cardDef = choices[i];
-                    var levelData = cardDef.GetDataForLevel(1);
+                    var choice = choices[i];
                     btn.gameObject.SetActive(true);
-                    textComp.text = $"<b>{cardDef.cardName}</b>\nコスト: {levelData.Cost.Amount} / CT: {levelData.Cooldown.Turns}\n{levelData.description}";
+
+                    if (choice.Type == RewardType.Mod)
+                    {
+                        textComp.text = $"<b><color=cyan>【MOD】\n{choice.Title}</color></b>\n\n{choice.Description}";
+                    }
+                    else if (choice.Type == RewardType.Heal)
+                    {
+                        textComp.text = $"<b><color=green>【HP回復】\n{choice.Title}</color></b>\n\n{choice.Description}";
+                    }
+                    else if (choice.Type == RewardType.LevelUp)
+                    {
+                        textComp.text = $"<b><color=yellow>【レベルアップ】\n{choice.Title}</color></b>\n\n{choice.Description}";
+                    }
 
                     btn.onClick.RemoveAllListeners();
                     btn.onClick.AddListener(() =>
                     {
-                        rewardsPanel.SetActive(false);
-                        runController?.ChooseRewardCard(cardDef);
+                        if (choice.Type == RewardType.Heal)
+                        {
+                            rewardsPanel.SetActive(false);
+                            runController?.ChooseHealReward();
+                        }
+                        else
+                        {
+                            // Transition to deck card selection screen
+                            OpenDeckCardSelection(choice);
+                        }
                     });
                 }
                 else
                 {
                     btn.gameObject.SetActive(false);
                 }
+            }
+        }
+
+        /// <summary>
+        /// プレイヤーのデッキ一覧を表示し、MOD付与やレベルアップの対象カードを選択させる。
+        /// </summary>
+        private void OpenDeckCardSelection(RewardChoice choice)
+        {
+            if (runController == null || runController.RunState == null) return;
+
+            string title = "";
+            if (choice.Type == RewardType.Mod)
+            {
+                title = $"MOD付与: 対象カードを選択してください\n<color=cyan>【付与するMOD: {choice.Title}】</color>";
+            }
+            else if (choice.Type == RewardType.LevelUp)
+            {
+                title = "レベルアップ: 対象カードを選択してください\n<color=yellow>【カードレベル +1】</color>";
+            }
+
+            // Close the base rewards panel first
+            if (rewardsPanel != null) rewardsPanel.SetActive(false);
+
+            var overlay = cardListOverlay != null ? cardListOverlay : UIs.CardListSelectionOverlay.Instance;
+            if (overlay != null)
+            {
+                overlay.Show(
+                    title,
+                    runController.RunState.playerDeck,
+                    choice,
+                    onSelect: (deckIndex) =>
+                    {
+                        runController?.ChooseDeckCardForReward(deckIndex, choice);
+                    },
+                    onCancel: () =>
+                    {
+                        // If selection cancelled, re-open the main rewards choice panel
+                        if (rewardsPanel != null) rewardsPanel.SetActive(true);
+                    }
+                );
             }
         }
 

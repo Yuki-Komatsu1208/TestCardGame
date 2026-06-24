@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: BurnStatusEffect
   m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Definitions.StatusEffects.BurnStatusEffectSO
   effectId: OnFire
-  displayName: OnFire
-  description: Deals fire damage at turn end.
+  displayName: "\u708E\u4E0A"
+  description: "\u30BF\u30FC\u30F3\u7D42\u4E86\u6642\u306B\u708E\u30C0\u30E1\u30FC\u30B8\u3092\u53D7\u3051\u308B"

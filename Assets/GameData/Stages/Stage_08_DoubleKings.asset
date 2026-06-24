@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb9ee71d385c649a283391b647e0dad9, type: 3}
   m_Name: Stage_08_DoubleKings
   m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Stage.StageDefinitionSO
-  stageName: 'Stage 8: Epic Final Clash'
+  stageName: "\u30B9\u30C6\u30FC\u30B88\uFF1A\u4E8C\u738B\u6C7A\u6226"
   boardSize: {x: 6, y: 6}
   enemies:
   - enemy: {fileID: 11400000, guid: a894ca43dbd16e840807b9d7d0741b05, type: 2}

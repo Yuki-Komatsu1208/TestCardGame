@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb9ee71d385c649a283391b647e0dad9, type: 3}
   m_Name: Stage_07_GoblinKingThrone
   m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Stage.StageDefinitionSO
-  stageName: 'Stage 7: Goblin King''s Throne'
+  stageName: "\u30B9\u30C6\u30FC\u30B87\uFF1A\u30B4\u30D6\u30EA\u30F3\u738B\u306E\u7389\u5EA7"
   boardSize: {x: 5, y: 5}
   enemies:
   - enemy: {fileID: 11400000, guid: 386d44d0ed2c8634caf0822a7e90b88e, type: 2}

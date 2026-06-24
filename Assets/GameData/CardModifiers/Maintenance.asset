@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93a6149fe1d74669abb9ab1764b6adbe, type: 3}
   m_Name: Maintenance
   m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Cards.Core.Modifiers.MaintenanceModifierSO
-  displayName: Maintenance
-  description: After use, reduce another random cooling card's cooldown by 1.
+  displayName: "\u6574\u5099"
+  description: "\u4F7F\u7528\u5F8C\u3001\u30AF\u30FC\u30EB\u30BF\u30A4\u30E0\u4E2D\u306E\u5225\u306E\u30AB\u30FC\u30C9\u3092\u30E9\u30F3\u30C0\u30E0\u306B1\u679A\u9078\u3073\u3001\u6B8B\u308A\u30AF\u30FC\u30EB\u30BF\u30A4\u30E0\u30921\u6E1B\u3089\u3059\u3002"
   timing: 1
   cooldownReduction: 1

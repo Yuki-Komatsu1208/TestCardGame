@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb9ee71d385c649a283391b647e0dad9, type: 3}
   m_Name: Stage_05_GoblinVanguard
   m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Stage.StageDefinitionSO
-  stageName: 'Stage 5: Goblin Vanguard'
+  stageName: "\u30B9\u30C6\u30FC\u30B85\uFF1A\u30B4\u30D6\u30EA\u30F3\u5148\u9063\u968A"
   boardSize: {x: 5, y: 5}
   enemies:
   - enemy: {fileID: 11400000, guid: 5e68f265d03ace44fa29310031b4d8a1, type: 2}

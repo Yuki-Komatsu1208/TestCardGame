@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77e98b1bf2da4e3c9ceef109857f2132, type: 3}
   m_Name: Lightweight
   m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Cards.Core.Modifiers.ManaCostModifierSO
-  displayName: Lightweight
-  description: Mana cost -1.
+  displayName: "\u8EFD\u91CF\u5316"
+  description: "\u3053\u306E\u30AB\u30FC\u30C9\u306E\u30DE\u30CA\u30B3\u30B9\u30C8\u30921\u6E1B\u3089\u3059\u3002"
   timing: 0
   costDelta: -1

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7223c5d2edba346408947569ba0c4216, type: 3}
   m_Name: FireSlimeEnemy
   m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Character.Enemies.EnemyDefinitionSO
-  enemyName: Fire Slime
+  enemyName: "\u30D5\u30A1\u30A4\u30A2\u30B9\u30E9\u30A4\u30E0"
   maxHp: 60
   characterCode: 3
   enemyColor: {r: 0.957, g: 0.263, b: 0.212, a: 1}
