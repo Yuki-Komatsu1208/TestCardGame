@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 716d85236f11c4486a2b818addb9311b, type: 3}
   m_Name: ApplyStatusEffect
   m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Actions.Effects.ApplyStatusEffectSO
-  defaultStatusEffect: {fileID: 0}
+  defaultStatusEffect: 0
   defaultDuration: 1
   defaultValue: 0

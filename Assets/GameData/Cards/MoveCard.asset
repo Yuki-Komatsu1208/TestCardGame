@@ -19,7 +19,6 @@ MonoBehaviour:
       amount: 0
     cooldown:
       turns: 0
-    modifiers: []
     effects:
     - effect: {fileID: 11400000, guid: a1000000000000000000000000000001, type: 2}
       parameters:
@@ -31,7 +30,7 @@ MonoBehaviour:
         radius: 1
         distance: 1
         maxRange: 0
-        statusEffect: {fileID: 0}
+        statusEffect: 0
         value: 0
   level2:
     description: "\u30E6\u30CB\u30C3\u30C8\u30922\u30DE\u30B9\u79FB\u52D5\u3055\u305B\u308B\u3002"
@@ -39,7 +38,6 @@ MonoBehaviour:
       amount: 0
     cooldown:
       turns: 0
-    modifiers: []
     effects:
     - effect: {fileID: 11400000, guid: a1000000000000000000000000000001, type: 2}
       parameters:
@@ -51,7 +49,7 @@ MonoBehaviour:
         radius: 1
         distance: 1
         maxRange: 0
-        statusEffect: {fileID: 0}
+        statusEffect: 0
         value: 0
   level3:
     description: "\u30E6\u30CB\u30C3\u30C8\u30923\u30DE\u30B9\u79FB\u52D5\u3055\u305B\u308B\u3002"
@@ -59,7 +57,6 @@ MonoBehaviour:
       amount: 0
     cooldown:
       turns: 0
-    modifiers: []
     effects:
     - effect: {fileID: 11400000, guid: a1000000000000000000000000000001, type: 2}
       parameters:
@@ -71,5 +68,5 @@ MonoBehaviour:
         radius: 1
         distance: 1
         maxRange: 0
-        statusEffect: {fileID: 0}
+        statusEffect: 0
         value: 0

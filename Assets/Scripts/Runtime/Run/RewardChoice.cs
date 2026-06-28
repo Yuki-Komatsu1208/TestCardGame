@@ -1,4 +1,4 @@
-using System;
+using TestCardGame.Cards.Core;
 using TestCardGame.Cards.Core.Modifiers;
 
 namespace TestCardGame.Rewards
@@ -40,6 +40,50 @@ namespace TestCardGame.Rewards
             {
                 Title = "レベルアップ";
                 Description = "選択したカードのレベルを1上げます。";
+            }
+        }
+
+        public bool CanApplyTo(CardBase card)
+        {
+            if (card == null)
+            {
+                return false;
+            }
+
+            return Type switch
+            {
+                RewardType.Mod => Modifier != null,
+                RewardType.LevelUp => card.Level.CanUpgrade,
+                _ => false
+            };
+        }
+
+        public CardBase CreatePreview(CardBase card)
+        {
+            if (card == null)
+            {
+                return null;
+            }
+
+            var preview = card.Clone();
+            ApplyTo(preview);
+            return preview;
+        }
+
+        public void ApplyTo(CardBase card)
+        {
+            if (card == null)
+            {
+                return;
+            }
+
+            if (Type == RewardType.Mod && Modifier != null)
+            {
+                card.AddEnchant(Modifier);
+            }
+            else if (Type == RewardType.LevelUp && card.Level.CanUpgrade)
+            {
+                card.ChangeLevel(card.Level.Upgrade());
             }
         }
     }

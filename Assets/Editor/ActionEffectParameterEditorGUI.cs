@@ -67,7 +67,7 @@ internal static class ActionEffectParameterEditorGUI
         parameters.FindPropertyRelative("radius").intValue = source.radius;
         parameters.FindPropertyRelative("distance").intValue = source.distance;
         parameters.FindPropertyRelative("maxRange").intValue = source.maxRange;
-        parameters.FindPropertyRelative("statusEffect").objectReferenceValue = source.statusEffect;
+        parameters.FindPropertyRelative("statusEffect").enumValueIndex = (int)source.statusEffect;
         parameters.FindPropertyRelative("value").intValue = source.value;
     }
 
@@ -81,7 +81,7 @@ internal static class ActionEffectParameterEditorGUI
             && parameters.FindPropertyRelative("radius").intValue == 1
             && parameters.FindPropertyRelative("distance").intValue == 1
             && parameters.FindPropertyRelative("maxRange").intValue == 0
-            && parameters.FindPropertyRelative("statusEffect").objectReferenceValue == null
+            && parameters.FindPropertyRelative("statusEffect").enumValueIndex == 0
             && parameters.FindPropertyRelative("value").intValue == 0;
     }
 

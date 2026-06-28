@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 716d85236f11c4486a2b818addb9311b, type: 3}
   m_Name: Sleep
   m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Actions.Effects.ApplyStatusEffectSO
-  defaultStatusEffect: {fileID: 11400000, guid: 45a91b2b10eed4a41bfe5a8e4031c8a5, type: 2}
+  defaultStatusEffect: 4
   defaultDuration: 1
   defaultValue: 0

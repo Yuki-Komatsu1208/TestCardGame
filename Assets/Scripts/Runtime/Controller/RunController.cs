@@ -4,6 +4,7 @@ using TestCardGame.Run;
 using TestCardGame.Stage;
 using TestCardGame.Rewards;
 using TestCardGame.Cards.Core;
+using TestCardGame.Cards.VOs;
 
 namespace TestCardGame.Controller
 {
@@ -72,7 +73,7 @@ namespace TestCardGame.Controller
                 {
                     if (entry != null && entry.card != null)
                     {
-                        runState.playerDeck.Add(new DeckCardEntry(entry.card, entry.level));
+                        runState.playerDeck.Add(new CardBase(entry.card, new CardLevel(entry.level)));
                     }
                 }
             }
@@ -144,6 +145,7 @@ namespace TestCardGame.Controller
             }
 
             Debug.Log("ステージクリア: 報酬を選択します。");
+            ResetPlayerDeckBattleState();
             OpenRewardScreen();
         }
 
@@ -277,21 +279,23 @@ namespace TestCardGame.Controller
         /// </summary>
         public void ChooseDeckCardForReward(int deckCardIndex, RewardChoice choice)
         {
-            if (runState == null || deckCardIndex < 0 || deckCardIndex >= runState.playerDeck.Count) return;
-            var deckCard = runState.playerDeck[deckCardIndex];
+            if (runState == null || choice == null || deckCardIndex < 0 || deckCardIndex >= runState.playerDeck.Count) return;
+            var card = runState.playerDeck[deckCardIndex];
+            if (!choice.CanApplyTo(card))
+            {
+                Debug.LogWarning("選択された報酬はこのカードに適用できません。");
+                return;
+            }
 
             if (choice.Type == RewardType.Mod)
             {
-                if (choice.Modifier != null)
-                {
-                    deckCard.modifiers.Add(choice.Modifier);
-                    Debug.Log($"MOD付与報酬選択: カード「{deckCard.card.cardName}」にMOD「{choice.Modifier.DisplayName}」を付与しました。");
-                }
+                choice.ApplyTo(card);
+                Debug.Log($"MOD付与報酬選択: カード「{card.CardName}」にMOD「{choice.Modifier.DisplayName}」を付与しました。");
             }
             else if (choice.Type == RewardType.LevelUp)
             {
-                deckCard.level++;
-                Debug.Log($"レベルアップ報酬選択: カード「{deckCard.card.cardName}」のレベルが {deckCard.level} に上がりました。");
+                choice.ApplyTo(card);
+                Debug.Log($"レベルアップ報酬選択: カード「{card.CardName}」のレベルが {card.Level.Level} に上がりました。");
             }
 
             AdvanceToNextStage();
@@ -308,6 +312,19 @@ namespace TestCardGame.Controller
             else
             {
                 StartCurrentStage();
+            }
+        }
+
+        private void ResetPlayerDeckBattleState()
+        {
+            if (runState?.playerDeck == null)
+            {
+                return;
+            }
+
+            foreach (var card in runState.playerDeck)
+            {
+                card?.ResetBattleState();
             }
         }
 

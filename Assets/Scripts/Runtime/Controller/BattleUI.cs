@@ -339,7 +339,7 @@ namespace TestCardGame.Controller
             List<string> list = new();
             foreach (var s in unit.StatusEffects)
             {
-                list.Add($"{s.Definition.DisplayName}({s.RemainingTurns}T, 値:{s.Value})");
+                list.Add($"{s.DisplayName}({s.RemainingTurns}T, 値:{s.Value})");
             }
             return "[" + string.Join(", ", list) + "]";
         }

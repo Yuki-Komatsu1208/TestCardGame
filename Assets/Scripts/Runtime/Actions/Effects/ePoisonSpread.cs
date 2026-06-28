@@ -1,5 +1,5 @@
 using TestCardGame.Actions.Core;
-using TestCardGame.Definitions.StatusEffects;
+using TestCardGame.Character.StatusEffects;
 using UnityEngine;
 
 namespace TestCardGame.Actions.Effects
@@ -9,14 +9,14 @@ namespace TestCardGame.Actions.Effects
     /// </summary>
     public sealed class ePoisonSpread : ActionEffect
     {
-        private readonly StatusEffectSO poisonEffect;
+        private readonly StatusEffectId poisonEffect;
         private readonly int duration;
         private readonly int value;
 
         /// <summary>
         /// 毒定義、持続、値を指定して作成する。
         /// </summary>
-        public ePoisonSpread(StatusEffectSO poisonEffect, int duration, int value)
+        public ePoisonSpread(StatusEffectId poisonEffect, int duration, int value)
         {
             this.poisonEffect = poisonEffect;
             this.duration = duration;
@@ -28,7 +28,7 @@ namespace TestCardGame.Actions.Effects
         /// </summary>
         public override void Execute(ActionContext context)
         {
-            if (poisonEffect == null) return;
+            if (poisonEffect == StatusEffectId.None) return;
 
             Vector2Int targetPos = context.TargetPosition;
             Vector2Int[] coordinates = {

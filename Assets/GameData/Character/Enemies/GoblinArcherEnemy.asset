@@ -30,5 +30,5 @@ MonoBehaviour:
       radius: 1
       distance: 1
       maxRange: 3
-      statusEffect: {fileID: 0}
+      statusEffect: 0
       value: 0

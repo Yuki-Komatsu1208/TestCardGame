@@ -12,6 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8172aafc8b042c42ae298145ffd768c, type: 3}
   m_Name: PoisonSpreadEffect
   m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Actions.Effects.PoisonSpreadEffectSO
-  poisonDefinition: {fileID: 11400000, guid: 8b9892dede0aba841adf9990229fd48a, type: 2}
   duration: 3
   value: 5

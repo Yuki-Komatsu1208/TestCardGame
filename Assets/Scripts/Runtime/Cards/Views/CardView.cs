@@ -2,6 +2,7 @@ using TMPro;
 using UnityEngine;
 using TestCardGame.Controller;
 using TestCardGame.Cards.Core;
+using System.Collections.Generic;
 
 namespace TestCardGame.Cards.Views
 {
@@ -18,11 +19,6 @@ namespace TestCardGame.Cards.Views
         /// </summary>
         public void Bind(CardBase card)
         {
-            Bind(card, null);
-        }
-
-        public void Bind(CardBase card, System.Collections.Generic.List<Core.Modifiers.CardModifierSO> mods)
-        {
             this.card = card;
             nameText.text = $"{card.CardName} (Lv.{card.Level.Level})";
             costText.text = $"M:{card.GetCost(null).Amount} CT:{card.GetCooldown(null).Turns}";
@@ -31,14 +27,14 @@ namespace TestCardGame.Cards.Views
                 ? $"{card.Description}\n残りCT: {card.RemainingCooldown.Turns}"
                 : card.Description;
 
-            if (mods != null && mods.Count > 0)
+            if (card.EnchantDefinitions != null && card.EnchantDefinitions.Count > 0)
             {
-                System.Collections.Generic.List<string> modNames = new System.Collections.Generic.List<string>();
-                foreach (var m in mods)
+                var modNames = new List<string>();
+                foreach (var modifierDefinition in card.EnchantDefinitions)
                 {
-                    if (m != null)
+                    if (modifierDefinition != null)
                     {
-                        modNames.Add(m.DisplayName);
+                        modNames.Add(modifierDefinition.DisplayName);
                     }
                 }
                 desc += $"\n<color=cyan>[MOD: {string.Join(", ", modNames)}]</color>";

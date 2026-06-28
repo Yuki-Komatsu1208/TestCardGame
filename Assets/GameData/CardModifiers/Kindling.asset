@@ -15,6 +15,6 @@ MonoBehaviour:
   displayName: "\u706B\u7A2E"
   description: "\u30AB\u30FC\u30C9\u4F7F\u7528\u5F8C\u3001\u5BFE\u8C61\u306B\u708E\u4E0A\u3092\u4ED8\u4E0E\u3059\u308B\u3002"
   timing: 1
-  statusEffect: {fileID: 11400000, guid: b1f8ef58889274a4687b76c23d10535f, type: 2}
+  statusEffect: 1
   duration: 1
   value: 3

@@ -1,6 +1,5 @@
 using TestCardGame.BoardManage;
 using TestCardGame.Cards.Core;
-using TestCardGame.Cards.Modifiers;
 using TestCardGame.Character.Enemies;
 using TestCardGame.Character.Player;
 using UnityEngine;
@@ -18,8 +17,6 @@ namespace TestCardGame.Controller.Services
         private readonly StatusEffectService statusEffectService;
 
         public bool IsPlayerTurn { get; private set; } = true;
-        public bool HasPlayedCardThisTurn { get; private set; }
-        private CardBase cardPlayedThisTurn;
 
         public TurnService(Board board, UnitMoveService moveService, CellEffectService cellEffectService, StatusEffectService statusEffectService)
         {
@@ -40,27 +37,21 @@ namespace TestCardGame.Controller.Services
                 return false;
             }
 
-            if (HasPlayedCardThisTurn)
-            {
-                Debug.LogWarning("カードは1ターンに1枚だけ使用できます。");
-                return false;
-            }
-
             if (card == null || player == null)
             {
                 return false;
             }
 
-            if (card.IsCoolingDown)
+            if (!card.CanBePlayedBy(player))
             {
-                Debug.LogWarning($"カード「{card.CardName}」はクールタイム中です。残り{card.RemainingCooldown.Turns}ターン。");
-                return false;
-            }
-
-            var cost = card.GetCost(player);
-            if (!cost.CanPayWith(player.Mana))
-            {
-                Debug.LogWarning("マナが足りません。");
+                if (card.IsCoolingDown)
+                {
+                    Debug.LogWarning($"カード「{card.CardName}」はクールタイム中です。残り{card.RemainingCooldown.Turns}ターン。");
+                }
+                else
+                {
+                    Debug.LogWarning("マナが足りません。");
+                }
                 return false;
             }
 
@@ -79,8 +70,6 @@ namespace TestCardGame.Controller.Services
 
             player.Mana = card.GetCost(player).PayFrom(player.Mana);
             card.StartCooldown(player);
-            HasPlayedCardThisTurn = true;
-            cardPlayedThisTurn = card;
         }
 
         /// <summary>
@@ -97,7 +86,7 @@ namespace TestCardGame.Controller.Services
 
             // プレイヤーターンの終了時にプレイヤーの状態異常を処理する
             statusEffectService?.TickTurnEnd(player);
-            TickPlayerCardCooldowns(player, cardPlayedThisTurn);
+            TickPlayerCardCooldowns(player);
 
             if (enemies != null)
             {
@@ -152,8 +141,6 @@ namespace TestCardGame.Controller.Services
         private void StartPlayerTurn(PlayerUnit player)
         {
             IsPlayerTurn = true;
-            HasPlayedCardThisTurn = false;
-            cardPlayedThisTurn = null;
 
             if (player != null)
             {
@@ -166,7 +153,7 @@ namespace TestCardGame.Controller.Services
         /// <summary>
         /// プレイヤーの所持カードの残りクールタイムを進める。
         /// </summary>
-        private static void TickPlayerCardCooldowns(PlayerUnit player, CardBase excludedCard)
+        private static void TickPlayerCardCooldowns(PlayerUnit player)
         {
             if (player?.Cards == null)
             {
@@ -175,17 +162,7 @@ namespace TestCardGame.Controller.Services
 
             foreach (var card in player.Cards)
             {
-                if (ReferenceEquals(card, excludedCard))
-                {
-                    continue;
-                }
-
-                var wasCoolingDown = card?.IsCoolingDown ?? false;
-                card?.TickCooldown();
-                if (wasCoolingDown && card != null && !card.IsCoolingDown)
-                {
-                    card.OnCooldownReady(new CardModifierContext(card, player));
-                }
+                card?.TickCooldownAtTurnEnd(player);
             }
         }
     }

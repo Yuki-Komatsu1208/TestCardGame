@@ -9,6 +9,7 @@ ADR番号はカテゴリフォルダごとに `ADR-001` から採番します。
 ## Architecture
 
 * [ADR-001: グリッド制ターンバトルおよびカード効果システムの基盤設計](Architecture/ADR-001-grid-turn-battle-card-effect-system.md)
+* [ADR-002: 状態管理はC#コードに集約し、Viewは表示だけを担当する](Architecture/ADR-002-code-owned-state-and-view-only-presentation.md)
 
 ## Enemy
 
@@ -22,3 +23,4 @@ ADR番号はカテゴリフォルダごとに `ADR-001` から採番します。
 * [ADR-004: カードレベル・マナコスト・クールタイムを独立した調整軸にする](GameDesign/ADR-004-independent-card-level-cost-cooldown.md)
 * [ADR-005: 一般戦闘報酬はMOD中心の三択強化にする](GameDesign/ADR-005-battle-reward-design.md)
 * [ADR-006: RUNは複数遠征で構成し、遠征クリア後に帰還か続行を選ぶ](GameDesign/ADR-006-expedition-return-and-push-forward-structure.md)
+* [ADR-007: 1ターン中のカード使用枚数はリソースとクールタイムで制限する](GameDesign/ADR-007-multiple-card-plays-per-turn-by-resource.md)

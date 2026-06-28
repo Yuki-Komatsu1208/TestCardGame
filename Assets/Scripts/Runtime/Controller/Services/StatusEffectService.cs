@@ -1,6 +1,5 @@
 using TestCardGame.Character;
 using TestCardGame.Character.StatusEffects;
-using TestCardGame.Definitions.StatusEffects;
 using UnityEngine;
 
 namespace TestCardGame.Controller.Services
@@ -11,33 +10,23 @@ namespace TestCardGame.Controller.Services
     public class StatusEffectService
     {
         public DamageService DamageService { get; }
-        private readonly StatusEffectSO burnDefinition;
-        private readonly StatusEffectSO sleepDefinition;
-        private readonly StatusEffectSO weakDefinition;
 
-        public StatusEffectSO BurnDefinition => burnDefinition;
-        public StatusEffectSO SleepDefinition => sleepDefinition;
-        public StatusEffectSO WeakDefinition => weakDefinition;
-
-        public StatusEffectService(DamageService damageService, StatusEffectSO burnDefinition, StatusEffectSO sleepDefinition, StatusEffectSO weakDefinition = null)
+        public StatusEffectService(DamageService damageService)
         {
             DamageService = damageService;
-            this.burnDefinition = burnDefinition;
-            this.sleepDefinition = sleepDefinition;
-            this.weakDefinition = weakDefinition;
         }
 
         /// <summary>
         /// 任意の状態異常を対象ユニットへ付与する。
         /// </summary>
-        public void ApplyStatus(IUnit unit, StatusEffectSO status, int duration, int value = 0)
+        public void ApplyStatus(IUnit unit, StatusEffectId status, int duration, int value = 0)
         {
-            if (status == null)
+            if (unit == null || status == StatusEffectId.None)
             {
-                Debug.LogWarning("StatusEffectService: 状態異常定義が設定されていません。");
                 return;
             }
-            unit.ApplyStatusEffect(new StatusEffectInstance(status, duration, value));
+
+            unit.ApplyStatusEffect(new StatusEffectInstance(status, Mathf.Max(1, duration), Mathf.Max(0, value)));
         }
 
         /// <summary>
@@ -54,12 +43,7 @@ namespace TestCardGame.Controller.Services
         /// </summary>
         public void ApplyBurn(IUnit unit, int duration, int damage)
         {
-            if (burnDefinition == null)
-            {
-                Debug.LogWarning("StatusEffectService: 炎上定義が設定されていません。");
-                return;
-            }
-            unit.ApplyStatusEffect(new StatusEffectInstance(burnDefinition, duration, damage));
+            ApplyStatus(unit, StatusEffectId.Burn, duration, damage);
         }
 
         /// <summary>
@@ -67,12 +51,7 @@ namespace TestCardGame.Controller.Services
         /// </summary>
         public void ApplySleep(IUnit unit, int duration)
         {
-            if (sleepDefinition == null)
-            {
-                Debug.LogWarning("StatusEffectService: 睡眠定義が設定されていません。");
-                return;
-            }
-            unit.ApplyStatusEffect(new StatusEffectInstance(sleepDefinition, duration));
+            ApplyStatus(unit, StatusEffectId.Sleep, duration);
         }
 
         /// <summary>
@@ -87,7 +66,7 @@ namespace TestCardGame.Controller.Services
             {
                 if (i < effects.Count)
                 {
-                    effects[i].OnTurnStart(unit, this);
+                    OnTurnStart(unit, effects[i]);
                 }
             }
             CleanExpiredEffects(unit);
@@ -105,10 +84,45 @@ namespace TestCardGame.Controller.Services
             {
                 if (i < effects.Count)
                 {
-                    effects[i].OnTurnEnd(unit, this);
+                    OnTurnEnd(unit, effects[i]);
                 }
             }
             CleanExpiredEffects(unit);
+        }
+
+        private void OnTurnStart(IUnit unit, StatusEffectInstance effect)
+        {
+        }
+
+        private void OnTurnEnd(IUnit unit, StatusEffectInstance effect)
+        {
+            if (effect.RemainingTurns <= 0)
+            {
+                return;
+            }
+
+            switch (effect.Id)
+            {
+                case StatusEffectId.Burn:
+                    DamageService.DealDamage(null, unit, effect.Value, DamageType.Fire);
+                    effect.RemainingTurns--;
+                    break;
+                case StatusEffectId.Poison:
+                    DamageService.DealDamage(null, unit, effect.Value, DamageType.Poison);
+                    effect.RemainingTurns--;
+                    break;
+                case StatusEffectId.Sleep:
+                    effect.RemainingTurns--;
+                    Debug.Log($"{unit.Name}はおやすみしています（睡眠残り: {effect.RemainingTurns}ターン）。");
+                    break;
+                case StatusEffectId.Weak:
+                    effect.RemainingTurns--;
+                    Debug.Log($"{unit.Name}は弱体化しています（弱体化残り: {effect.RemainingTurns}ターン）。");
+                    break;
+                case StatusEffectId.Shield:
+                    effect.RemainingTurns--;
+                    break;
+            }
         }
 
         /// <summary>

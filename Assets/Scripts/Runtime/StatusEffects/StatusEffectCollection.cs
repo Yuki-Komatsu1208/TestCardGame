@@ -17,16 +17,16 @@ namespace TestCardGame.Character.StatusEffects
         {
             if (owner == null || effect == null) return;
 
-            var existing = effects.Find(e => e.Definition.EffectId == effect.Definition.EffectId);
+            var existing = effects.Find(e => e.Id == effect.Id);
             if (existing != null)
             {
                 existing.Merge(effect);
-                Debug.Log($"{owner.Name}の既存の状態異常 {effect.Definition.DisplayName} が更新されました（残り持続: {existing.RemainingTurns}ターン）。");
+                Debug.Log($"{owner.Name}の既存の状態異常 {effect.DisplayName} が更新されました（残り持続: {existing.RemainingTurns}ターン）。");
             }
             else
             {
                 effects.Add(effect);
-                Debug.Log($"{owner.Name}に状態異常 {effect.Definition.DisplayName} が付与されました（持続: {effect.RemainingTurns}ターン）。");
+                Debug.Log($"{owner.Name}に状態異常 {effect.DisplayName} が付与されました（持続: {effect.RemainingTurns}ターン）。");
             }
         }
 
@@ -40,7 +40,7 @@ namespace TestCardGame.Character.StatusEffects
                 if (effect.IsExpired)
                 {
                     effects.RemoveAt(i);
-                    Debug.Log($"{owner.Name}の状態異常 {effect.Definition.DisplayName} が終了しました。");
+                    Debug.Log($"{owner.Name}の状態異常 {effect.DisplayName} が終了しました。");
                 }
             }
         }
@@ -49,7 +49,7 @@ namespace TestCardGame.Character.StatusEffects
         {
             foreach (var effect in effects)
             {
-                if (!effect.CanAct(owner))
+                if (!effect.CanAct())
                 {
                     return false;
                 }

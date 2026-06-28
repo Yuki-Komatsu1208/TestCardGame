@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TestCardGame.Cards.Core;
 
 namespace TestCardGame.Run
 {
@@ -9,7 +10,7 @@ namespace TestCardGame.Run
     [Serializable]
     public class RunState
     {
-        public List<DeckCardEntry> playerDeck = new();
+        public List<CardBase> playerDeck = new();
         public int currentStageIndex;
         public int currentHp;
     }

@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using TestCardGame.Run;
 using TestCardGame.Cards.Core;
-using TestCardGame.Cards.Core.Modifiers;
-using TestCardGame.Cards.VOs;
 using TestCardGame.Cards.Views;
 using TestCardGame.Rewards;
 
@@ -33,7 +30,7 @@ namespace TestCardGame.UIs
         [SerializeField] private Button confirmCancelButton;
 
         // Runtime State
-        private List<DeckCardEntry> currentDeck;
+        private List<CardBase> currentDeck;
         private RewardChoice currentChoice;
         private Action<int> onCardSelected;
         private Action onOverlayClosed;
@@ -110,7 +107,7 @@ namespace TestCardGame.UIs
         /// </summary>
         public void Show(
             string title, 
-            List<DeckCardEntry> deck, 
+            List<CardBase> deck, 
             RewardChoice choice = null, 
             Action<int> onSelect = null, 
             Action onCancel = null
@@ -165,16 +162,15 @@ namespace TestCardGame.UIs
             for (int i = 0; i < currentDeck.Count; i++)
             {
                 int index = i;
-                var entry = currentDeck[i];
-                if (entry == null || entry.card == null) continue;
+                var card = currentDeck[i];
+                if (card == null) continue;
 
                 // Instantiate Card prefab
                 var view = Instantiate(prefab, gridContent);
                 view.name = $"DeckCardItem_{index}";
 
                 // Bind state
-                var runtimeCard = new CardBase(entry.card, new CardLevel(entry.level));
-                view.Bind(runtimeCard, entry.modifiers);
+                view.Bind(card);
 
                 // Add button click handler to card
                 var btn = view.gameObject.GetComponent<Button>();
@@ -198,20 +194,20 @@ namespace TestCardGame.UIs
             // If read-only mode, clicking does nothing
             if (currentChoice == null || onCardSelected == null) return;
 
-            var entry = currentDeck[index];
+            var card = currentDeck[index];
 
             // Prevent level up if card is already max level
-            if (currentChoice.Type == RewardType.LevelUp && entry.level >= 3)
+            if (!currentChoice.CanApplyTo(card))
             {
-                Debug.LogWarning("This card is already at maximum level.");
+                Debug.LogWarning("This reward cannot be applied to the selected card.");
                 return;
             }
 
             selectedDeckIndex = index;
-            OpenConfirmationModal(entry);
+            OpenConfirmationModal(card);
         }
 
-        private void OpenConfirmationModal(DeckCardEntry entry)
+        private void OpenConfirmationModal(CardBase card)
         {
             if (confirmModal == null) return;
 
@@ -232,8 +228,7 @@ namespace TestCardGame.UIs
             if (beforeCardParent != null)
             {
                 var beforeView = Instantiate(prefab, beforeCardParent);
-                var beforeRuntime = new CardBase(entry.card, new CardLevel(entry.level));
-                beforeView.Bind(beforeRuntime, entry.modifiers);
+                beforeView.Bind(card);
                 DisableInteractiveCardComponents(beforeView);
             }
 
@@ -241,31 +236,24 @@ namespace TestCardGame.UIs
             if (afterCardContainer != null)
             {
                 var afterView = Instantiate(prefab, afterCardContainer);
-                CardBase afterRuntime = null;
-                List<CardModifierSO> afterModifiers = new List<CardModifierSO>(entry.modifiers);
+                var afterRuntime = currentChoice.CreatePreview(card);
 
                 if (currentChoice.Type == RewardType.LevelUp)
                 {
-                    afterRuntime = new CardBase(entry.card, new CardLevel(entry.level + 1));
                     if (confirmMessageText != null)
                     {
-                        confirmMessageText.text = $"カード「<b>{entry.card.cardName}</b>」を\n<color=yellow>レベル {entry.level} ➡ {entry.level + 1}</color> へレベルアップします。よろしいですか？";
+                        confirmMessageText.text = $"カード「<b>{card.CardName}</b>」を\n<color=yellow>レベル {card.Level.Level} ➡ {afterRuntime.Level.Level}</color> へレベルアップします。よろしいですか？";
                     }
                 }
                 else if (currentChoice.Type == RewardType.Mod)
                 {
-                    afterRuntime = new CardBase(entry.card, new CardLevel(entry.level));
-                    if (currentChoice.Modifier != null)
-                    {
-                        afterModifiers.Add(currentChoice.Modifier);
-                    }
                     if (confirmMessageText != null)
                     {
-                        confirmMessageText.text = $"カード「<b>{entry.card.cardName}</b>」に\n<color=cyan>MOD: {currentChoice.Title}</color> を付与します。よろしいですか？";
+                        confirmMessageText.text = $"カード「<b>{card.CardName}</b>」に\n<color=cyan>MOD: {currentChoice.Title}</color> を付与します。よろしいですか？";
                     }
                 }
 
-                afterView.Bind(afterRuntime, afterModifiers);
+                afterView.Bind(afterRuntime);
                 DisableInteractiveCardComponents(afterView);
             }
 

@@ -1,5 +1,5 @@
 using System;
-using TestCardGame.Definitions.StatusEffects;
+using TestCardGame.Character.StatusEffects;
 using UnityEngine;
 
 namespace TestCardGame.Actions.Effects
@@ -30,7 +30,7 @@ namespace TestCardGame.Actions.Effects
         [Min(0)]
         public int maxRange;
 
-        public StatusEffectSO statusEffect;
+        public StatusEffectId statusEffect;
 
         [Min(0)]
         public int value;

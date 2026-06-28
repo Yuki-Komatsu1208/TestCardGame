@@ -7,7 +7,6 @@ using TestCardGame.Character.ValueObjects;
 using TestCardGame.BoardManage;
 using TestCardGame.Controller.Services;
 using TestCardGame.Cards.Core;
-using TestCardGame.Definitions.StatusEffects;
 
 namespace TestCardGame.Controller
 {
@@ -25,13 +24,6 @@ namespace TestCardGame.Controller
         }
 
         [SerializeField] private CellBuilder cellBuilder;
-        [SerializeField] private StatusEffectSO burnDefinition;
-        [SerializeField] private StatusEffectSO sleepDefinition;
-        [SerializeField] private StatusEffectSO weakDefinition;
-
-        public StatusEffectSO BurnDefinition { get => burnDefinition; set => burnDefinition = value; }
-        public StatusEffectSO SleepDefinition { get => sleepDefinition; set => sleepDefinition = value; }
-        public StatusEffectSO WeakDefinition { get => weakDefinition; set => weakDefinition = value; }
 
         private DamageService damageService;
         private StatusEffectService statusEffectService;
@@ -168,7 +160,7 @@ namespace TestCardGame.Controller
             }
 
             damageService = new DamageService();
-            statusEffectService = new StatusEffectService(damageService, burnDefinition, sleepDefinition, weakDefinition);
+            statusEffectService = new StatusEffectService(damageService);
 
             moveService = new UnitMoveService(board, unitsById, statusEffectService);
             moveService.MoveStarted += OnMoveStarted;

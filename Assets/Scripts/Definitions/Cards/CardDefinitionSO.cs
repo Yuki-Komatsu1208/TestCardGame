@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using TestCardGame.Actions.Effects;
-using TestCardGame.Cards.Core.Modifiers;
 using TestCardGame.Cards.VOs;
 using UnityEngine;
 
@@ -13,7 +12,6 @@ namespace TestCardGame.Cards.Core
         public string description;
         public ManaCost cost = ManaCost.Zero;
         public CardCooldown cooldown = CardCooldown.None;
-        public List<CardModifierSO> modifiers;
         public List<CardEffectEntry> effects;
 
         public ManaCost Cost => cost ?? ManaCost.Zero;

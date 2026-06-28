@@ -170,9 +170,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cellBuilder: {fileID: 0}
-  burnDefinition: {fileID: 11400000, guid: b1f8ef58889274a4687b76c23d10535f, type: 2}
-  sleepDefinition: {fileID: 11400000, guid: 45a91b2b10eed4a41bfe5a8e4031c8a5, type: 2}
-  weakDefinition: {fileID: 11400000, guid: a35906478928e4bc4863595955293baa, type: 2}
   battleUIInstance: {fileID: 377012212}
 --- !u!114 &377012211
 MonoBehaviour:

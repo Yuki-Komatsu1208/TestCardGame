@@ -19,7 +19,6 @@ MonoBehaviour:
       amount: 2
     cooldown:
       turns: 3
-    modifiers: []
     effects:
     - effect: {fileID: 11400000, guid: a1000000000000000000000000000004, type: 2}
       parameters:
@@ -31,7 +30,7 @@ MonoBehaviour:
         radius: 1
         distance: 1
         maxRange: 1
-        statusEffect: {fileID: 0}
+        statusEffect: 0
         value: 0
     - effect: {fileID: 11400000, guid: a0000000000000000000000000000051, type: 2}
       parameters:
@@ -43,7 +42,7 @@ MonoBehaviour:
         radius: 1
         distance: 1
         maxRange: 0
-        statusEffect: {fileID: 11400000, guid: 45a91b2b10eed4a41bfe5a8e4031c8a5, type: 2}
+        statusEffect: 4
         value: 0
   level2:
     description: "\u76F8\u624B\u3092\uFF11\u30BF\u30FC\u30F3\u7720\u3089\u305B\u308B"
@@ -51,7 +50,6 @@ MonoBehaviour:
       amount: 2
     cooldown:
       turns: 2
-    modifiers: []
     effects:
     - effect: {fileID: 11400000, guid: a1000000000000000000000000000004, type: 2}
       parameters:
@@ -63,7 +61,7 @@ MonoBehaviour:
         radius: 1
         distance: 1
         maxRange: 1
-        statusEffect: {fileID: 0}
+        statusEffect: 0
         value: 0
     - effect: {fileID: 11400000, guid: a0000000000000000000000000000051, type: 2}
       parameters:
@@ -75,7 +73,7 @@ MonoBehaviour:
         radius: 1
         distance: 1
         maxRange: 0
-        statusEffect: {fileID: 11400000, guid: 45a91b2b10eed4a41bfe5a8e4031c8a5, type: 2}
+        statusEffect: 4
         value: 0
   level3:
     description: "\u76F8\u624B\u3092\uFF11\u30BF\u30FC\u30F3\u7720\u3089\u305B\u308B"
@@ -83,7 +81,6 @@ MonoBehaviour:
       amount: 2
     cooldown:
       turns: 1
-    modifiers: []
     effects:
     - effect: {fileID: 11400000, guid: a1000000000000000000000000000004, type: 2}
       parameters:
@@ -95,7 +92,7 @@ MonoBehaviour:
         radius: 1
         distance: 1
         maxRange: 1
-        statusEffect: {fileID: 0}
+        statusEffect: 0
         value: 0
     - effect: {fileID: 11400000, guid: a0000000000000000000000000000051, type: 2}
       parameters:
@@ -107,5 +104,5 @@ MonoBehaviour:
         radius: 1
         distance: 1
         maxRange: 0
-        statusEffect: {fileID: 11400000, guid: 45a91b2b10eed4a41bfe5a8e4031c8a5, type: 2}
+        statusEffect: 4
         value: 0

@@ -8,7 +8,6 @@ using TestCardGame.Character.Enemies;
 using TestCardGame.Character.ValueObjects;
 using TestCardGame.Character.StatusVO;
 using TestCardGame.Cards.Core;
-using TestCardGame.Cards.VOs;
 using TestCardGame.Stage;
 
 namespace TestCardGame.BoardManage
@@ -97,26 +96,14 @@ namespace TestCardGame.BoardManage
             // プレイヤーユニットを作成する。
             if (runState != null)
             {
-                var cards = new List<CardBase>();
-                foreach (var entry in runState.playerDeck)
+                foreach (var card in runState.playerDeck)
                 {
-                    if (entry != null && entry.card != null)
+                    if (card != null)
                     {
-                        var cardBase = new CardBase(entry.card, new CardLevel(entry.level));
-                        if (entry.modifiers != null)
-                        {
-                            foreach (var modSO in entry.modifiers)
-                            {
-                                if (modSO != null)
-                                {
-                                    cardBase.AddEnchant(modSO.CreateRuntimeModifier());
-                                }
-                            }
-                        }
-                        cards.Add(cardBase);
+                        card.ResetBattleState();
                     }
                 }
-                playerUnit = new PlayerUnit(UnitID.defaultPlayerUnit, playerDefinition.playerName, new HP(playerDefinition.maxHp), new Vector2Int(0, 0), cards);
+                playerUnit = new PlayerUnit(UnitID.defaultPlayerUnit, playerDefinition.playerName, new HP(playerDefinition.maxHp), new Vector2Int(0, 0), runState.playerDeck);
                 playerUnit.Hp.TakeDamage(playerDefinition.maxHp - runState.currentHp);
             }
             else

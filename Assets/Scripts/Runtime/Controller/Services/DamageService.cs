@@ -1,5 +1,5 @@
 using TestCardGame.Character;
-using TestCardGame.Definitions.StatusEffects;
+using TestCardGame.Character.StatusEffects;
 using UnityEngine;
 
 namespace TestCardGame.Controller.Services
@@ -30,7 +30,7 @@ namespace TestCardGame.Controller.Services
                 bool sourceIsWeak = false;
                 foreach (var effect in source.StatusEffects)
                 {
-                    if (effect.Definition is WeakStatusEffectSO || effect.Definition.EffectId == "Weak")
+                    if (effect.Id == StatusEffectId.Weak)
                     {
                         sourceIsWeak = true;
                         break;
@@ -45,7 +45,7 @@ namespace TestCardGame.Controller.Services
             bool targetIsWeak = false;
             foreach (var effect in target.StatusEffects)
             {
-                if (effect.Definition is WeakStatusEffectSO || effect.Definition.EffectId == "Weak")
+                if (effect.Id == StatusEffectId.Weak)
                 {
                     targetIsWeak = true;
                     break;
@@ -64,7 +64,7 @@ namespace TestCardGame.Controller.Services
                 for (int i = 0; i < target.StatusEffects.Count; i++)
                 {
                     var effect = target.StatusEffects[i];
-                    if (effect.Definition is ShieldStatusEffectSO || effect.Definition.EffectId == "Shield")
+                    if (effect.Id == StatusEffectId.Shield)
                     {
                         if (effect.RemainingTurns > 0 && effect.Value > 0)
                         {

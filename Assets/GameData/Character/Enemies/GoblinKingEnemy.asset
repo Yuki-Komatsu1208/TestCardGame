@@ -30,7 +30,7 @@ MonoBehaviour:
       radius: 1
       distance: 1
       maxRange: 0
-      statusEffect: {fileID: 0}
+      statusEffect: 0
       value: 0
   - targetKind: 1
     effect: {fileID: 11400000, guid: a1000000000000000000000000000004, type: 2}
@@ -44,5 +44,5 @@ MonoBehaviour:
       radius: 1
       distance: 1
       maxRange: 1
-      statusEffect: {fileID: 0}
+      statusEffect: 0
       value: 0
