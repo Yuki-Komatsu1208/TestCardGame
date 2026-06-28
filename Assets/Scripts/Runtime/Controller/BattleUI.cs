@@ -29,23 +29,25 @@ namespace TestCardGame.Controller
 
         private GameController gameController;
         private RunController runController;
+        private RewardController rewardController;
 
         /// <summary>
-        /// バトルUIを構築し、RunControllerのイベント購読を開始する。
+        /// バトルUIを構築し、Run/Rewardのイベント購読を開始する。
         /// </summary>
         public void Initialize(GameController controller)
         {
-            this.gameController = controller;
-            this.runController = FindAnyObjectByType<RunController>();
+            gameController = controller;
+            runController = FindAnyObjectByType<RunController>();
+            rewardController = runController != null
+                ? runController.GetComponent<RewardController>()
+                : FindAnyObjectByType<RewardController>();
 
-            // 事前配置UIがアサインされているか確認
             bool hasPreconfiguredUI = statusText != null && endTurnButton != null && rewardsPanel != null && endRunPanel != null;
 
             if (!hasPreconfiguredUI)
             {
                 Debug.Log("BattleUI: 事前配置されたUIが不完全なため、動的にUIを生成します。");
 
-                // 再生成時に古い動的UIを削除する。
                 var canvas = FindAnyObjectByType<Canvas>();
                 if (canvas == null)
                 {
@@ -61,37 +63,31 @@ namespace TestCardGame.Controller
                     }
                 }
 
-                // ステータス表示パネルを作成する。
                 GameObject panelObj = new GameObject("BattleUIPanel", typeof(RectTransform));
                 panelObj.transform.SetParent(canvas.transform, false);
                 var panelRect = panelObj.GetComponent<RectTransform>();
-                
-                // 画面上部中央に配置する。
                 panelRect.anchorMin = new Vector2(0f, 0.75f);
                 panelRect.anchorMax = new Vector2(1f, 1f);
                 panelRect.pivot = new Vector2(0.5f, 1f);
                 panelRect.anchoredPosition = new Vector2(0f, -20f);
                 panelRect.sizeDelta = new Vector2(0f, 150f);
 
-                // ステータステキストを追加する。
                 GameObject textObj = new GameObject("StatusText", typeof(RectTransform));
                 textObj.transform.SetParent(panelRect, false);
                 var textRect = textObj.GetComponent<RectTransform>();
                 textRect.anchorMin = Vector2.zero;
                 textRect.anchorMax = Vector2.one;
                 textRect.sizeDelta = Vector2.zero;
-                
+
                 statusText = textObj.AddComponent<TextMeshProUGUI>();
                 statusText.fontSize = 20;
                 statusText.alignment = TextAlignmentOptions.Center;
                 statusText.color = Color.white;
                 statusText.text = "バトルを初期化しています...";
 
-                // ターン終了ボタンを追加する。
                 GameObject buttonObj = new GameObject("EndTurnButton", typeof(RectTransform), typeof(Image), typeof(Button));
                 buttonObj.transform.SetParent(canvas.transform, false);
                 var buttonRect = buttonObj.GetComponent<RectTransform>();
-                
                 buttonRect.anchorMin = new Vector2(1f, 0f);
                 buttonRect.anchorMax = new Vector2(1f, 0f);
                 buttonRect.pivot = new Vector2(1f, 0f);
@@ -117,17 +113,13 @@ namespace TestCardGame.Controller
                 btnText.color = Color.white;
                 btnText.text = "ターン終了";
 
-                // 報酬パネルを作成する。
                 CreateRewardsPanel(canvas);
-
-                // Run終了パネルを作成する。
                 CreateEndRunPanel(canvas);
             }
             else
             {
                 Debug.Log("BattleUI: 事前配置されたUIを使用します。");
 
-                // ボタンのイベント登録を設定
                 endTurnButton.onClick.RemoveListener(OnEndTurnClicked);
                 endTurnButton.onClick.AddListener(OnEndTurnClicked);
 
@@ -135,7 +127,6 @@ namespace TestCardGame.Controller
                 if (endRunPanel != null) endRunPanel.SetActive(false);
             }
 
-            // Find overlay and deck button if not assigned via Inspector
             if (cardListOverlay == null)
             {
                 cardListOverlay = FindAnyObjectByType<UIs.CardListSelectionOverlay>();
@@ -150,7 +141,6 @@ namespace TestCardGame.Controller
                 }
             }
 
-            // Wire up the Check Deck button
             if (checkDeckButton != null)
             {
                 checkDeckButton.onClick.RemoveAllListeners();
@@ -163,12 +153,15 @@ namespace TestCardGame.Controller
                 });
             }
 
-            // RunControllerのイベントで報酬/終了UIを切り替える。
+            if (rewardController != null)
+            {
+                // 報酬UIの表示切替はRewardControllerのイベントを起点にする。
+                rewardController.RewardScreenOpened -= OnRewardScreenOpened;
+                rewardController.RewardScreenOpened += OnRewardScreenOpened;
+            }
+
             if (runController != null)
             {
-                runController.RewardScreenOpened -= OnRewardScreenOpened;
-                runController.RewardScreenOpened += OnRewardScreenOpened;
-
                 runController.StageStarted -= OnStageStarted;
                 runController.StageStarted += OnStageStarted;
 
@@ -196,7 +189,6 @@ namespace TestCardGame.Controller
 
             rewardsPanel.GetComponent<Image>().color = new Color(0.1f, 0.1f, 0.15f, 0.95f);
 
-            // タイトルを作成する。
             GameObject titleObj = new GameObject("Title", typeof(RectTransform));
             titleObj.transform.SetParent(rewardsPanel.transform, false);
             var titleRect = titleObj.GetComponent<RectTransform>();
@@ -210,7 +202,6 @@ namespace TestCardGame.Controller
             rewardsTitleText.color = Color.yellow;
             rewardsTitleText.text = "ステージクリア！報酬カードを選んでください";
 
-            // 報酬カードを並べる領域を作成する。
             GameObject cardsGrid = new GameObject("CardsGrid", typeof(RectTransform), typeof(HorizontalLayoutGroup));
             cardsGrid.transform.SetParent(rewardsPanel.transform, false);
             var gridRect = cardsGrid.GetComponent<RectTransform>();
@@ -225,7 +216,6 @@ namespace TestCardGame.Controller
             layout.childForceExpandHeight = true;
             layout.childForceExpandWidth = true;
 
-            // 最大3つの報酬ボタンを作成する。
             rewardButtons.Clear();
             for (int i = 0; i < 3; i++)
             {
@@ -235,7 +225,6 @@ namespace TestCardGame.Controller
                 var btnImg = cardBtnObj.GetComponent<Image>();
                 btnImg.color = new Color(0.25f, 0.25f, 0.35f, 1f);
 
-                // Text
                 GameObject cardTxtObj = new GameObject("Text", typeof(RectTransform));
                 cardTxtObj.transform.SetParent(cardBtnObj.transform, false);
                 var txtRect = cardTxtObj.GetComponent<RectTransform>();
@@ -373,7 +362,6 @@ namespace TestCardGame.Controller
             if (rewardsPanel == null) return;
 
             rewardsPanel.SetActive(true);
-
             rewardsTitleText.text = "ステージクリア！報酬を選択してください";
 
             for (int i = 0; i < rewardButtons.Count; i++)
@@ -405,11 +393,11 @@ namespace TestCardGame.Controller
                         if (choice.Type == RewardType.Heal)
                         {
                             rewardsPanel.SetActive(false);
-                            runController?.ChooseHealReward();
+                            rewardController?.ChooseHealReward();
                         }
                         else
                         {
-                            // Transition to deck card selection screen
+                            // MOD/LevelUpは対象カード選択を挟んでから適用する。
                             OpenDeckCardSelection(choice);
                         }
                     });
@@ -438,7 +426,6 @@ namespace TestCardGame.Controller
                 title = "レベルアップ: 対象カードを選択してください\n<color=yellow>【カードレベル +1】</color>";
             }
 
-            // Close the base rewards panel first
             if (rewardsPanel != null) rewardsPanel.SetActive(false);
 
             var overlay = cardListOverlay != null ? cardListOverlay : UIs.CardListSelectionOverlay.Instance;
@@ -450,11 +437,10 @@ namespace TestCardGame.Controller
                     choice,
                     onSelect: (deckIndex) =>
                     {
-                        runController?.ChooseDeckCardForReward(deckIndex, choice);
+                        rewardController?.ChooseDeckCardForReward(deckIndex, choice);
                     },
                     onCancel: () =>
                     {
-                        // If selection cancelled, re-open the main rewards choice panel
                         if (rewardsPanel != null) rewardsPanel.SetActive(true);
                     }
                 );
@@ -492,13 +478,17 @@ namespace TestCardGame.Controller
         }
 
         /// <summary>
-        /// 破棄時にRunControllerのイベント購読を解除する。
+        /// 破棄時にイベント購読を解除する。
         /// </summary>
         private void OnDestroy()
         {
+            if (rewardController != null)
+            {
+                rewardController.RewardScreenOpened -= OnRewardScreenOpened;
+            }
+
             if (runController != null)
             {
-                runController.RewardScreenOpened -= OnRewardScreenOpened;
                 runController.StageStarted -= OnStageStarted;
                 runController.RunWon -= OnRunWon;
                 runController.RunLost -= OnRunLost;
