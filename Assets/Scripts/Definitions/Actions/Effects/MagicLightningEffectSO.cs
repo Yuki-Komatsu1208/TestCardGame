@@ -10,12 +10,12 @@ namespace TestCardGame.Actions.Effects
     {
         [SerializeField, Min(0)] private int defaultDamagePerStrike = 15;
         [SerializeField, Min(1)] private int defaultRange = 3;
-        [SerializeField, Min(0)] private int defaultFocusCost = 3;
+        [SerializeField, Min(1)] private int defaultStrikeCount = 3;
 
         /// <summary>
         /// Unity上でカードごとに編集する項目を返す。
         /// </summary>
-        public override string[] ParameterFields => new[] { "damage", "range", "focusCost" };
+        public override string[] ParameterFields => new[] { "damage", "range", "count" };
 
         /// <summary>
         /// 新規カード効果へライトニングの初期値を入れる。
@@ -24,7 +24,7 @@ namespace TestCardGame.Actions.Effects
         {
             parameters.damage = defaultDamagePerStrike;
             parameters.range = defaultRange;
-            parameters.focusCost = defaultFocusCost;
+            parameters.count = defaultStrikeCount;
         }
 
         /// <summary>
@@ -35,8 +35,8 @@ namespace TestCardGame.Actions.Effects
             var defaults = CreateDefaultParameters(level);
             int damage = Mathf.Max(0, parameters?.damage ?? defaults.damage);
             int range = Mathf.Max(1, parameters?.range ?? defaults.range);
-            int focusCost = Mathf.Max(0, parameters?.focusCost ?? defaults.focusCost);
-            return new eMagicLightning(damage, range, focusCost);
+            int strikeCount = Mathf.Max(1, parameters?.count ?? defaults.count);
+            return new eMagicLightning(damage, range, strikeCount);
         }
     }
 }

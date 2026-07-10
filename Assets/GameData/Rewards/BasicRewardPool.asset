@@ -31,3 +31,7 @@ MonoBehaviour:
     weight: 1
   - card: {fileID: 11400000, guid: c5ef51275632547c59775c6a20f30be5, type: 2}
     weight: 1
+  - card: {fileID: 11400000, guid: 3a19c3fa97724dfba5173d8ad473bfcb, type: 2}
+    weight: 1
+  - card: {fileID: 11400000, guid: 63c8b4174ffb429588debbac45c3c98d, type: 2}
+    weight: 1

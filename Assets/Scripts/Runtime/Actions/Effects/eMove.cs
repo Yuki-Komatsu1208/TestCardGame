@@ -29,7 +29,9 @@ namespace TestCardGame.Actions.Effects
 
             Vector2Int dir = Normalize(diff);
             int distance = Mathf.Abs(diff.x) >= Mathf.Abs(diff.y) ? Mathf.Abs(diff.x) : Mathf.Abs(diff.y);
-            int actualStep = Mathf.Min(distance, step);
+            int availableStep = context.StatusEffectService?.GetAdjustedMoveStep(context.User, step) ?? step;
+            if (availableStep <= 0) return false;
+            int actualStep = Mathf.Min(distance, availableStep);
             Vector2Int destination = userPos + dir * actualStep;
             return context.MoveService.GetCellAt(destination)?.CanMove == true;
         }
@@ -45,7 +47,14 @@ namespace TestCardGame.Actions.Effects
             Vector2Int diff = context.TargetPosition - userPos;
             Vector2Int dir = Normalize(diff);
             int distance = Mathf.Abs(diff.x) >= Mathf.Abs(diff.y) ? Mathf.Abs(diff.x) : Mathf.Abs(diff.y);
-            int actualStep = Mathf.Min(distance, step);
+            int availableStep = context.StatusEffectService?.GetAdjustedMoveStep(context.User, step) ?? step;
+            if (availableStep <= 0)
+            {
+                Debug.Log($"{context.User.Name}は凍傷で動けない。");
+                return;
+            }
+
+            int actualStep = Mathf.Min(distance, availableStep);
 
             context.MoveService.RequestMoveRelative(context.User.ID, dir * actualStep);
         }

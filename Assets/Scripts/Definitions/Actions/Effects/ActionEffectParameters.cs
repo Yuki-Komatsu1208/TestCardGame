@@ -38,7 +38,7 @@ namespace TestCardGame.Actions.Effects
         [Min(0)]
         public int value;
 
-        [Min(0)]
-        public int focusCost;
+        [Min(1)]
+        public int count = 1;
     }
 }

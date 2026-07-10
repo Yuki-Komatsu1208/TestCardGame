@@ -11,22 +11,28 @@ namespace TestCardGame.Actions.Effects
     /// </summary>
     public sealed class eMagicFireball : ActionEffect
     {
+        private static readonly Vector2Int[] AdjacentOffsets =
+        {
+            Vector2Int.up,
+            Vector2Int.down,
+            Vector2Int.left,
+            Vector2Int.right,
+        };
+
         private readonly int damage;
         private readonly int range;
         private readonly int burnDuration;
         private readonly int burnDamage;
-        private readonly int focusCost;
 
         /// <summary>
-        /// ファイアボールの威力、射程、炎上、集中コストを初期化する。
+        /// ファイアボールの威力、射程、炎上を初期化する。
         /// </summary>
-        public eMagicFireball(int damage, int range, int burnDuration, int burnDamage, int focusCost)
+        public eMagicFireball(int damage, int range, int burnDuration, int burnDamage)
         {
             this.damage = damage;
             this.range = range;
             this.burnDuration = burnDuration;
             this.burnDamage = burnDamage;
-            this.focusCost = Mathf.Max(0, focusCost);
         }
 
         /// <summary>
@@ -43,7 +49,7 @@ namespace TestCardGame.Actions.Effects
         }
 
         /// <summary>
-        /// 集中が足りれば発動し、不足時は詠唱として集中を得る。
+        /// 現在の集中をすべて消費し、その量だけ炎上を強化して発動する。
         /// </summary>
         public override void Execute(ActionContext context)
         {
@@ -54,58 +60,63 @@ namespace TestCardGame.Actions.Effects
             }
 
             IUnit user = context.User;
-            int focus = MagicFocusHelper.GetFocusCount(user);
+            int spentFocus = MagicFocusHelper.ConsumeAllFocus(user);
+            int actualBurnDuration = burnDuration + spentFocus;
+            int actualBurnDamage = burnDamage + spentFocus;
+            Debug.Log($"{user.Name}は集中を{spentFocus}解放して魔法：ファイアボールを発動した！ (炎上: {actualBurnDuration}ターン / {actualBurnDamage}ダメージ)");
 
-            if (focus >= focusCost)
+            Vector2Int difference = context.TargetPosition - user.Position;
+            Vector2Int direction = NormalizeDirection(difference);
+            bool hitTarget = false;
+
+            for (int distance = 1; distance <= range; distance++)
             {
-                // 集中コスト0も許可し、同じ発動処理に乗せる。
-                MagicFocusHelper.ConsumeFocus(user, focusCost);
-                Debug.Log($"{user.Name}は集中を{focusCost}消費して魔法：ファイアボールを発動した！ (残り集中: {focus - focusCost})");
-
-                Vector2Int difference = context.TargetPosition - user.Position;
-                Vector2Int direction = NormalizeDirection(difference);
-                bool hitTarget = false;
-
-                for (int distance = 1; distance <= range; distance++)
+                // 指定方向を1マスずつ見て、最初に当たったユニットだけを対象にする。
+                Vector2Int attackPosition = user.Position + direction * distance;
+                if (context.MoveService.GetCellAt(attackPosition) == null)
                 {
-                    // 指定方向を1マスずつ見て、最初に当たったユニットだけを対象にする。
-                    Vector2Int attackPosition = user.Position + direction * distance;
-                    if (context.MoveService.GetCellAt(attackPosition) == null)
-                    {
-                        break;
-                    }
+                    break;
+                }
 
-                    var targetUnit = context.MoveService.GetUnitAt(attackPosition);
-                    if (targetUnit == null)
+                var targetUnit = context.MoveService.GetUnitAt(attackPosition);
+                if (targetUnit == null)
+                {
+                    continue;
+                }
+
+                // サービスがある場合は共通ダメージ計算を通し、なければ直接HPを減らす。
+                if (context.StatusEffectService?.DamageService != null)
+                {
+                    context.StatusEffectService.DamageService.DealDamage(user, targetUnit, damage, TestCardGame.Controller.Services.DamageType.Normal);
+                }
+                else
+                {
+                    targetUnit.Hp.TakeDamage(damage);
+                }
+
+                context.StatusEffectService?.ApplyBurn(targetUnit, actualBurnDuration, actualBurnDamage);
+
+                // 直撃対象の周囲4マスにも炎上だけを拡散させる。
+                foreach (var offset in AdjacentOffsets)
+                {
+                    Vector2Int adjacentPosition = targetUnit.Position + offset;
+                    var adjacentUnit = context.MoveService.GetUnitAt(adjacentPosition);
+                    if (adjacentUnit == null)
                     {
                         continue;
                     }
 
-                    // サービスがある場合は共通ダメージ計算を通し、なければ直接HPを減らす。
-                    if (context.StatusEffectService?.DamageService != null)
-                    {
-                        context.StatusEffectService.DamageService.DealDamage(user, targetUnit, damage, TestCardGame.Controller.Services.DamageType.Normal);
-                    }
-                    else
-                    {
-                        targetUnit.Hp.TakeDamage(damage);
-                    }
-
-                    context.StatusEffectService?.ApplyBurn(targetUnit, burnDuration, burnDamage);
-                    Debug.Log($"{user.Name}の魔法が{targetUnit.Name}に命中！ {damage}ダメージと炎上効果({burnDuration}ターン, 毎ターン{burnDamage}ダメージ)を付与。");
-                    hitTarget = true;
-                    break; 
+                    context.StatusEffectService?.ApplyBurn(adjacentUnit, actualBurnDuration, actualBurnDamage);
                 }
 
-                if (!hitTarget)
-                {
-                    Debug.Log("ファイアボールは空振りに終わった。");
-                }
+                Debug.Log($"{user.Name}の魔法が{targetUnit.Name}に命中！ {damage}ダメージと炎上効果({actualBurnDuration}ターン, 毎ターン{actualBurnDamage}ダメージ)を付与。");
+                hitTarget = true;
+                break;
             }
-            else
+
+            if (!hitTarget)
             {
-                MagicFocusHelper.AddFocus(user, 1);
-                Debug.Log($"{user.Name}は集中が足りないため、ファイアボールの詠唱により集中を1獲得した。");
+                Debug.Log("ファイアボールは空振りに終わった。");
             }
         }
 

@@ -9,7 +9,8 @@ namespace TestCardGame.Character.StatusEffects
         Sleep = 4,
         Weak = 5,
         Focus = 6,
-        Power = 7
+        Power = 7,
+        Frostbite = 8
     }
 
     public static class StatusEffectIdExtensions
@@ -25,6 +26,7 @@ namespace TestCardGame.Character.StatusEffects
                 StatusEffectId.Weak => "弱体",
                 StatusEffectId.Focus => "集中",
                 StatusEffectId.Power => "力上昇",
+                StatusEffectId.Frostbite => "凍傷",
                 _ => "なし"
             };
         }

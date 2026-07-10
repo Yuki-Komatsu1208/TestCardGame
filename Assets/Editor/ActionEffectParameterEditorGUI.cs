@@ -81,7 +81,7 @@ internal static class ActionEffectParameterEditorGUI
         parameters.FindPropertyRelative("maxRange").intValue = source.maxRange;
         parameters.FindPropertyRelative("statusEffect").enumValueIndex = (int)source.statusEffect;
         parameters.FindPropertyRelative("value").intValue = source.value;
-        parameters.FindPropertyRelative("focusCost").intValue = source.focusCost;
+        parameters.FindPropertyRelative("count").intValue = source.count;
     }
 
     /// <summary>
@@ -99,7 +99,7 @@ internal static class ActionEffectParameterEditorGUI
             && parameters.FindPropertyRelative("maxRange").intValue == 0
             && parameters.FindPropertyRelative("statusEffect").enumValueIndex == 0
             && parameters.FindPropertyRelative("value").intValue == 0
-            && parameters.FindPropertyRelative("focusCost").intValue == 0;
+            && parameters.FindPropertyRelative("count").intValue == 1;
     }
 
     /// <summary>

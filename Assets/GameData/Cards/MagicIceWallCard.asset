@@ -1,0 +1,72 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c908b67c4bbf4b54fbdadee6b3525c30, type: 3}
+  m_Name: MagicIceWallCard
+  m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Cards.Core.CardDefinitionSO
+  cardName: "\u9B54\u6CD5\uFF1A\u30A2\u30A4\u30B9\u30A6\u30A9\u30FC\u30EB"
+  level1:
+    description: "自身にシールド15を2ターン付与し、周囲4マスに10ダメージと凍傷2ターンを与える。現在の集中をすべて消費し、その値だけシールド値が増加する。"
+    cost:
+      amount: 2
+    cooldown:
+      turns: 2
+    effects:
+    - effect: {fileID: 11400000, guid: 2f646f264f2341f5a9c2f8dc74f0525c, type: 2}
+      parameters:
+        step: 1
+        damage: 10
+        duration: 2
+        range: 2
+        hitType: 0
+        radius: 1
+        distance: 1
+        maxRange: 0
+        statusEffect: 0
+        value: 15
+  level2:
+    description: "自身にシールド20を2ターン付与し、周囲4マスに14ダメージと凍傷2ターンを与える。現在の集中をすべて消費し、その値だけシールド値が増加する。"
+    cost:
+      amount: 2
+    cooldown:
+      turns: 2
+    effects:
+    - effect: {fileID: 11400000, guid: 2f646f264f2341f5a9c2f8dc74f0525c, type: 2}
+      parameters:
+        step: 1
+        damage: 14
+        duration: 2
+        range: 2
+        hitType: 0
+        radius: 1
+        distance: 1
+        maxRange: 0
+        statusEffect: 0
+        value: 20
+  level3:
+    description: "自身にシールド28を3ターン付与し、周囲4マスに18ダメージと凍傷3ターンを与える。現在の集中をすべて消費し、その値だけシールド値が増加する。"
+    cost:
+      amount: 3
+    cooldown:
+      turns: 2
+    effects:
+    - effect: {fileID: 11400000, guid: 2f646f264f2341f5a9c2f8dc74f0525c, type: 2}
+      parameters:
+        step: 1
+        damage: 18
+        duration: 3
+        range: 3
+        hitType: 0
+        radius: 1
+        distance: 1
+        maxRange: 0
+        statusEffect: 0
+        value: 28

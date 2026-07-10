@@ -12,12 +12,11 @@ namespace TestCardGame.Actions.Effects
         [SerializeField, Min(1)] private int defaultRange = 4;
         [SerializeField, Min(1)] private int defaultBurnDuration = 3;
         [SerializeField, Min(1)] private int defaultBurnDamage = 5;
-        [SerializeField, Min(0)] private int defaultFocusCost = 1;
 
         /// <summary>
         /// Unity上でカードごとに編集する項目を返す。
         /// </summary>
-        public override string[] ParameterFields => new[] { "damage", "range", "duration", "value", "focusCost" };
+        public override string[] ParameterFields => new[] { "damage", "range", "duration", "value" };
 
         /// <summary>
         /// 新規カード効果へファイアボールの初期値を入れる。
@@ -28,7 +27,6 @@ namespace TestCardGame.Actions.Effects
             parameters.range = defaultRange;
             parameters.duration = defaultBurnDuration;
             parameters.value = defaultBurnDamage;
-            parameters.focusCost = defaultFocusCost;
         }
 
         /// <summary>
@@ -41,8 +39,7 @@ namespace TestCardGame.Actions.Effects
             int range = Mathf.Max(1, parameters?.range ?? defaults.range);
             int burnDuration = Mathf.Max(1, parameters?.duration ?? defaults.duration);
             int burnDamage = Mathf.Max(0, parameters?.value ?? defaults.value);
-            int focusCost = Mathf.Max(0, parameters?.focusCost ?? defaults.focusCost);
-            return new eMagicFireball(damage, range, burnDuration, burnDamage, focusCost);
+            return new eMagicFireball(damage, range, burnDuration, burnDamage);
         }
     }
 }

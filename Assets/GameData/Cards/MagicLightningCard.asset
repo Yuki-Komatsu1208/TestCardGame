@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Cards.Core.CardDefinitionSO
   cardName: "\u9B54\u6CD5\uFF1A\u30E9\u30A4\u30C8\u30CB\u30F3\u30B0"
   level1:
-    description: "\u3010\u9B54\u6CD5\uFF1A\u6D88\u8CBB\u96C6\u4E2D\uFF13\u3011\u5BFE\u8C61\u5EA7\u6A19\u306B3\u56DE\u9023\u7D9A\u3067\u96F7\u3092\u843D\u3068\u3057\u3001\u540415\u30C0\u30E1\u30FC\u30B8\uFF08\u5408\u8A0845\uFF09\u3092\u4E0E\u3048\u308B\u3002\u96C6\u4E2D\u304C\u4E0D\u8DB3\u3057\u3066\u3044\u308B\u5834\u5408\u3001\u4EE3\u308F\u308A\u306B\u96C6\u4E2D\u3092\uFF0B1\u3059\u308B\u3002"
+    description: "対象座標に3回連続で雷を落とし、各15ダメージを与える。現在の集中をすべて消費し、その値だけ雷撃回数が増加する。"
     cost:
       amount: 3
     cooldown:
@@ -32,9 +32,9 @@ MonoBehaviour:
         maxRange: 0
         statusEffect: 0
         value: 0
-        focusCost: 3
+        count: 3
   level2:
-    description: "\u3010\u9B54\u6CD5\uFF1A\u6D88\u8CBB\u96C6\u4E2D\uFF13\u3011\u5BFE\u8C61\u5EA7\u6A19\u306B3\u56DE\u9023\u7D9A\u3067\u96F7\u3092\u843D\u3068\u3057\u3001\u540422\u30C0\u30E1\u30FC\u30B8\uFF08\u5408\u8A0866\uFF09\u3092\u4E0E\u3048\u308B\u3002\u96C6\u4E2D\u304C\u4E0D\u8DB3\u3057\u3066\u3044\u308B\u5834\u5408\u3001\u4EE3\u308F\u308A\u306B\u96C6\u4E2D\u3092\uFF0B1\u3059\u308B\u3002"
+    description: "対象座標に3回連続で雷を落とし、各22ダメージを与える。現在の集中をすべて消費し、その値だけ雷撃回数が増加する。"
     cost:
       amount: 3
     cooldown:
@@ -52,9 +52,9 @@ MonoBehaviour:
         maxRange: 0
         statusEffect: 0
         value: 0
-        focusCost: 3
+        count: 3
   level3:
-    description: "\u3010\u9B54\u6CD5\uFF1A\u6D88\u8CBB\u96C6\u4E2D\uFF13\u3011\u5BFE\u8C61\u5EA7\u6A19\u306B3\u56DE\u9023\u7D9A\u3067\u96F7\u3092\u843D\u3068\u3057\u3001\u540430\u30C0\u30E1\u30FC\u30B8\uFF08\u5408\u8A0890\uFF09\u3092\u4E0E\u3048\u308B\u3002\u96C6\u4E2D\u304C\u4E0D\u8DB3\u3057\u3066\u3044\u308B\u5834\u5408\u3001\u4EE3\u308F\u308A\u306B\u96C6\u4E2D\u3092\uFF0B1\u3059\u308B\u3002"
+    description: "対象座標に3回連続で雷を落とし、各30ダメージを与える。現在の集中をすべて消費し、その値だけ雷撃回数が増加する。"
     cost:
       amount: 3
     cooldown:
@@ -72,4 +72,4 @@ MonoBehaviour:
         maxRange: 0
         statusEffect: 0
         value: 0
-        focusCost: 3
+        count: 3

@@ -58,5 +58,15 @@ namespace TestCardGame.StatusEffects
                 }
             }
         }
+
+        /// <summary>
+        /// ユニットが持つ集中をすべて消費し、消費した量を返す。
+        /// </summary>
+        public static int ConsumeAllFocus(IUnit unit)
+        {
+            int focus = GetFocusCount(unit);
+            ConsumeFocus(unit, focus);
+            return focus;
+        }
     }
 }

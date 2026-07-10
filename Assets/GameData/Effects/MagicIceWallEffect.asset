@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90ebf45ae81b44f7bd9c0f2ca8ed1a71, type: 3}
+  m_Name: MagicIceWallEffect
+  m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Actions.Effects.MagicIceWallEffectSO
+  defaultShieldDuration: 2
+  defaultShieldValue: 15
+  defaultDamage: 10
+  defaultFrostbiteDuration: 2
+  defaultFocusCost: 2

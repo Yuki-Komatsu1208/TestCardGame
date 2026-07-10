@@ -13,16 +13,16 @@ namespace TestCardGame.Actions.Effects
     {
         private readonly int damagePerStrike;
         private readonly int range;
-        private readonly int focusCost;
+        private readonly int baseStrikeCount;
 
         /// <summary>
-        /// ライトニングの単発ダメージ、射程、集中コストを初期化する。
+        /// ライトニングの単発ダメージ、射程、基本ヒット数を初期化する。
         /// </summary>
-        public eMagicLightning(int damagePerStrike, int range, int focusCost)
+        public eMagicLightning(int damagePerStrike, int range, int baseStrikeCount)
         {
             this.damagePerStrike = damagePerStrike;
             this.range = range;
-            this.focusCost = Mathf.Max(0, focusCost);
+            this.baseStrikeCount = Mathf.Max(1, baseStrikeCount);
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace TestCardGame.Actions.Effects
         }
 
         /// <summary>
-        /// 集中が足りれば発動し、不足時は詠唱として集中を得る。
+        /// 現在の集中をすべて消費し、その量だけヒット数を増やして発動する。
         /// </summary>
         public override void Execute(ActionContext context)
         {
@@ -54,49 +54,39 @@ namespace TestCardGame.Actions.Effects
             }
 
             IUnit user = context.User;
-            int focus = MagicFocusHelper.GetFocusCount(user);
+            int spentFocus = MagicFocusHelper.ConsumeAllFocus(user);
+            int strikeCount = baseStrikeCount + spentFocus;
+            Debug.Log($"{user.Name}は集中を{spentFocus}解放して極大魔法：ライトニングを詠唱した！ (雷撃回数: {strikeCount})");
 
-            if (focus >= focusCost)
+            Vector2Int targetPosition = context.TargetPosition;
+            var targetUnit = context.MoveService.GetUnitAt(targetPosition);
+
+            if (targetUnit == null)
             {
-                // 集中コスト0も許可し、同じ発動処理に乗せる。
-                MagicFocusHelper.ConsumeFocus(user, focusCost);
-                Debug.Log($"{user.Name}は集中を{focusCost}消費して極大魔法：ライトニングを詠唱した！ (残り集中: {focus - focusCost})");
-
-                Vector2Int targetPosition = context.TargetPosition;
-                var targetUnit = context.MoveService.GetUnitAt(targetPosition);
-
-                if (targetUnit == null)
-                {
-                    Debug.Log("ライトニングの対象座標にユニットがいません。雷は地面を焦がした。");
-                    return;
-                }
-
-                // 同じ対象に3回命中させ、途中で倒れたら追撃を止める。
-                for (int i = 1; i <= 3; i++)
-                {
-                    if (targetUnit.Hp.CurrentValue <= 0)
-                    {
-                        Debug.Log($"{targetUnit.Name}は既に倒れているため、追撃は発生しません。");
-                        break;
-                    }
-
-                    // サービスがある場合は共通ダメージ計算を通し、なければ直接HPを減らす。
-                    if (context.StatusEffectService?.DamageService != null)
-                    {
-                        context.StatusEffectService.DamageService.DealDamage(user, targetUnit, damagePerStrike, TestCardGame.Controller.Services.DamageType.Normal);
-                    }
-                    else
-                    {
-                        targetUnit.Hp.TakeDamage(damagePerStrike);
-                    }
-
-                    Debug.Log($"ライトニング第 {i} 撃！ {targetUnit.Name}に {damagePerStrike} ダメージ！ (残りHP: {targetUnit.Hp.CurrentValue})");
-                }
+                Debug.Log("ライトニングの対象座標にユニットがいません。雷は地面を焦がした。");
+                return;
             }
-            else
+
+            // 同じ対象に連続で命中させ、途中で倒れたら追撃を止める。
+            for (int i = 1; i <= strikeCount; i++)
             {
-                MagicFocusHelper.AddFocus(user, 1);
-                Debug.Log($"{user.Name}は十分な集中（現在: {focus}/{focusCost}）を保持していないため、ライトニングの精神統一を行い集中を1獲得した。");
+                if (targetUnit.Hp.CurrentValue <= 0)
+                {
+                    Debug.Log($"{targetUnit.Name}は既に倒れているため、追撃は発生しません。");
+                    break;
+                }
+
+                // サービスがある場合は共通ダメージ計算を通し、なければ直接HPを減らす。
+                if (context.StatusEffectService?.DamageService != null)
+                {
+                    context.StatusEffectService.DamageService.DealDamage(user, targetUnit, damagePerStrike, TestCardGame.Controller.Services.DamageType.Normal);
+                }
+                else
+                {
+                    targetUnit.Hp.TakeDamage(damagePerStrike);
+                }
+
+                Debug.Log($"ライトニング第 {i} 撃！ {targetUnit.Name}に {damagePerStrike} ダメージ！ (残りHP: {targetUnit.Hp.CurrentValue})");
             }
         }
     }

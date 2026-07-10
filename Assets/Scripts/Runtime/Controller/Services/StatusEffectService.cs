@@ -55,6 +55,37 @@ namespace TestCardGame.Controller.Services
         }
 
         /// <summary>
+        /// 凍傷状態を対象ユニットへ付与する。
+        /// </summary>
+        public void ApplyFrostbite(IUnit unit, int duration)
+        {
+            ApplyStatus(unit, StatusEffectId.Frostbite, duration);
+        }
+
+        /// <summary>
+        /// 付与中の状態異常を考慮して、実際に使える移動歩数を返す。
+        /// </summary>
+        public int GetAdjustedMoveStep(IUnit unit, int baseStep)
+        {
+            if (unit == null)
+            {
+                return Mathf.Max(0, baseStep);
+            }
+
+            int adjustedStep = Mathf.Max(0, baseStep);
+            foreach (var effect in unit.StatusEffects)
+            {
+                if (effect.Id == StatusEffectId.Frostbite && effect.RemainingTurns > 0)
+                {
+                    adjustedStep /= 2;
+                    break;
+                }
+            }
+
+            return adjustedStep;
+        }
+
+        /// <summary>
         /// ターン開始時に発動する状態異常処理を実行する。
         /// </summary>
         public void TickTurnStart(IUnit unit)
@@ -127,6 +158,10 @@ namespace TestCardGame.Controller.Services
                     break;
                 case StatusEffectId.Power:
                     effect.RemainingTurns--;
+                    break;
+                case StatusEffectId.Frostbite:
+                    effect.RemainingTurns--;
+                    Debug.Log($"{unit.Name}は凍傷で動きが鈍っています（凍傷残り: {effect.RemainingTurns}ターン）。");
                     break;
             }
         }
