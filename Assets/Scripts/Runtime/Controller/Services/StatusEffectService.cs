@@ -122,6 +122,12 @@ namespace TestCardGame.Controller.Services
                 case StatusEffectId.Shield:
                     effect.RemainingTurns--;
                     break;
+                case StatusEffectId.Focus:
+                    // 集中はターン経過で減少せず、リソースとして明示的に消費される。
+                    break;
+                case StatusEffectId.Power:
+                    effect.RemainingTurns--;
+                    break;
             }
         }
 

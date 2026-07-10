@@ -4,11 +4,17 @@ using UnityEngine;
 
 internal static class ActionEffectParameterEditorGUI
 {
+    /// <summary>
+    /// Inspectorに表示する効果パラメータの行数を返す。
+    /// </summary>
     public static int GetVisibleParameterCount(ActionEffectSO effect)
     {
         return Mathf.Max(1, effect?.ParameterFields.Length ?? 1);
     }
 
+    /// <summary>
+    /// PropertyDrawer用に効果パラメータを描画する。
+    /// </summary>
     public static void DrawFields(Rect line, ActionEffectSO effect, SerializedProperty parameters)
     {
         if (effect == null)
@@ -29,6 +35,9 @@ internal static class ActionEffectParameterEditorGUI
         }
     }
 
+    /// <summary>
+    /// 通常のInspectorレイアウトで効果パラメータを描画する。
+    /// </summary>
     public static void DrawFieldsLayout(ActionEffectSO effect, SerializedProperty parameters)
     {
         if (effect == null)
@@ -57,6 +66,9 @@ internal static class ActionEffectParameterEditorGUI
         }
     }
 
+    /// <summary>
+    /// 効果アセットの初期値をSerializedPropertyへ反映する。
+    /// </summary>
     public static void ApplyParameters(SerializedProperty parameters, ActionEffectParameters source)
     {
         parameters.FindPropertyRelative("step").intValue = source.step;
@@ -69,8 +81,12 @@ internal static class ActionEffectParameterEditorGUI
         parameters.FindPropertyRelative("maxRange").intValue = source.maxRange;
         parameters.FindPropertyRelative("statusEffect").enumValueIndex = (int)source.statusEffect;
         parameters.FindPropertyRelative("value").intValue = source.value;
+        parameters.FindPropertyRelative("focusCost").intValue = source.focusCost;
     }
 
+    /// <summary>
+    /// パラメータがUnity生成直後の初期値か判定する。
+    /// </summary>
     public static bool IsInitialParameters(SerializedProperty parameters)
     {
         return parameters.FindPropertyRelative("step").intValue == 1
@@ -82,9 +98,13 @@ internal static class ActionEffectParameterEditorGUI
             && parameters.FindPropertyRelative("distance").intValue == 1
             && parameters.FindPropertyRelative("maxRange").intValue == 0
             && parameters.FindPropertyRelative("statusEffect").enumValueIndex == 0
-            && parameters.FindPropertyRelative("value").intValue == 0;
+            && parameters.FindPropertyRelative("value").intValue == 0
+            && parameters.FindPropertyRelative("focusCost").intValue == 0;
     }
 
+    /// <summary>
+    /// 指定名のパラメータを1行描画する。
+    /// </summary>
     private static void DrawField(ref Rect line, SerializedProperty parameters, string fieldName)
     {
         var field = parameters.FindPropertyRelative(fieldName);

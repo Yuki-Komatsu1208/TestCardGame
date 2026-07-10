@@ -16,7 +16,7 @@ MonoBehaviour:
   level1:
     description: "\u30E6\u30CB\u30C3\u30C8\u30921\u30DE\u30B9\u79FB\u52D5\u3055\u305B\u308B\u3002"
     cost:
-      amount: 0
+      amount: 1
     cooldown:
       turns: 0
     effects:
@@ -35,7 +35,7 @@ MonoBehaviour:
   level2:
     description: "\u30E6\u30CB\u30C3\u30C8\u30922\u30DE\u30B9\u79FB\u52D5\u3055\u305B\u308B\u3002"
     cost:
-      amount: 0
+      amount: 1
     cooldown:
       turns: 0
     effects:
@@ -54,7 +54,7 @@ MonoBehaviour:
   level3:
     description: "\u30E6\u30CB\u30C3\u30C8\u30923\u30DE\u30B9\u79FB\u52D5\u3055\u305B\u308B\u3002"
     cost:
-      amount: 0
+      amount: 1
     cooldown:
       turns: 0
     effects:

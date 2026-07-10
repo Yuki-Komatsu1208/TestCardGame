@@ -30,7 +30,7 @@ namespace TestCardGame.Character.StatusEffects
         public void Merge(StatusEffectInstance other)
         {
             RemainingTurns = Mathf.Max(RemainingTurns, other.RemainingTurns);
-            if (Id == StatusEffectId.Shield)
+            if (Id == StatusEffectId.Shield || Id == StatusEffectId.Focus || Id == StatusEffectId.Power)
             {
                 Value += other.Value;
             }

@@ -26,3 +26,9 @@ MonoBehaviour:
     level: 2
   - card: {fileID: 11400000, guid: ad0262bb58f9a44978ce4ea9cd3163b7, type: 2}
     level: 2
+  - card: {fileID: 11400000, guid: b487b9ec8403440a888bd0d7e5f81ee2, type: 2}
+    level: 1
+  - card: {fileID: 11400000, guid: 7c9baafc0222f490bb2a950715175ac5, type: 2}
+    level: 1
+  - card: {fileID: 11400000, guid: c5ef51275632547c59775c6a20f30be5, type: 2}
+    level: 1

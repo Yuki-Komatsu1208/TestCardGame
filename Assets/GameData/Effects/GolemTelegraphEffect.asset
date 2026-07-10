@@ -1,0 +1,15 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d83ab75e6f51d428f8279a3131f72ca8, type: 3}
+  m_Name: GolemTelegraphEffect
+  m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Actions.Effects.TelegraphEffectSO
+  message: <b><color=orange>[警告] {user}</color>が右腕を大きく振り上げ、大振りの構えをとった！次のターン、隣接マスへ壊滅的な一撃（80ダメージ）を放つ！離れて回避せよ！</b>

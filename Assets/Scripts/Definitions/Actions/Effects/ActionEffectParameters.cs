@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace TestCardGame.Actions.Effects
 {
+    /// <summary>
+    /// カード効果ごとの調整値を保持する。
+    /// </summary>
     [Serializable]
     public class ActionEffectParameters
     {
@@ -34,5 +37,8 @@ namespace TestCardGame.Actions.Effects
 
         [Min(0)]
         public int value;
+
+        [Min(0)]
+        public int focusCost;
     }
 }

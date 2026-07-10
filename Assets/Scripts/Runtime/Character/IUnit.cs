@@ -13,7 +13,6 @@ namespace TestCardGame.Character
     {
         /// <summary>
         /// ユニットのID
-        /// </summary>
         UnitID ID { get; }
         /// <summary>
         /// ユニットの名前

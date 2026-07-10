@@ -28,14 +28,19 @@ namespace TestCardGame.Controller.Services
             if (source != null)
             {
                 bool sourceIsWeak = false;
+                int sourcePower = 0;
                 foreach (var effect in source.StatusEffects)
                 {
                     if (effect.Id == StatusEffectId.Weak)
                     {
                         sourceIsWeak = true;
-                        break;
+                    }
+                    else if (effect.Id == StatusEffectId.Power)
+                    {
+                        sourcePower += effect.Value;
                     }
                 }
+                calculatedAmount += sourcePower;
                 if (sourceIsWeak)
                 {
                     calculatedAmount *= 0.5f;
