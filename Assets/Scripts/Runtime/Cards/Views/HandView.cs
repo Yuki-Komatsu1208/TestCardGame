@@ -41,6 +41,15 @@ public class HandView : MonoBehaviour
     }
 
     /// <summary>
+    /// 現在の手札UIを再レイアウトする。
+    /// </summary>
+    public void RefreshLayout()
+    {
+        var parent = handArea != null ? handArea : transform;
+        LayoutCards(parent);
+    }
+
+    /// <summary>
     /// 手札表示領域の既存カードUIをすべて削除する。
     /// </summary>
     private static void ClearCards(Transform parent)

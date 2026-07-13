@@ -15,6 +15,7 @@ public class MoveCardDragHandler : MonoBehaviour, IPointerDownHandler, IDragHand
     private Vector2 pointerDownScreenPos;
     private bool isDragging;
     private CardView cardView;
+    private HandView handView;
 
     /// <summary>
     /// 必要な参照を取得し、カードの初期位置を記録する。
@@ -38,6 +39,7 @@ public class MoveCardDragHandler : MonoBehaviour, IPointerDownHandler, IDragHand
         }
 
         cardView = GetComponent<CardView>();
+        handView = GetComponentInParent<HandView>();
     }
 
     /// <summary>
@@ -120,6 +122,7 @@ public class MoveCardDragHandler : MonoBehaviour, IPointerDownHandler, IDragHand
         }
 
         cardRect.anchoredPosition = initialAnchoredPos;
+        handView?.RefreshLayout();
     }
 
     /// <summary>
@@ -141,6 +144,7 @@ public class MoveCardDragHandler : MonoBehaviour, IPointerDownHandler, IDragHand
         }
 
         parentCanvas = GetComponentInParent<Canvas>();
+        handView = GetComponentInParent<HandView>();
         if (cardRect != null)
         {
             initialAnchoredPos = cardRect.anchoredPosition;

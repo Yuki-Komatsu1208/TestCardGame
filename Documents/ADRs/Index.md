@@ -24,3 +24,8 @@ ADR番号はカテゴリフォルダごとに `ADR-001` から採番します。
 * [ADR-005: 一般戦闘報酬はMOD中心の三択強化にする](GameDesign/ADR-005-battle-reward-design.md)
 * [ADR-006: RUNは複数遠征で構成し、遠征クリア後に帰還か続行を選ぶ](GameDesign/ADR-006-expedition-return-and-push-forward-structure.md)
 * [ADR-007: 1ターン中のカード使用枚数はリソースとクールタイムで制限する](GameDesign/ADR-007-multiple-card-plays-per-turn-by-resource.md)
+* [ADR-008: 街・ゴールド・OverHuntを含む遠征ループを採用する](GameDesign/ADR-008-town-gold-and-overhunt-loop.md)
+* [ADR-009: アイテム3層構造でビルド軸と擬似職業を成立させる](GameDesign/ADR-009-item-tiers-and-build-archetype-guidance.md)
+* [ADR-010: 初期キーストーン3種を魔法・騎士・ガンナーで開始する](GameDesign/ADR-010-initial-keystone-lineup.md)
+* [ADR-011: 初期エンジンは各キーストーンに2〜3個ずつ用意する](GameDesign/ADR-011-initial-engine-lineup.md)
+* [ADR-012: 魔法使い・騎士・ガンナーの三すくみコンセプトを明確化する](GameDesign/ADR-012-archetype-triangle-for-mage-knight-gunner.md)

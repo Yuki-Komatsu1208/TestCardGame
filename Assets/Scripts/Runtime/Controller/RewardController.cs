@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using TestCardGame.Run;
 using TestCardGame.Rewards;
+using TestCardGame.Cards.Core.Modifiers;
 
 namespace TestCardGame.Controller
 {
@@ -11,7 +13,7 @@ namespace TestCardGame.Controller
     public class RewardController : MonoBehaviour
     {
         [SerializeField] private GameController gameController;
-        [SerializeField] private List<Cards.Core.Modifiers.CardModifierSO> modifierPool = new();
+        [SerializeField] private List<CardModifierSO> modifierPool = new();
 
         private readonly List<RewardChoice> rewardSelectionChoices = new();
         private RunState currentRunState;
@@ -30,6 +32,17 @@ namespace TestCardGame.Controller
             gameController = controller;
         }
 
+        public void ConfigureModifierPool(IEnumerable<CardModifierSO> modifiers)
+        {
+            modifierPool.Clear();
+            if (modifiers == null)
+            {
+                return;
+            }
+
+            modifierPool.AddRange(modifiers.Where(mod => mod != null).Distinct());
+        }
+
         /// <summary>
         /// 現在の Run 状態に応じて報酬候補を生成し、報酬選択UIへ通知する。
         /// </summary>
@@ -40,16 +53,16 @@ namespace TestCardGame.Controller
             rewardSelectionChoices.Clear();
 
             // まずMODを2枠確定で並べ、残り1枠を状況に応じて埋める。
-            var selectedMods = new List<Cards.Core.Modifiers.CardModifierSO>();
+            var selectedMods = new List<CardModifierSO>();
 
-            Cards.Core.Modifiers.CardModifierSO mod1 = GetRandomUniqueModifier(selectedMods);
+            CardModifierSO mod1 = GetRandomUniqueModifier(selectedMods);
             if (mod1 != null)
             {
                 selectedMods.Add(mod1);
                 rewardSelectionChoices.Add(new RewardChoice(RewardType.Mod, mod1));
             }
 
-            Cards.Core.Modifiers.CardModifierSO mod2 = GetRandomUniqueModifier(selectedMods);
+            CardModifierSO mod2 = GetRandomUniqueModifier(selectedMods);
             if (mod2 != null)
             {
                 selectedMods.Add(mod2);
@@ -74,7 +87,7 @@ namespace TestCardGame.Controller
                 }
                 else
                 {
-                    Cards.Core.Modifiers.CardModifierSO mod3 = GetRandomUniqueModifier(selectedMods);
+                    CardModifierSO mod3 = GetRandomUniqueModifier(selectedMods);
                     if (mod3 != null)
                     {
                         rewardSelectionChoices.Add(new RewardChoice(RewardType.Mod, mod3));
@@ -170,9 +183,9 @@ namespace TestCardGame.Controller
         /// <summary>
         /// 既に選ばれた候補を除外しつつ、MOD プールから1件抽選する。
         /// </summary>
-        private Cards.Core.Modifiers.CardModifierSO GetRandomUniqueModifier(List<Cards.Core.Modifiers.CardModifierSO> excludeList)
+        private CardModifierSO GetRandomUniqueModifier(List<CardModifierSO> excludeList)
         {
-            var available = new List<Cards.Core.Modifiers.CardModifierSO>();
+            var available = new List<CardModifierSO>();
             foreach (var mod in modifierPool)
             {
                 if (mod != null && !excludeList.Contains(mod))

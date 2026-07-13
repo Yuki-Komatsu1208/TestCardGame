@@ -187,6 +187,7 @@ MonoBehaviour:
   gameController: {fileID: 377012210}
   handView: {fileID: 0}
   modifierPool:
+  - {fileID: 11400000, guid: a091f2fa8418b4edebb6aa734a860fd4, type: 2}
   - {fileID: 11400000, guid: 7d347ba742544ce4b78d4b2e37b344bc, type: 2}
   - {fileID: 11400000, guid: f3455d956387478889e4b18e8eb19f97, type: 2}
   - {fileID: 11400000, guid: 2c32cb37245c436ca6920e175ed0d389, type: 2}

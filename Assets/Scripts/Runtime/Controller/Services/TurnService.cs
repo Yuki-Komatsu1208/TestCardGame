@@ -144,7 +144,7 @@ namespace TestCardGame.Controller.Services
 
             if (player != null)
             {
-                player.Mana = Mathf.Min(player.Mana + 1, player.MaxMana);
+                player.Mana = Mathf.Min(player.Mana + 3, player.MaxMana);
                 // プレイヤーターン開始時の状態異常を処理する
                 statusEffectService?.TickTurnStart(player);
             }

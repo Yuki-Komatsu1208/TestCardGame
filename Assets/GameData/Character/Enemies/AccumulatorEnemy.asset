@@ -31,8 +31,8 @@ MonoBehaviour:
       distance: 1
       maxRange: 0
       statusEffect: 0
-      value: 0
-      focusCost: 0
+      value: 3
+      count: 1
   - targetKind: 1
     effect: {fileID: 11400000, guid: a1000000000000000000000000000004, type: 2}
     useCustomParameters: 1
@@ -44,10 +44,10 @@ MonoBehaviour:
       hitType: 0
       radius: 1
       distance: 1
-      maxRange: 0
+      maxRange: 3
       statusEffect: 0
       value: 0
-      focusCost: 0
+      count: 1
   - targetKind: 1
     effect: {fileID: 11400000, guid: a1000000000000000000000000000004, type: 2}
     useCustomParameters: 1
@@ -59,7 +59,7 @@ MonoBehaviour:
       hitType: 0
       radius: 1
       distance: 1
-      maxRange: 0
+      maxRange: 3
       statusEffect: 0
       value: 0
-      focusCost: 0
+      count: 1

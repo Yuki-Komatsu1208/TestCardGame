@@ -5,6 +5,7 @@ using TestCardGame.Stage;
 using TestCardGame.Rewards;
 using TestCardGame.Cards.Core;
 using TestCardGame.Cards.VOs;
+using TestCardGame.Cards.Core.Modifiers;
 
 namespace TestCardGame.Controller
 {
@@ -14,6 +15,7 @@ namespace TestCardGame.Controller
         [SerializeField] private GameController gameController;
         [SerializeField] private HandView handView;
         [SerializeField] private RewardController rewardController;
+        [SerializeField] private List<CardModifierSO> modifierPool = new();
 
         private RunState runState;
 
@@ -51,6 +53,7 @@ namespace TestCardGame.Controller
             }
 
             rewardController.SetGameController(gameController);
+            rewardController.ConfigureModifierPool(modifierPool);
             rewardController.RewardResolved -= AdvanceToNextStage;
             rewardController.RewardResolved += AdvanceToNextStage;
         }
@@ -114,6 +117,7 @@ namespace TestCardGame.Controller
             if (rewardController != null)
             {
                 rewardController.SetGameController(gameController);
+                rewardController.ConfigureModifierPool(modifierPool);
             }
 
             if (handView == null)
