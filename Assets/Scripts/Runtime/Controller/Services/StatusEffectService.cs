@@ -26,7 +26,10 @@ namespace TestCardGame.Controller.Services
                 return;
             }
 
-            unit.ApplyStatusEffect(new StatusEffectInstance(status, Mathf.Max(1, duration), Mathf.Max(0, value)));
+            int normalizedDuration = status == StatusEffectId.Shield
+                ? 1
+                : Mathf.Max(1, duration);
+            unit.ApplyStatusEffect(new StatusEffectInstance(status, normalizedDuration, Mathf.Max(0, value)));
         }
 
         /// <summary>
@@ -136,31 +139,33 @@ namespace TestCardGame.Controller.Services
             {
                 case StatusEffectId.Burn:
                     DamageService.DealDamage(null, unit, effect.Value, DamageType.Fire);
-                    effect.RemainingTurns--;
+                    effect.TickDuration();
                     break;
                 case StatusEffectId.Poison:
                     DamageService.DealDamage(null, unit, effect.Value, DamageType.Poison);
-                    effect.RemainingTurns--;
+                    effect.TickDuration();
                     break;
                 case StatusEffectId.Sleep:
-                    effect.RemainingTurns--;
+                    effect.TickDuration();
                     Debug.Log($"{unit.Name}はおやすみしています（睡眠残り: {effect.RemainingTurns}ターン）。");
                     break;
                 case StatusEffectId.Weak:
-                    effect.RemainingTurns--;
+                    effect.TickDuration();
                     Debug.Log($"{unit.Name}は弱体化しています（弱体化残り: {effect.RemainingTurns}ターン）。");
                     break;
                 case StatusEffectId.Shield:
-                    effect.RemainingTurns--;
+                    break;
+                case StatusEffectId.Barrier:
+                    effect.TickDuration();
                     break;
                 case StatusEffectId.Focus:
                     // 集中はターン経過で減少せず、リソースとして明示的に消費される。
                     break;
                 case StatusEffectId.Power:
-                    effect.RemainingTurns--;
+                    effect.TickDuration();
                     break;
                 case StatusEffectId.Frostbite:
-                    effect.RemainingTurns--;
+                    effect.TickDuration();
                     Debug.Log($"{unit.Name}は凍傷で動きが鈍っています（凍傷残り: {effect.RemainingTurns}ターン）。");
                     break;
             }

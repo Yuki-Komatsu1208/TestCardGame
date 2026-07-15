@@ -69,22 +69,15 @@ namespace TestCardGame.Controller.Services
                 for (int i = 0; i < target.StatusEffects.Count; i++)
                 {
                     var effect = target.StatusEffects[i];
-                    if (effect.Id == StatusEffectId.Shield)
+                    int remainingAmount = effect.AbsorbDamage(finalAmount);
+                    if (remainingAmount != finalAmount)
                     {
-                        if (effect.RemainingTurns > 0 && effect.Value > 0)
+                        shieldModified = true;
+                        finalAmount = remainingAmount;
+
+                        if (finalAmount <= 0)
                         {
-                            shieldModified = true;
-                            if (finalAmount >= effect.Value)
-                            {
-                                finalAmount -= effect.Value;
-                                effect.Value = 0;
-                                effect.RemainingTurns = 0;
-                            }
-                            else
-                            {
-                                effect.Value -= finalAmount;
-                                finalAmount = 0;
-                            }
+                            break;
                         }
                     }
                 }

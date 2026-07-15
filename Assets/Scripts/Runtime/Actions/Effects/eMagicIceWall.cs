@@ -8,7 +8,7 @@ namespace TestCardGame.Actions.Effects
 {
     /// <summary>
     /// 魔法：アイスウォールの効果。
-    /// 自身へシールドを付与し、周囲4マスへダメージと凍傷を与える。
+    /// 自身へバリアを付与し、周囲4マスへダメージと凍傷を与える。
     /// </summary>
     public sealed class eMagicIceWall : ActionEffect
     {
@@ -26,7 +26,7 @@ namespace TestCardGame.Actions.Effects
         private readonly int frostbiteDuration;
 
         /// <summary>
-        /// アイスウォールのシールド、ダメージ、凍傷を初期化する。
+        /// アイスウォールのバリア、ダメージ、凍傷を初期化する。
         /// </summary>
         public eMagicIceWall(int shieldDuration, int shieldValue, int damage, int frostbiteDuration)
         {
@@ -45,7 +45,7 @@ namespace TestCardGame.Actions.Effects
         }
 
         /// <summary>
-        /// 現在の集中をすべて消費し、その量だけシールド値を増やして発動する。
+        /// 現在の集中をすべて消費し、その量だけバリア値を増やして発動する。
         /// </summary>
         public override void Execute(ActionContext context)
         {
@@ -57,8 +57,8 @@ namespace TestCardGame.Actions.Effects
             IUnit user = context.User;
             int spentFocus = MagicFocusHelper.ConsumeAllFocus(user);
             int actualShieldValue = shieldValue + spentFocus;
-            context.StatusEffectService?.ApplyStatus(user, StatusEffectId.Shield, shieldDuration, actualShieldValue);
-            Debug.Log($"{user.Name}は集中を{spentFocus}解放して魔法：アイスウォールを展開した！ 自身にシールド{actualShieldValue}を付与。");
+            context.StatusEffectService?.ApplyStatus(user, StatusEffectId.Barrier, shieldDuration, actualShieldValue);
+            Debug.Log($"{user.Name}は集中を{spentFocus}解放して魔法：アイスウォールを展開した！ 自身にバリア{actualShieldValue}を付与。");
 
             foreach (var offset in AdjacentOffsets)
             {

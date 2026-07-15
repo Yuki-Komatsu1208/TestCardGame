@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Cards.Core.CardDefinitionSO
   cardName: "\u9B54\u6CD5\uFF1A\u30A2\u30A4\u30B9\u30A6\u30A9\u30FC\u30EB"
   level1:
-    description: "自身にシールド15を2ターン付与し、周囲4マスに10ダメージと凍傷2ターンを与える。現在の集中をすべて消費し、その値だけシールド値が増加する。"
+    description: "自身にバリア15を2ターン付与し、周囲4マスに10ダメージと凍傷2ターンを与える。現在の集中をすべて消費し、その値だけバリア値が増加する。"
     cost:
       amount: 2
     cooldown:
@@ -33,7 +33,7 @@ MonoBehaviour:
         statusEffect: 0
         value: 15
   level2:
-    description: "自身にシールド20を2ターン付与し、周囲4マスに14ダメージと凍傷2ターンを与える。現在の集中をすべて消費し、その値だけシールド値が増加する。"
+    description: "自身にバリア20を2ターン付与し、周囲4マスに14ダメージと凍傷2ターンを与える。現在の集中をすべて消費し、その値だけバリア値が増加する。"
     cost:
       amount: 2
     cooldown:
@@ -52,7 +52,7 @@ MonoBehaviour:
         statusEffect: 0
         value: 20
   level3:
-    description: "自身にシールド28を3ターン付与し、周囲4マスに18ダメージと凍傷3ターンを与える。現在の集中をすべて消費し、その値だけシールド値が増加する。"
+    description: "自身にバリア28を3ターン付与し、周囲4マスに18ダメージと凍傷3ターンを与える。現在の集中をすべて消費し、その値だけバリア値が増加する。"
     cost:
       amount: 3
     cooldown:

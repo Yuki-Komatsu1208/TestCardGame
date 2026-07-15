@@ -328,7 +328,14 @@ namespace TestCardGame.Controller
             List<string> list = new();
             foreach (var s in unit.StatusEffects)
             {
-                list.Add($"{s.DisplayName}({s.RemainingTurns}T, 値:{s.Value})");
+                if (s.Id == TestCardGame.Character.StatusEffects.StatusEffectId.Shield)
+                {
+                    list.Add($"{s.DisplayName}(値:{s.Value}/{s.GetDisplayMaxValue()})");
+                }
+                else
+                {
+                    list.Add($"{s.DisplayName}({s.RemainingTurns}T, 値:{s.Value})");
+                }
             }
             return "[" + string.Join(", ", list) + "]";
         }

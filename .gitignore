@@ -1,17 +1,25 @@
+.DS_Store
+
 [Ll]ibrary/
 [Tt]emp/
 [Bb]uild/
 [Bb]uilds/
 [Ll]ogs/
+[Oo]bj/
+.vs/
+.idea/
 UserSettings/
+TestCardGame_BurstDebugInformation_DoNotShip/
 
 MemoryCaptures/
 
 *.csproj
 *.unityproj
 *.sln
+*.sln.docstates
 *.user
 *.userprefs
+*.suo
 *.pidb
 *.booproj
 *.svd

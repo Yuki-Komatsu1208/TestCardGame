@@ -14,6 +14,14 @@ namespace TestCardGame.Controller
     {
         [SerializeField] private GameController gameController;
         [SerializeField] private List<CardModifierSO> modifierPool = new();
+        [Header("Reward Rules")]
+        [SerializeField, Min(1)] private int guaranteedModChoices = 2;
+        [SerializeField, Min(0)] private int minimumRecommendedModifierPoolSize = 5;
+        [SerializeField, Range(0f, 1f)] private float lowHpThreshold = 0.40f;
+        [SerializeField, Range(0f, 1f)] private float highHpThreshold = 0.70f;
+        [SerializeField] private RewardRollProfile highHpProfile = new(0.85f, 0f, 0.15f);
+        [SerializeField] private RewardRollProfile midHpProfile = new(0.65f, 0.20f, 0.15f);
+        [SerializeField] private RewardRollProfile lowHpProfile = new(0.45f, 0.45f, 0.10f);
 
         private readonly List<RewardChoice> rewardSelectionChoices = new();
         private RunState currentRunState;
@@ -51,48 +59,37 @@ namespace TestCardGame.Controller
             currentRunState = runState;
             currentMaxHp = Mathf.Max(1, maxHp);
             rewardSelectionChoices.Clear();
+            WarnIfModifierPoolIsShallow();
 
             // まずMODを2枠確定で並べ、残り1枠を状況に応じて埋める。
             var selectedMods = new List<CardModifierSO>();
 
-            CardModifierSO mod1 = GetRandomUniqueModifier(selectedMods);
-            if (mod1 != null)
+            for (int i = 0; i < guaranteedModChoices; i++)
             {
-                selectedMods.Add(mod1);
-                rewardSelectionChoices.Add(new RewardChoice(RewardType.Mod, mod1));
-            }
-
-            CardModifierSO mod2 = GetRandomUniqueModifier(selectedMods);
-            if (mod2 != null)
-            {
-                selectedMods.Add(mod2);
-                rewardSelectionChoices.Add(new RewardChoice(RewardType.Mod, mod2));
-            }
-
-            float hpRatio = GetCurrentHpRatio();
-            if (hpRatio <= 0.40f)
-            {
-                rewardSelectionChoices.Add(new RewardChoice(RewardType.Heal));
-            }
-            else
-            {
-                float roll = Random.value;
-                if (roll < 0.40f)
+                CardModifierSO mod = GetRandomUniqueModifier(selectedMods);
+                if (mod != null)
                 {
-                    rewardSelectionChoices.Add(new RewardChoice(RewardType.Heal));
+                    selectedMods.Add(mod);
+                    rewardSelectionChoices.Add(new RewardChoice(RewardType.Mod, mod));
                 }
-                else if (roll < 0.70f)
+            }
+
+            RewardType specialRewardType = RollSpecialRewardType();
+            if (specialRewardType == RewardType.Mod)
+            {
+                CardModifierSO mod = GetRandomUniqueModifier(selectedMods);
+                if (mod != null)
                 {
-                    rewardSelectionChoices.Add(new RewardChoice(RewardType.LevelUp));
+                    rewardSelectionChoices.Add(new RewardChoice(RewardType.Mod, mod));
                 }
                 else
                 {
-                    CardModifierSO mod3 = GetRandomUniqueModifier(selectedMods);
-                    if (mod3 != null)
-                    {
-                        rewardSelectionChoices.Add(new RewardChoice(RewardType.Mod, mod3));
-                    }
+                    Debug.LogWarning("報酬用のMOD候補が不足しているため、特殊枠を追加できませんでした。");
                 }
+            }
+            else
+            {
+                rewardSelectionChoices.Add(new RewardChoice(specialRewardType));
             }
 
             RewardScreenOpened?.Invoke(rewardSelectionChoices);
@@ -181,6 +178,66 @@ namespace TestCardGame.Controller
         }
 
         /// <summary>
+        /// 現在のHP帯と候補可否に応じて、特殊枠の報酬タイプを抽選する。
+        /// </summary>
+        private RewardType RollSpecialRewardType()
+        {
+            RewardRollProfile profile = GetRewardRollProfile(GetCurrentHpRatio());
+            bool canOfferHeal = CanOfferHealReward();
+            bool canOfferLevelUp = CanOfferLevelUpReward();
+            float modWeight = Mathf.Max(0f, profile.modWeight);
+            float healWeight = canOfferHeal ? Mathf.Max(0f, profile.healWeight) : 0f;
+            float levelUpWeight = canOfferLevelUp ? Mathf.Max(0f, profile.levelUpWeight) : 0f;
+            float totalWeight = modWeight + healWeight + levelUpWeight;
+
+            if (totalWeight <= 0f)
+            {
+                return RewardType.Mod;
+            }
+
+            float roll = Random.value * totalWeight;
+            if (roll < modWeight)
+            {
+                return RewardType.Mod;
+            }
+
+            roll -= modWeight;
+            if (roll < healWeight)
+            {
+                return RewardType.Heal;
+            }
+
+            return RewardType.LevelUp;
+        }
+
+        private RewardRollProfile GetRewardRollProfile(float hpRatio)
+        {
+            if (hpRatio >= highHpThreshold)
+            {
+                return highHpProfile;
+            }
+
+            if (hpRatio >= lowHpThreshold)
+            {
+                return midHpProfile;
+            }
+
+            return lowHpProfile;
+        }
+
+        private bool CanOfferHealReward()
+        {
+            return currentRunState != null && currentRunState.currentHp < currentMaxHp;
+        }
+
+        private bool CanOfferLevelUpReward()
+        {
+            return currentRunState != null
+                && currentRunState.playerDeck != null
+                && currentRunState.playerDeck.Any(card => card != null && card.Level.CanUpgrade);
+        }
+
+        /// <summary>
         /// 既に選ばれた候補を除外しつつ、MOD プールから1件抽選する。
         /// </summary>
         private CardModifierSO GetRandomUniqueModifier(List<CardModifierSO> excludeList)
@@ -204,6 +261,15 @@ namespace TestCardGame.Controller
             }
 
             return available[Random.Range(0, available.Count)];
+        }
+
+        private void WarnIfModifierPoolIsShallow()
+        {
+            int uniqueCount = modifierPool.Where(mod => mod != null).Distinct().Count();
+            if (uniqueCount < minimumRecommendedModifierPoolSize)
+            {
+                Debug.LogWarning($"MOD報酬プールが少なめです。現在の一意候補数: {uniqueCount}, 推奨最低数: {minimumRecommendedModifierPoolSize}");
+            }
         }
 
         /// <summary>
@@ -248,5 +314,20 @@ namespace TestCardGame.Controller
             UnityEditor.EditorUtility.SetDirty(this);
         }
 #endif
+    }
+
+    [System.Serializable]
+    public class RewardRollProfile
+    {
+        [Range(0f, 1f)] public float modWeight = 0.85f;
+        [Range(0f, 1f)] public float healWeight = 0f;
+        [Range(0f, 1f)] public float levelUpWeight = 0.15f;
+
+        public RewardRollProfile(float modWeight, float healWeight, float levelUpWeight)
+        {
+            this.modWeight = modWeight;
+            this.healWeight = healWeight;
+            this.levelUpWeight = levelUpWeight;
+        }
     }
 }
