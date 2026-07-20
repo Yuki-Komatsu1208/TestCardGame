@@ -14,6 +14,54 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Run.RunDefinitionSO
   runName: "\u30B9\u30E9\u30A4\u30E0\u9060\u5F81"
   playerDefinition: {fileID: 11400000, guid: 473d0e891eec4e74b94125d03bce4645, type: 2}
+  keystones:
+  - id: 1
+    displayName: "\u9B54\u6CD5\u306E\u6C34\u6676"
+    description: "\u9B54\u6CD5\u30AB\u30FC\u30C9\u306E\u51FA\u73FE\u91CD\u307F\u3092\u4E0A\u3052\u3001\u9B54\u6CD5\u306E\u77E2\u3068\u7CBE\u795E\u7D71\u4E00\u3092\u7372\u5F97\u3059\u308B\u3002"
+    favoredTags:
+    - 0
+    initialCards:
+    - {fileID: 11400000, guid: 63c8b4174ffb429588debbac45c3c98d, type: 2}
+    - {fileID: 11400000, guid: c5ef51275632547c59775c6a20f30be5, type: 2}
+  - id: 2
+    displayName: "\u9A0E\u58EB\u306E\u76FE"
+    description: "\u9A0E\u58EB\u7CFB\u5019\u88DC\u306E\u51FA\u73FE\u91CD\u307F\u3092\u4E0A\u3052\u308B\u3002\u5BFE\u5FDC\u30AB\u30FC\u30C9\u306F\u5F8C\u7D9A\u5B9F\u88C5\u3067\u8FFD\u52A0\u4E88\u5B9A\u3002"
+    favoredTags:
+    - 1
+    initialCards: []
+  - id: 3
+    displayName: "\u30DE\u30B9\u30B1\u30C3\u30C8\u9283"
+    description: "\u30AC\u30F3\u30CA\u30FC\u7CFB\u5019\u88DC\u306E\u51FA\u73FE\u91CD\u307F\u3092\u4E0A\u3052\u308B\u3002\u5BFE\u5FDC\u30AB\u30FC\u30C9\u306F\u5F8C\u7D9A\u5B9F\u88C5\u3067\u8FFD\u52A0\u4E88\u5B9A\u3002"
+    favoredTags:
+    - 2
+    initialCards: []
+  expeditions:
+  - expeditionName: "スライムの湿地"
+    stages:
+    - {fileID: 11400000, guid: 0b19816796f4148d3a1d7d2169465bb5, type: 2}
+    - {fileID: 11400000, guid: 876a530475ca54fe3a5f25df9036645a, type: 2}
+    - {fileID: 11400000, guid: 47c264da045b24288936b829171938b9, type: 2}
+    overhuntStages:
+    - {fileID: 11400000, guid: 876a530475ca54fe3a5f25df9036645a, type: 2}
+  - expeditionName: "ゴブリンの行軍"
+    stages:
+    - {fileID: 11400000, guid: 460704719c56bd94ea73ec6621f54930, type: 2}
+    - {fileID: 11400000, guid: c73056c00882a284f88f5ec535af8f41, type: 2}
+    - {fileID: 11400000, guid: ceddcb0db93f1674bbe550f0c206686f, type: 2}
+    overhuntStages:
+    - {fileID: 11400000, guid: c73056c00882a284f88f5ec535af8f41, type: 2}
+  - expeditionName: "王たちの決戦"
+    stages:
+    - {fileID: 11400000, guid: 912a2771cc43a4344954f5db5282fff8, type: 2}
+    - {fileID: 11400000, guid: ee0514907a54d34468108dcb0498e099, type: 2}
+    - {fileID: 11400000, guid: 6750b0540881540ca9174bf6664d5d77, type: 2}
+    overhuntStages:
+    - {fileID: 11400000, guid: ee0514907a54d34468108dcb0498e099, type: 2}
+  - expeditionName: "太古の祭壇"
+    stages:
+    - {fileID: 11400000, guid: 5cc4dd73029df40d8811ae61b5fd6a99, type: 2}
+    overhuntStages:
+    - {fileID: 11400000, guid: 6750b0540881540ca9174bf6664d5d77, type: 2}
   stages:
   - {fileID: 11400000, guid: 0b19816796f4148d3a1d7d2169465bb5, type: 2}
   - {fileID: 11400000, guid: 876a530475ca54fe3a5f25df9036645a, type: 2}

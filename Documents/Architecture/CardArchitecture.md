@@ -58,7 +58,7 @@ flowchart LR
 1. `PlayerUnit` が `CardBase` の一覧を保持する。
 2. `HandView` が各カードを `CardView` にバインドして表示する。
 3. カードのドロップ操作から `GameController.UseCardAtDropScreenPosition` を呼ぶ。
-4. `GameController` がターン、使用回数、マナ、対象座標を検証する。
+4. `GameController` がターン、マナ、クールタイム、対象座標を検証する。カード使用枚数に固定上限は置かない。
 5. `ActionContext` を生成する。
 6. `CardBase.Effects` を順番に確認し、各 `ActionEffect.CanExecute` が通れば `Execute` を実行する。
 7. コストを消費し、盤面とUIを更新する。

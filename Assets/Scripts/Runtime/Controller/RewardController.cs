@@ -260,7 +260,15 @@ namespace TestCardGame.Controller
                 return null;
             }
 
-            return available[Random.Range(0, available.Count)];
+            int totalWeight = available.Sum(mod => BuildWeightService.GetWeight(mod.BuildTags, currentRunState));
+            int roll = Random.Range(0, totalWeight);
+            foreach (CardModifierSO mod in available)
+            {
+                roll -= BuildWeightService.GetWeight(mod.BuildTags, currentRunState);
+                if (roll < 0) return mod;
+            }
+
+            return available[available.Count - 1];
         }
 
         private void WarnIfModifierPoolIsShallow()

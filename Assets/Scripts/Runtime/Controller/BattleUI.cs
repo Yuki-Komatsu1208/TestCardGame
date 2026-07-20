@@ -22,6 +22,7 @@ namespace TestCardGame.Controller
         [SerializeField] private GameObject endRunPanel;
         [SerializeField] private TextMeshProUGUI rewardsTitleText;
         [SerializeField] private List<Button> rewardButtons = new();
+        private Button townDepartureButton;
 
         [Header("Deck overlay & view references")]
         [SerializeField] private Button checkDeckButton;
@@ -165,11 +166,28 @@ namespace TestCardGame.Controller
                 runController.StageStarted -= OnStageStarted;
                 runController.StageStarted += OnStageStarted;
 
+                runController.RouteChoiceRequested -= OnRouteChoiceRequested;
+                runController.RouteChoiceRequested += OnRouteChoiceRequested;
+
+                runController.OverhuntChoiceRequested -= OnOverhuntChoiceRequested;
+                runController.OverhuntChoiceRequested += OnOverhuntChoiceRequested;
+
+                runController.TownOpened -= OnTownOpened;
+                runController.TownOpened += OnTownOpened;
+
+                runController.RunStateChanged -= OnRunStateChanged;
+                runController.RunStateChanged += OnRunStateChanged;
+
                 runController.RunWon -= OnRunWon;
                 runController.RunWon += OnRunWon;
 
                 runController.RunLost -= OnRunLost;
                 runController.RunLost += OnRunLost;
+            }
+
+            if (runController != null && runController.IsTownOpen)
+            {
+                OpenTownMenu();
             }
 
             Refresh();
@@ -217,7 +235,7 @@ namespace TestCardGame.Controller
             layout.childForceExpandWidth = true;
 
             rewardButtons.Clear();
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 5; i++)
             {
                 int index = i;
                 GameObject cardBtnObj = new GameObject($"RewardBtn_{index}", typeof(RectTransform), typeof(Image), typeof(Button));
@@ -307,15 +325,26 @@ namespace TestCardGame.Controller
             }
 
             string turnName = gameController.IsPlayerTurn ? "<color=green>プレイヤーのターン</color>" : "<color=red>敵のターン</color>";
+            string runInfo = string.Empty;
+            if (runController != null && runController.RunState != null)
+            {
+                var state = runController.RunState;
+                runInfo = $"\n所持ゴールド: {state.ownedGold} / 保留ゴールド: {state.pendingGold}\n" +
+                          $"進行状態: {GetPhaseLabel(state.phase)}";
+            }
+
             statusText.text = $"<b>{stageName}</b> (残り敵: {livingEnemiesCount}体)\n" +
                              $"{turnName}\n" +
                              $"プレイヤーマナ: {player.Mana}/{player.MaxMana}\n" +
                              $"プレイヤーHP: {player.Hp.CurrentValue} {playerStatusStr}" +
+                             $"{runInfo}" +
                              $"{enemiesInfo}";
 
             if (endTurnButton != null)
             {
-                endTurnButton.interactable = gameController.IsPlayerTurn && gameController.CurrentBattleResult == BattleResult.None;
+                bool isBattleInteractionEnabled = gameController.CurrentBattleResult == BattleResult.None
+                    && (runController == null || (!runController.IsTownOpen && !runController.IsAwaitingRouteChoice && !runController.IsAwaitingOverhuntChoice));
+                endTurnButton.interactable = gameController.IsPlayerTurn && isBattleInteractionEnabled;
             }
         }
 
@@ -357,7 +386,44 @@ namespace TestCardGame.Controller
         private void OnStageStarted(StageDefinitionSO stageDef, RunState runState)
         {
             if (rewardsPanel != null) rewardsPanel.SetActive(false);
+            HideTownDepartureButton();
             if (endRunPanel != null) endRunPanel.SetActive(false);
+            Refresh();
+        }
+
+        private void OnRouteChoiceRequested(RunState state)
+        {
+            var choices = new List<(string label, System.Action action)>
+            {
+                ($"<b><color=yellow>【街へ帰る】</color></b>\nOverHuntの保留ゴールドを確定する", () => runController?.ChooseReturnToTown())
+            };
+
+            if (runController != null && runController.CanGoToOverhunt)
+            {
+                choices.Add(($"<b><color=red>【OverHuntへ進む】</color></b>\n強敵戦に挑む / 成功で保留ゴールド追加 / 死亡時RUN失敗", () => runController?.ChooseOverhunt()));
+            }
+
+            ShowChoicePanel("遠征ボス撃破！ 次の行動を選択してください", choices);
+        }
+
+        private void OnOverhuntChoiceRequested(RunState state)
+        {
+            ShowChoicePanel(
+                "OverHunt戦クリア！ 続けるか、街へ帰るかを選択してください",
+                new List<(string label, System.Action action)>
+                {
+                    ($"<b><color=yellow>【街へ帰る】</color></b>\n保留ゴールドを確定して街へ戻る", () => runController?.ChooseReturnToTown()),
+                    ($"<b><color=red>【さらに続行】</color></b>\n次のOverHunt戦へ進む / 死亡時RUN失敗", () => runController?.ChooseOverhunt())
+                });
+        }
+
+        private void OnTownOpened(RunState state)
+        {
+            OpenTownMenu();
+        }
+
+        private void OnRunStateChanged(RunState state)
+        {
             Refresh();
         }
 
@@ -454,11 +520,160 @@ namespace TestCardGame.Controller
             }
         }
 
+        private void OpenTownMenu()
+        {
+            if (runController == null || runController.RunState == null)
+            {
+                return;
+            }
+
+            if (!runController.HasSelectedKeystone)
+            {
+                var keystoneChoices = new List<(string label, System.Action action)>();
+                foreach (KeystoneDefinition keystone in runController.AvailableKeystones)
+                {
+                    KeystoneDefinition capturedKeystone = keystone;
+                    keystoneChoices.Add(($"<b><color=yellow>【{capturedKeystone.displayName}】</color></b>\n0G / {capturedKeystone.description}", () =>
+                    {
+                        if (runController.TrySelectKeystone(capturedKeystone.id)) OpenTownMenu();
+                    }));
+                }
+
+                HideTownDepartureButton();
+                ShowChoicePanel("遠征出発前：キーストーンを1つ選んでください（0G）", keystoneChoices, false);
+                return;
+            }
+
+            ShowChoicePanel(
+                $"街に到着しました。所持ゴールド: {runController.RunState.ownedGold}\n購入したい項目を選んでください",
+                new List<(string label, System.Action action)>
+                {
+                    ($"<b><color=green>【HP回復】</color></b>\n{runController.TownHealCost}G / 最大HPの25%回復", () => { if (runController.TryBuyTownHeal()) OpenTownMenu(); }),
+                    ($"<b><color=yellow>【レベルアップ】</color></b>\n{runController.TownLevelUpCost}G / ランダムな強化可能カードを+1", () => { if (runController.TryBuyTownLevelUp()) OpenTownMenu(); }),
+                    ($"<b><color=cyan>【MOD付与】</color></b>\n{runController.TownModCost}G / ランダムなカードへランダムMOD付与", () => { if (runController.TryBuyTownModifier()) OpenTownMenu(); }),
+                    ($"<b><color=magenta>【新カード獲得】</color></b>\n{runController.TownNewCardCost}G / 報酬プールからカードを1枚獲得", () => { if (runController.TryBuyTownNewCard()) OpenTownMenu(); })
+                }, false);
+            ShowTownDepartureButton();
+        }
+
+        private void ShowChoicePanel(string title, List<(string label, System.Action action)> choices, bool closeBeforeAction = true)
+        {
+            if (rewardsPanel == null || rewardsTitleText == null)
+            {
+                return;
+            }
+
+            EnsureChoiceButtonCapacity(choices?.Count ?? 0);
+            rewardsPanel.SetActive(true);
+            rewardsTitleText.text = title;
+
+            for (int i = 0; i < rewardButtons.Count; i++)
+            {
+                var btn = rewardButtons[i];
+                var textComp = btn.GetComponentInChildren<TextMeshProUGUI>();
+                btn.onClick.RemoveAllListeners();
+
+                if (choices != null && i < choices.Count)
+                {
+                    var choice = choices[i];
+                    btn.gameObject.SetActive(true);
+                    textComp.text = choice.label;
+                    btn.onClick.AddListener(() =>
+                    {
+                        if (closeBeforeAction)
+                        {
+                            rewardsPanel.SetActive(false);
+                        }
+                        choice.action?.Invoke();
+                    });
+                }
+                else
+                {
+                    btn.gameObject.SetActive(false);
+                }
+            }
+        }
+
+        /// <summary>
+        /// シーンに事前配置された3ボタンでも、街メニューなど5択を表示できるようにする。
+        /// </summary>
+        private void EnsureChoiceButtonCapacity(int requiredCount)
+        {
+            if (requiredCount <= rewardButtons.Count || rewardButtons.Count == 0)
+            {
+                return;
+            }
+
+            Button template = rewardButtons[0];
+            for (int i = rewardButtons.Count; i < requiredCount; i++)
+            {
+                var extraButton = Instantiate(template, template.transform.parent);
+                extraButton.name = $"RewardBtn_{i}";
+                extraButton.onClick.RemoveAllListeners();
+                rewardButtons.Add(extraButton);
+            }
+        }
+
+        private void ShowTownDepartureButton()
+        {
+            if (runController == null || !runController.IsTownOpen || !runController.HasSelectedKeystone || endTurnButton == null)
+            {
+                return;
+            }
+
+            if (townDepartureButton == null)
+            {
+                townDepartureButton = Instantiate(endTurnButton, endTurnButton.transform.parent);
+                townDepartureButton.name = "TownDepartureButton";
+                var rect = townDepartureButton.GetComponent<RectTransform>();
+                rect.anchorMin = new Vector2(0f, 0f);
+                rect.anchorMax = new Vector2(0f, 0f);
+                rect.pivot = new Vector2(0f, 0f);
+                rect.anchoredPosition = new Vector2(20f, 20f);
+                rect.sizeDelta = new Vector2(220f, 60f);
+            }
+
+            var label = townDepartureButton.GetComponentInChildren<TextMeshProUGUI>();
+            if (label != null)
+            {
+                label.text = runController.IsFinalExpedition ? "RUNを完了" : "次の遠征へ";
+            }
+
+            townDepartureButton.onClick.RemoveAllListeners();
+            townDepartureButton.onClick.AddListener(() => runController.LeaveTown());
+            townDepartureButton.gameObject.SetActive(true);
+        }
+
+        private void HideTownDepartureButton()
+        {
+            if (townDepartureButton != null)
+            {
+                townDepartureButton.gameObject.SetActive(false);
+            }
+        }
+
+        private string GetPhaseLabel(RunProgressPhase phase)
+        {
+            return phase switch
+            {
+                RunProgressPhase.Expedition => "遠征中",
+                RunProgressPhase.AwaitingNormalRewardResolution => "通常戦闘報酬の選択待ち",
+                RunProgressPhase.AwaitingReturnOrOverhuntChoice => "ボス撃破後の選択待ち",
+                RunProgressPhase.OverHunt => "OverHunt中",
+                RunProgressPhase.AwaitingOverhuntDecision => "OverHunt継続選択待ち",
+                RunProgressPhase.Town => "街",
+                RunProgressPhase.Completed => "完了",
+                RunProgressPhase.Failed => "失敗",
+                _ => "進行中"
+            };
+        }
+
         /// <summary>
         /// Run勝利時の終了パネルを表示する。
         /// </summary>
         private void OnRunWon()
         {
+            HideTownDepartureButton();
             if (endRunPanel == null) return;
             endRunPanel.SetActive(true);
             var imageComp = endRunPanel.GetComponent<Image>();
@@ -474,6 +689,7 @@ namespace TestCardGame.Controller
         /// </summary>
         private void OnRunLost()
         {
+            HideTownDepartureButton();
             if (endRunPanel == null) return;
             endRunPanel.SetActive(true);
             var imageComp = endRunPanel.GetComponent<Image>();
@@ -497,6 +713,10 @@ namespace TestCardGame.Controller
             if (runController != null)
             {
                 runController.StageStarted -= OnStageStarted;
+                runController.RouteChoiceRequested -= OnRouteChoiceRequested;
+                runController.OverhuntChoiceRequested -= OnOverhuntChoiceRequested;
+                runController.TownOpened -= OnTownOpened;
+                runController.RunStateChanged -= OnRunStateChanged;
                 runController.RunWon -= OnRunWon;
                 runController.RunLost -= OnRunLost;
             }

@@ -213,6 +213,20 @@ namespace TestCardGame.Controller
                 }
             }
 
+            InitializeBattleUI();
+
+            RefreshBattleViews();
+
+            return true;
+        }
+
+        [SerializeField] private BattleUI battleUIInstance;
+
+        /// <summary>
+        /// 戦闘盤面を開始せず、街やRUN開始時に必要なUIだけを初期化する。
+        /// </summary>
+        public void InitializeBattleUI()
+        {
             if (battleUIInstance == null)
             {
                 battleUIInstance = GetComponent<BattleUI>();
@@ -225,14 +239,9 @@ namespace TestCardGame.Controller
                     battleUIInstance = gameObject.AddComponent<BattleUI>();
                 }
             }
+
             battleUIInstance.Initialize(this);
-
-            RefreshBattleViews();
-
-            return true;
         }
-
-        [SerializeField] private BattleUI battleUIInstance;
 
         public bool IsPlayerTurn => turnService?.IsPlayerTurn ?? true;
         public PlayerUnit PlayerUnitInstance => cellBuilder?.Player as PlayerUnit;

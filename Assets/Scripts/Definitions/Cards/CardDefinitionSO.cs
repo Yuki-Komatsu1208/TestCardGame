@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using TestCardGame.Actions.Effects;
 using TestCardGame.Cards.VOs;
+using TestCardGame.Run;
 using UnityEngine;
 
 namespace TestCardGame.Cards.Core
@@ -22,6 +23,7 @@ namespace TestCardGame.Cards.Core
     public class CardDefinitionSO : ScriptableObject
     {
         public string cardName;
+        public List<BuildTag> buildTags = new();
         public CardLevelData level1;
         public CardLevelData level2;
         public CardLevelData level3;

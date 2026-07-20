@@ -191,10 +191,19 @@ namespace TestCardGame.UIs
 
         private void OnCardClicked(int index)
         {
-            // If read-only mode, clicking does nothing
-            if (currentChoice == null || onCardSelected == null) return;
-
             var card = currentDeck[index];
+            if (card == null)
+            {
+                return;
+            }
+
+            // 報酬選択ではないデッキ確認モードでは、クリックをカード詳細表示として扱う。
+            if (currentChoice == null || onCardSelected == null)
+            {
+                selectedDeckIndex = -1;
+                OpenConfirmationModal(card);
+                return;
+            }
 
             // Prevent level up if card is already max level
             if (!currentChoice.CanApplyTo(card))
@@ -210,6 +219,9 @@ namespace TestCardGame.UIs
         private void OpenConfirmationModal(CardBase card)
         {
             if (confirmModal == null) return;
+
+            // 報酬適用の確認ではなく、カード詳細だけを確認するモードかを判定する。
+            bool isReadOnlyDetail = currentChoice == null || onCardSelected == null;
 
             // Clear prior modal previews
             if (beforeCardParent != null)
@@ -232,9 +244,46 @@ namespace TestCardGame.UIs
                 DisableInteractiveCardComponents(beforeView);
             }
 
+            // 詳細確認モードでは確定操作が不要なため、OKボタンを隠す。
+            if (confirmOkButton != null)
+            {
+                confirmOkButton.gameObject.SetActive(!isReadOnlyDetail);
+            }
+
+            if (confirmCancelButton != null)
+            {
+                // 同じボタンを、詳細確認モードでは閉じる操作として分かりやすく表示する。
+                var cancelLabel = confirmCancelButton.GetComponentInChildren<TextMeshProUGUI>();
+                if (cancelLabel != null)
+                {
+                    cancelLabel.text = isReadOnlyDetail ? "閉じる" : "キャンセル";
+                }
+            }
+
+            if (isReadOnlyDetail)
+            {
+                // 詳細確認では比較後カードが存在しないため、右側のプレビュー領域を隠す。
+                if (afterCardContainer != null)
+                {
+                    afterCardContainer.gameObject.SetActive(false);
+                }
+
+                // カード詳細に、現在付与されているModifierを一覧として追記する。
+                if (confirmMessageText != null)
+                {
+                    confirmMessageText.text = $"カード「<b>{card.CardName}</b>」の詳細\n{BuildModifierSummary(card, "付与中Modifier")}";
+                }
+
+                confirmModal.SetActive(true);
+                return;
+            }
+
             // 2. Create AFTER Card Preview
             if (afterCardContainer != null)
             {
+                // 報酬適用時は、適用後カードの比較プレビューを再表示する。
+                afterCardContainer.gameObject.SetActive(true);
+
                 var afterView = Instantiate(prefab, afterCardContainer);
                 var afterRuntime = currentChoice.CreatePreview(card);
 
@@ -242,14 +291,16 @@ namespace TestCardGame.UIs
                 {
                     if (confirmMessageText != null)
                     {
-                        confirmMessageText.text = $"カード「<b>{card.CardName}</b>」を\n<color=yellow>レベル {card.Level.Level} ➡ {afterRuntime.Level.Level}</color> へレベルアップします。よろしいですか？";
+                        // レベルアップ後にも保持されるModifierを確認できるよう、適用後の一覧を表示する。
+                        confirmMessageText.text = $"カード「<b>{card.CardName}</b>」を\n<color=yellow>レベル {card.Level.Level} ➡ {afterRuntime.Level.Level}</color> へレベルアップします。よろしいですか？\n{BuildModifierSummary(afterRuntime, "適用後Modifier")}";
                     }
                 }
                 else if (currentChoice.Type == RewardType.Mod)
                 {
                     if (confirmMessageText != null)
                     {
-                        confirmMessageText.text = $"カード「<b>{card.CardName}</b>」に\n<color=cyan>MOD: {currentChoice.Title}</color> を付与します。よろしいですか？";
+                        // MOD付与後の最終状態として、既存分と新規分を含めたModifier一覧を表示する。
+                        confirmMessageText.text = $"カード「<b>{card.CardName}</b>」に\n<color=cyan>MOD: {currentChoice.Title}</color> を付与します。よろしいですか？\n{BuildModifierSummary(afterRuntime, "適用後Modifier")}";
                     }
                 }
 
@@ -258,6 +309,35 @@ namespace TestCardGame.UIs
             }
 
             confirmModal.SetActive(true);
+        }
+
+        private static string BuildModifierSummary(CardBase card, string label)
+        {
+            // EnchantDefinitionsをUI向けのModifier一覧テキストへ変換する。
+            if (card?.EnchantDefinitions == null || card.EnchantDefinitions.Count == 0)
+            {
+                return $"<color=#CFCFCF>{label}: なし</color>";
+            }
+
+            var modifierNames = new List<string>();
+            foreach (var modifierDefinition in card.EnchantDefinitions)
+            {
+                if (modifierDefinition == null)
+                {
+                    continue;
+                }
+
+                // ユーザーに見せる名前はScriptableObject側のDisplayNameを採用する。
+                modifierNames.Add($"・{modifierDefinition.DisplayName}");
+            }
+
+            if (modifierNames.Count == 0)
+            {
+                return $"<color=#CFCFCF>{label}: なし</color>";
+            }
+
+            // TextMeshProのリッチテキストで見出しだけ色を付け、各Modifierを改行で列挙する。
+            return $"<color=#7FDBFF>{label}</color>\n{string.Join("\n", modifierNames)}";
         }
 
         private void DisableInteractiveCardComponents(CardView view)

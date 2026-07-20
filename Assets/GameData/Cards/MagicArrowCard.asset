@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: MagicArrowCard
   m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Cards.Core.CardDefinitionSO
   cardName: "\u9B54\u6CD5\uFF1A\u9B54\u6CD5\u306E\u77E2"
+  buildTags:
+  - 0
   level1:
     description: "射程3の直線上に魔法の矢を放ち、最初に当たった対象に18ダメージを与える。現在の集中をすべて消費し、その値だけ射程が増加する。"
     cost:
