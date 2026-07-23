@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TestCardGame.Actions.Effects;
 using TestCardGame.Cards.VOs;
 using TestCardGame.Run;
+using TestCardGame.Cards.Core.Modifiers;
 using UnityEngine;
 
 namespace TestCardGame.Cards.Core
@@ -24,6 +25,8 @@ namespace TestCardGame.Cards.Core
     {
         public string cardName;
         public List<BuildTag> buildTags = new();
+        [Tooltip("このカード自身が常に持つModifier。報酬で付与するEnchantとは別に、カード固有の性質を表す。")]
+        public List<CardModifierSO> intrinsicModifiers = new();
         public CardLevelData level1;
         public CardLevelData level2;
         public CardLevelData level3;

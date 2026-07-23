@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c908b67c4bbf4b54fbdadee6b3525c30, type: 3}
+  m_Name: FireBulletCard
+  m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Cards.Core.CardDefinitionSO
+  cardName: "\u708E\u4E0A\u5F3E"
+  buildTags:
+  - 2
+  intrinsicModifiers:
+  - {fileID: 11400000, guid: 4ec59c98f0f841ee92a1100000000010, type: 2}
+  level1:
+    description: "2\u30DE\u30B9\u5148\u307E\u3067\u306E\u6575\u306B3\u30C0\u30E1\u30FC\u30B8\u3068\u708E\u4E0A1\u30BF\u30FC\u30F3\uFF08\u6BCE\u30BF\u30FC\u30F32\u30C0\u30E1\u30FC\u30B8\uFF09\u3002\u4F7F\u7528\u5F8C\u306B\u524A\u9664\u3002"
+    cost: {amount: 0}
+    cooldown: {turns: 0}
+    effects:
+    - effect: {fileID: 11400000, guid: a1000000000000000000000000000004, type: 2}
+      parameters: {damage: 3, maxRange: 2}
+    - effect: {fileID: 11400000, guid: e8b80bdd9e564cd458dc080d0dafdf82, type: 2}
+      parameters: {statusEffect: 1, duration: 1, value: 2}
+  level2:
+    description: "2\u30DE\u30B9\u5148\u307E\u3067\u306E\u6575\u306B4\u30C0\u30E1\u30FC\u30B8\u3068\u708E\u4E0A1\u30BF\u30FC\u30F3\uFF08\u6BCE\u30BF\u30FC\u30F33\u30C0\u30E1\u30FC\u30B8\uFF09\u3002\u4F7F\u7528\u5F8C\u306B\u524A\u9664\u3002"
+    cost: {amount: 0}
+    cooldown: {turns: 0}
+    effects:
+    - effect: {fileID: 11400000, guid: a1000000000000000000000000000004, type: 2}
+      parameters: {damage: 4, maxRange: 2}
+    - effect: {fileID: 11400000, guid: e8b80bdd9e564cd458dc080d0dafdf82, type: 2}
+      parameters: {statusEffect: 1, duration: 1, value: 3}
+  level3:
+    description: "2\u30DE\u30B9\u5148\u307E\u3067\u306E\u6575\u306B5\u30C0\u30E1\u30FC\u30B8\u3068\u708E\u4E0A1\u30BF\u30FC\u30F3\uFF08\u6BCE\u30BF\u30FC\u30F34\u30C0\u30E1\u30FC\u30B8\uFF09\u3002\u4F7F\u7528\u5F8C\u306B\u524A\u9664\u3002"
+    cost: {amount: 0}
+    cooldown: {turns: 0}
+    effects:
+    - effect: {fileID: 11400000, guid: a1000000000000000000000000000004, type: 2}
+      parameters: {damage: 5, maxRange: 2}
+    - effect: {fileID: 11400000, guid: e8b80bdd9e564cd458dc080d0dafdf82, type: 2}
+      parameters: {statusEffect: 1, duration: 1, value: 4}

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TestCardGame.Actions.Effects;
 using TestCardGame.Cards.Core.Modifiers;
 using TestCardGame.Cards.Modifiers;
@@ -17,9 +18,11 @@ namespace TestCardGame.Cards.Core
         public CardLevel Level { get; private set; }
         public IReadOnlyList<CardModifier> Enchants => enchants;
         public IReadOnlyList<CardModifierSO> EnchantDefinitions => enchantDefinitions;
+        public IReadOnlyList<CardModifierSO> IntrinsicModifierDefinitions => intrinsicModifierDefinitions;
         public IReadOnlyList<ActionEffect> Effects { get; private set; }
 
         private readonly List<CardModifier> enchants;
+        private readonly List<CardModifierSO> intrinsicModifierDefinitions;
         private readonly List<CardModifierSO> enchantDefinitions;
         private bool skipNextTurnEndCooldownTick;
 
@@ -29,6 +32,7 @@ namespace TestCardGame.Cards.Core
         public CardCooldown BaseCooldown => Definition != null ? Definition.GetDataForLevel(Level.Level).Cooldown : CardCooldown.None;
         public CardCooldown RemainingCooldown { get; private set; } = CardCooldown.None;
         public bool IsCoolingDown => RemainingCooldown.IsActive;
+        public bool RemovesAfterUse => enchants.Any(enchant => enchant.RemovesCardAfterUse);
 
         public CardBase(
             CardDefinitionSO definition,
@@ -37,6 +41,17 @@ namespace TestCardGame.Cards.Core
         {
             Definition = definition ?? throw new ArgumentNullException(nameof(definition));
             Level = level ?? throw new ArgumentNullException(nameof(level));
+            intrinsicModifierDefinitions = new List<CardModifierSO>();
+            if (Definition.intrinsicModifiers != null)
+            {
+                foreach (var modifierDefinition in Definition.intrinsicModifiers)
+                {
+                    if (modifierDefinition != null)
+                    {
+                        intrinsicModifierDefinitions.Add(modifierDefinition);
+                    }
+                }
+            }
             this.enchantDefinitions = new List<CardModifierSO>();
             if (enchantDefinitions != null)
             {
@@ -206,6 +221,14 @@ namespace TestCardGame.Cards.Core
         private void RebuildEnchants()
         {
             enchants.Clear();
+            foreach (var modifierDefinition in intrinsicModifierDefinitions)
+            {
+                var modifier = modifierDefinition != null ? modifierDefinition.CreateRuntimeModifier() : null;
+                if (modifier != null)
+                {
+                    enchants.Add(modifier);
+                }
+            }
             foreach (var modifierDefinition in enchantDefinitions)
             {
                 var modifier = modifierDefinition != null ? modifierDefinition.CreateRuntimeModifier() : null;

@@ -12,11 +12,16 @@ namespace TestCardGame.Actions.Effects
         /// 移動距離。
         /// </summary>
         private readonly int step;
+        private readonly bool moveAwayFromTarget;
 
         /// <summary>
         /// 移動距離を指定して効果を作成する。
         /// </summary>
-        public eMove(int step) { this.step = step; }
+        public eMove(int step, bool moveAwayFromTarget = false)
+        {
+            this.step = step;
+            this.moveAwayFromTarget = moveAwayFromTarget;
+        }
 
         /// <summary>
         /// 指定セルへ向かう移動が可能か判定する。
@@ -27,7 +32,7 @@ namespace TestCardGame.Actions.Effects
             Vector2Int diff = context.TargetPosition - userPos;
             if (diff == Vector2Int.zero) return false;
 
-            Vector2Int dir = Normalize(diff);
+            Vector2Int dir = GetMoveDirection(diff);
             int distance = Mathf.Abs(diff.x) >= Mathf.Abs(diff.y) ? Mathf.Abs(diff.x) : Mathf.Abs(diff.y);
             int availableStep = context.StatusEffectService?.GetAdjustedMoveStep(context.User, step) ?? step;
             if (availableStep <= 0) return false;
@@ -45,7 +50,7 @@ namespace TestCardGame.Actions.Effects
 
             Vector2Int userPos = context.User.Position;
             Vector2Int diff = context.TargetPosition - userPos;
-            Vector2Int dir = Normalize(diff);
+            Vector2Int dir = GetMoveDirection(diff);
             int distance = Mathf.Abs(diff.x) >= Mathf.Abs(diff.y) ? Mathf.Abs(diff.x) : Mathf.Abs(diff.y);
             int availableStep = context.StatusEffectService?.GetAdjustedMoveStep(context.User, step) ?? step;
             if (availableStep <= 0)
@@ -66,5 +71,11 @@ namespace TestCardGame.Actions.Effects
             => Mathf.Abs(d.x) >= Mathf.Abs(d.y)
                 ? new Vector2Int(d.x == 0 ? 0 : (d.x > 0 ? 1 : -1), 0)
                 : new Vector2Int(0, d.y > 0 ? 1 : -1);
+
+        private Vector2Int GetMoveDirection(Vector2Int targetOffset)
+        {
+            var direction = Normalize(targetOffset);
+            return moveAwayFromTarget ? -direction : direction;
+        }
     }
 }

@@ -18,27 +18,9 @@ MonoBehaviour:
   maxMana: 5
   playerSprite: {fileID: 6221534257167143075, guid: e42df1363f7d5664cb6b708ed0e08051, type: 3}
   initialCards:
+  - card: {fileID: 11400000, guid: 6e4c9d8b13f64540a9e2c7b1f0d68452, type: 2}
+    level: 1
   - card: {fileID: 11400000, guid: 4ba51b6c2ea9b0c47a137a2d09899309, type: 2}
-    level: 2
-  - card: {fileID: 11400000, guid: 4729016e310219b4db6f60e2c49de4dd, type: 2}
-    level: 2
-  - card: {fileID: 11400000, guid: 76c2b44d17fc2e344883cda87615ba7e, type: 2}
-    level: 2
+    level: 1
   - card: {fileID: 11400000, guid: ad0262bb58f9a44978ce4ea9cd3163b7, type: 2}
-    level: 2
-  - card: {fileID: 11400000, guid: 0c9876e0afe3b2b49b59a0cf20bfc1e4, type: 2}
-    level: 1
-  - card: {fileID: 11400000, guid: 24abacc385187e54c97ac03188f76ab2, type: 2}
-    level: 1
-  - card: {fileID: 11400000, guid: 96509179b6b1f8f42b719751d062db34, type: 2}
-    level: 1
-  - card: {fileID: 11400000, guid: b487b9ec8403440a888bd0d7e5f81ee2, type: 2}
-    level: 1
-  - card: {fileID: 11400000, guid: 7c9baafc0222f490bb2a950715175ac5, type: 2}
-    level: 1
-  - card: {fileID: 11400000, guid: c5ef51275632547c59775c6a20f30be5, type: 2}
-    level: 1
-  - card: {fileID: 11400000, guid: 3a19c3fa97724dfba5173d8ad473bfcb, type: 2}
-    level: 1
-  - card: {fileID: 11400000, guid: 63c8b4174ffb429588debbac45c3c98d, type: 2}
     level: 1

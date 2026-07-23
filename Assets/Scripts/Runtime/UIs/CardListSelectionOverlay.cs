@@ -34,6 +34,8 @@ namespace TestCardGame.UIs
         private RewardChoice currentChoice;
         private Action<int> onCardSelected;
         private Action onOverlayClosed;
+        private Func<CardBase, bool> canSelectCard;
+        private string selectionConfirmationMessage;
         private int selectedDeckIndex = -1;
 
         public static CardListSelectionOverlay Instance { get; private set; }
@@ -117,6 +119,8 @@ namespace TestCardGame.UIs
             currentChoice = choice;
             onCardSelected = onSelect;
             onOverlayClosed = onCancel;
+            canSelectCard = null;
+            selectionConfirmationMessage = null;
             selectedDeckIndex = -1;
 
             if (titleText != null)
@@ -140,6 +144,29 @@ namespace TestCardGame.UIs
             }
 
             PopulateDeckGrid();
+        }
+
+        /// <summary>
+        /// 任意のカードを対象にした操作を確認付きで実行する。
+        /// カード状態の変更は呼び出し側のドメイン処理へ委譲する。
+        /// </summary>
+        public void ShowCardOperation(
+            string title,
+            List<CardBase> cards,
+            Func<CardBase, bool> canSelect,
+            Action<CardBase> onConfirm,
+            string confirmationMessage,
+            Action onCancel = null,
+            bool allowCancel = true)
+        {
+            Show(title, cards, null, null, onCancel);
+            canSelectCard = canSelect;
+            selectionConfirmationMessage = confirmationMessage;
+            onCardSelected = index => onConfirm?.Invoke(currentDeck[index]);
+            if (closeButton != null)
+            {
+                closeButton.gameObject.SetActive(allowCancel);
+            }
         }
 
         private void PopulateDeckGrid()
@@ -198,15 +225,21 @@ namespace TestCardGame.UIs
             }
 
             // 報酬選択ではないデッキ確認モードでは、クリックをカード詳細表示として扱う。
-            if (currentChoice == null || onCardSelected == null)
+            if (onCardSelected == null)
             {
                 selectedDeckIndex = -1;
                 OpenConfirmationModal(card);
                 return;
             }
 
-            // Prevent level up if card is already max level
-            if (!currentChoice.CanApplyTo(card))
+            if (canSelectCard != null && !canSelectCard(card))
+            {
+                Debug.LogWarning("このカードは対象に選べません。");
+                return;
+            }
+
+            // 報酬選択時だけ、報酬固有の適用可否を確認する。
+            if (currentChoice != null && !currentChoice.CanApplyTo(card))
             {
                 Debug.LogWarning("This reward cannot be applied to the selected card.");
                 return;
@@ -221,7 +254,7 @@ namespace TestCardGame.UIs
             if (confirmModal == null) return;
 
             // 報酬適用の確認ではなく、カード詳細だけを確認するモードかを判定する。
-            bool isReadOnlyDetail = currentChoice == null || onCardSelected == null;
+            bool isReadOnlyDetail = onCardSelected == null;
 
             // Clear prior modal previews
             if (beforeCardParent != null)
@@ -272,6 +305,23 @@ namespace TestCardGame.UIs
                 if (confirmMessageText != null)
                 {
                     confirmMessageText.text = $"カード「<b>{card.CardName}</b>」の詳細\n{BuildModifierSummary(card, "付与中Modifier")}";
+                }
+
+                confirmModal.SetActive(true);
+                return;
+            }
+
+            if (currentChoice == null)
+            {
+                if (afterCardContainer != null)
+                {
+                    afterCardContainer.gameObject.SetActive(false);
+                }
+                if (confirmMessageText != null)
+                {
+                    confirmMessageText.text = string.IsNullOrWhiteSpace(selectionConfirmationMessage)
+                        ? $"カード「<b>{card.CardName}</b>」を対象にします。よろしいですか？"
+                        : selectionConfirmationMessage;
                 }
 
                 confirmModal.SetActive(true);

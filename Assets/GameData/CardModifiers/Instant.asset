@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ec59c98f0f841ee92a1100000000002, type: 3}
+  m_Name: Instant
+  m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Cards.Core.Modifiers.InstantModifierSO
+  displayName: "\u30A4\u30F3\u30B9\u30BF\u30F3\u30C8"
+  description: "\u4F7F\u7528\u5F8C\u3001\u307E\u305F\u306F\u6226\u95D8\u7D42\u4E86\u6642\u306B\u30C7\u30C3\u30AD\u304B\u3089\u524A\u9664\u3055\u308C\u308B\u3002"
+  timing: 1
+  buildTags: []

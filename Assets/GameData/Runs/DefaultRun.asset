@@ -31,10 +31,12 @@ MonoBehaviour:
     initialCards: []
   - id: 3
     displayName: "\u30DE\u30B9\u30B1\u30C3\u30C8\u9283"
-    description: "\u30AC\u30F3\u30CA\u30FC\u7CFB\u5019\u88DC\u306E\u51FA\u73FE\u91CD\u307F\u3092\u4E0A\u3052\u308B\u3002\u5BFE\u5FDC\u30AB\u30FC\u30C9\u306F\u5F8C\u7D9A\u5B9F\u88C5\u3067\u8FFD\u52A0\u4E88\u5B9A\u3002"
+    description: "\u30AC\u30F3\u30CA\u30FC\u7CFB\u5019\u88DC\u306E\u51FA\u73FE\u91CD\u307F\u3092\u4E0A\u3052\u308B\u3002\u9283\u5263\u8853\u3068\u9283\u6483\u3092\u7372\u5F97\u3059\u308B\u3002"
     favoredTags:
     - 2
-    initialCards: []
+    initialCards:
+    - {fileID: 11400000, guid: 4ec59c98f0f841ee92a1100000000023, type: 2}
+    - {fileID: 11400000, guid: 8d4c2a1e5b6f47a8901234567890abd1, type: 2}
   expeditions:
   - expeditionName: "スライムの湿地"
     stages:

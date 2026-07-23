@@ -1,0 +1,78 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d388f5f03de54d3cba1c23f5156723ef, type: 3}
+  m_Name: ShopCatalog
+  m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Run.ShopCatalogSO
+  keystoneOffers:
+  - displayName: Magic Crystal
+    description: 魔法軸のキーストーン
+    price: 0
+    card: {fileID: 0}
+    modifier: {fileID: 0}
+  - displayName: Knight Shield
+    description: 騎士軸のキーストーン
+    price: 0
+    card: {fileID: 0}
+    modifier: {fileID: 0}
+  - displayName: Musket
+    description: ガンナー軸のキーストーン
+    price: 0
+    card: {fileID: 0}
+    modifier: {fileID: 0}
+  cardOffers:
+  - displayName: 
+    description: 強力な範囲攻撃カード
+    price: 80
+    card: {fileID: 11400000, guid: b487b9ec8403440a888bd0d7e5f81ee2, type: 2}
+    modifier: {fileID: 0}
+  - displayName: 
+    description: 防御と配置を変える高価値カード
+    price: 75
+    card: {fileID: 11400000, guid: 3a19c3fa97724dfba5173d8ad473bfcb, type: 2}
+    modifier: {fileID: 0}
+  - displayName: 
+    description: 集中を作るビルドカード
+    price: 70
+    card: {fileID: 11400000, guid: c5ef51275632547c59775c6a20f30be5, type: 2}
+    modifier: {fileID: 0}
+  itemOffers:
+  - displayName: 未鑑定の護符
+    description: 効果は今後実装。価格はこのアセットで調整。
+    price: 120
+    card: {fileID: 0}
+    modifier: {fileID: 0}
+  - displayName: 旅人の地図
+    description: 効果は今後実装。価格はこのアセットで調整。
+    price: 110
+    card: {fileID: 0}
+    modifier: {fileID: 0}
+  - displayName: 古いコイン
+    description: 効果は今後実装。価格はこのアセットで調整。
+    price: 100
+    card: {fileID: 0}
+    modifier: {fileID: 0}
+  modifierOffers:
+  - displayName: 
+    description: 購入後に付与先カードを選択
+    price: 30
+    card: {fileID: 0}
+    modifier: {fileID: 11400000, guid: a091f2fa8418b4edebb6aa734a860fd4, type: 2}
+  - displayName: 
+    description: 購入後に付与先カードを選択
+    price: 25
+    card: {fileID: 0}
+    modifier: {fileID: 11400000, guid: f3455d956387478889e4b18e8eb19f97, type: 2}
+  - displayName: 
+    description: 購入後に付与先カードを選択
+    price: 30
+    card: {fileID: 0}
+    modifier: {fileID: 11400000, guid: 77e392fc98e1481d892a815265ee8af6, type: 2}

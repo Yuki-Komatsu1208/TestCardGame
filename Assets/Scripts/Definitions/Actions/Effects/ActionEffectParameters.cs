@@ -40,5 +40,7 @@ namespace TestCardGame.Actions.Effects
 
         [Min(1)]
         public int count = 1;
+
+        public bool moveAwayFromTarget;
     }
 }

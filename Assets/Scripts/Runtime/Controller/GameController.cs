@@ -177,7 +177,7 @@ namespace TestCardGame.Controller
             targetingService = new BoardTargetingService(cellRects);
             boardVisualService = new BoardVisualService(cellRects);
             cellEffectService = new CellEffectService();
-            cardPlayService = new CardPlayService(moveService, targetingService, statusEffectService);
+            cardPlayService = new CardPlayService(moveService, targetingService, statusEffectService, new CardTargetSelectionService(OnDeferredCardOperationResolved));
             turnService = new TurnService(board, moveService, cellEffectService, statusEffectService);
 
             initialized = true;
@@ -274,6 +274,7 @@ namespace TestCardGame.Controller
             CheckBattleResolution();
 
             RefreshBattleViews();
+            RefreshHandView();
 
             return true;
         }
@@ -516,6 +517,19 @@ namespace TestCardGame.Controller
             {
                 battleUIInstance.Refresh();
             }
+        }
+
+        private void RefreshHandView()
+        {
+            var handView = FindAnyObjectByType<HandView>();
+            handView?.ShowCards(GetPlayerCards());
+        }
+
+        private void OnDeferredCardOperationResolved()
+        {
+            CheckBattleResolution();
+            RefreshBattleViews();
+            RefreshHandView();
         }
         /// <summary>
         /// ユニットの移動開始を通知する

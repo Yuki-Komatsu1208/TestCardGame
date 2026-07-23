@@ -10,7 +10,7 @@ namespace TestCardGame.Actions.Effects
     {
         [SerializeField, Min(1)] private int defaultStep = 1;
 
-        public override string[] ParameterFields => new[] { "step" };
+        public override string[] ParameterFields => new[] { "step", "moveAwayFromTarget" };
 
         public override void SetDefaultParameters(ActionEffectParameters parameters)
         {
@@ -20,7 +20,9 @@ namespace TestCardGame.Actions.Effects
         public override ActionEffect CreateRuntimeEffect(ActionEffectParameters parameters, int level = 1)
         {
             var defaults = CreateDefaultParameters(level);
-            return new eMove(Mathf.Max(1, parameters?.step ?? defaults.step));
+            return new eMove(
+                Mathf.Max(1, parameters?.step ?? defaults.step),
+                parameters?.moveAwayFromTarget ?? defaults.moveAwayFromTarget);
         }
     }
 }

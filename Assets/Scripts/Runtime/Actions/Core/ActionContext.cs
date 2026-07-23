@@ -13,13 +13,15 @@ namespace TestCardGame.Actions.Core
         public IUnit User { get; }
         public Vector2Int TargetPosition { get; }
         public StatusEffectService StatusEffectService { get; }
+        public CardTargetSelectionService CardTargetSelectionService { get; }
 
-        public ActionContext(UnitMoveService moveService, IUnit user, Vector2Int targetPosition, StatusEffectService statusEffectService)
+        public ActionContext(UnitMoveService moveService, IUnit user, Vector2Int targetPosition, StatusEffectService statusEffectService, CardTargetSelectionService cardTargetSelectionService = null)
         {
             MoveService = moveService;
             User = user;
             TargetPosition = targetPosition;
             StatusEffectService = statusEffectService;
+            CardTargetSelectionService = cardTargetSelectionService;
         }
     }
 }

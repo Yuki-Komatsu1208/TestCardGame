@@ -14,12 +14,14 @@ namespace TestCardGame.Controller.Services
         private readonly UnitMoveService moveService;
         private readonly BoardTargetingService targetingService;
         private readonly StatusEffectService statusEffectService;
+        private readonly CardTargetSelectionService cardTargetSelectionService;
 
-        public CardPlayService(UnitMoveService moveService, BoardTargetingService targetingService, StatusEffectService statusEffectService)
+        public CardPlayService(UnitMoveService moveService, BoardTargetingService targetingService, StatusEffectService statusEffectService, CardTargetSelectionService cardTargetSelectionService)
         {
             this.moveService = moveService;
             this.targetingService = targetingService;
             this.statusEffectService = statusEffectService;
+            this.cardTargetSelectionService = cardTargetSelectionService;
         }
 
         /// <summary>
@@ -37,7 +39,7 @@ namespace TestCardGame.Controller.Services
                 return false;
             }
 
-            var context = new ActionContext(moveService, player, targetCellPosition, statusEffectService);
+            var context = new ActionContext(moveService, player, targetCellPosition, statusEffectService, cardTargetSelectionService);
             var modifierContext = new CardModifierContext(card, player, context);
 
             foreach (var effect in card.Effects)
@@ -56,6 +58,11 @@ namespace TestCardGame.Controller.Services
             }
 
             card.OnAfterCardUse(modifierContext);
+
+            if (card.RemovesAfterUse)
+            {
+                player.Cards.Remove(card);
+            }
 
             return true;
         }

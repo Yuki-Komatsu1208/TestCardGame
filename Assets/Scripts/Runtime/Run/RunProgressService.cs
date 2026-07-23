@@ -77,6 +77,7 @@ namespace TestCardGame.Run
             }
 
             runState.currentHp = currentHp;
+            RemoveInstantCards(runState);
             ResetPlayerDeckBattleState(runState);
 
             if (runState.isInOverhunt)
@@ -360,6 +361,14 @@ namespace TestCardGame.Run
             {
                 card?.ResetBattleState();
             }
+        }
+
+        /// <summary>
+        /// Instantカードは未使用でも戦闘をまたいで保持しない。
+        /// </summary>
+        private static void RemoveInstantCards(RunState runState)
+        {
+            runState?.playerDeck?.RemoveAll(card => card != null && card.RemovesAfterUse);
         }
     }
 }
