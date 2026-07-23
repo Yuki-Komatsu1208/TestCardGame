@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
+using TestCardGame.Cards.Core;
 using TestCardGame.Cards.Core.Modifiers;
+using TestCardGame.Cards.VOs;
 using TestCardGame.Rewards;
 using TestCardGame.Run;
 using TestCardGame.Stage;
@@ -15,6 +17,13 @@ namespace TestCardGame.Controller
         [SerializeField] private HandView handView;
         [SerializeField] private RewardController rewardController;
         [SerializeField] private List<CardModifierSO> modifierPool = new();
+
+        [Header("DEBUG")]
+        [Tooltip("有効時は開始デッキをデバッグ攻撃・移動・ヘヴィストライクだけに置き換え、キーストーン選択後にその初期カードを追加します。")]
+        [SerializeField] private bool DEBUG;
+        [SerializeField] private CardDefinitionSO debugMoveCard;
+        [SerializeField] private CardDefinitionSO debugAttackCard;
+        [SerializeField] private CardDefinitionSO debugHeavyStrikeCard;
 
         [Header("Phase 2 Economy")]
         [SerializeField, Min(0)] private int normalBattleGoldReward = 15;
@@ -92,6 +101,13 @@ namespace TestCardGame.Controller
         {
             if (runDefinition != null)
             {
+                var session = RunSession.GetOrCreate();
+                if (session.HasActiveRun && session.Definition == runDefinition)
+                {
+                    runState = session.State;
+                    if (runState.phase == RunProgressPhase.Expedition) StartCurrentStage();
+                    return;
+                }
                 StartRun();
             }
         }
@@ -110,7 +126,10 @@ namespace TestCardGame.Controller
                 return;
             }
 
-            runState = runProgressService.StartRun(runDefinition);
+            var session = RunSession.GetOrCreate();
+            session.Begin(runDefinition);
+            runState = session.State;
+            ApplyDebugStartDeck();
 
             Debug.Log($"ラン開始: {runDefinition.runName} を {runState.playerDeck.Count} 枚のカードで開始します。");
             RunStarted?.Invoke(runState);
@@ -265,10 +284,11 @@ namespace TestCardGame.Controller
                 return;
             }
 
-            runProgressService.OpenTown(runState);
-            Debug.Log($"街に到着しました。所持ゴールド: {runState.ownedGold}");
+            RunSession.GetOrCreate().OpenTown();
+            Debug.Log($"Outpostに到着しました。所持ゴールド: {runState.ownedGold}");
             TownOpened?.Invoke(runState);
             RunStateChanged?.Invoke(runState);
+            UnityEngine.SceneManagement.SceneManager.LoadScene("OutpostScene");
         }
 
         public bool TryBuyTownHeal()
@@ -316,7 +336,7 @@ namespace TestCardGame.Controller
                 return;
             }
 
-            if (runProgressService.StartNextExpedition(runState, runDefinition))
+            if (RunSession.GetOrCreate().TryStartNextExpedition())
             {
                 Debug.Log($"次の遠征へ進行します。遠征 {runState.currentExpeditionIndex + 1} を開始します。");
                 RunStateChanged?.Invoke(runState);
@@ -329,12 +349,31 @@ namespace TestCardGame.Controller
 
         public bool TrySelectKeystone(KeystoneId keystoneId)
         {
-            if (!runProgressService.TrySelectKeystone(runState, runDefinition, keystoneId)) return false;
+            if (!RunSession.GetOrCreate().TrySelectKeystone(keystoneId)) return false;
 
             KeystoneDefinition selected = AvailableKeystones.FirstOrDefault(keystone => keystone.id == keystoneId);
             Debug.Log($"キーストーンを取得: {selected?.displayName}。所持カード数: {runState.playerDeck.Count}");
             RunStateChanged?.Invoke(runState);
             return true;
+        }
+
+        private void ApplyDebugStartDeck()
+        {
+            if (!DEBUG || runState == null)
+            {
+                return;
+            }
+
+            if (debugMoveCard == null || debugAttackCard == null || debugHeavyStrikeCard == null)
+            {
+                Debug.LogError("RunController: DEBUGが有効ですが、デバッグ初期手札が設定されていません。");
+                return;
+            }
+
+            runState.playerDeck.Clear();
+            runState.playerDeck.Add(new CardBase(debugMoveCard, CardLevel.one));
+            runState.playerDeck.Add(new CardBase(debugAttackCard, CardLevel.one));
+            runState.playerDeck.Add(new CardBase(debugHeavyStrikeCard, CardLevel.one));
         }
 
         public bool CanBuyTownHeal()
@@ -359,7 +398,7 @@ namespace TestCardGame.Controller
 
         public void FailRun()
         {
-            runProgressService.MarkRunFailed(runState);
+            RunSession.GetOrCreate().MarkFailed();
             if (runState != null)
             {
                 RunStateChanged?.Invoke(runState);
@@ -423,7 +462,7 @@ namespace TestCardGame.Controller
 
         private void WinRun()
         {
-            runProgressService.MarkRunCompleted(runState);
+            RunSession.GetOrCreate().MarkCompleted();
             if (runState != null)
             {
                 RunStateChanged?.Invoke(runState);
