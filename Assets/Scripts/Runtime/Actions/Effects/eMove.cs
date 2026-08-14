@@ -37,8 +37,7 @@ namespace TestCardGame.Actions.Effects
             int availableStep = context.StatusEffectService?.GetAdjustedMoveStep(context.User, step) ?? step;
             if (availableStep <= 0) return false;
             int actualStep = Mathf.Min(distance, availableStep);
-            Vector2Int destination = userPos + dir * actualStep;
-            return context.MoveService.GetCellAt(destination)?.CanMove == true;
+            return actualStep > 0 && context.MoveService.GetCellAt(userPos + dir)?.CanMove == true;
         }
 
         /// <summary>

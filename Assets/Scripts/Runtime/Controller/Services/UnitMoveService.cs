@@ -51,7 +51,16 @@ namespace TestCardGame.Controller.Services
         public bool Move(UnitID unitId, Vector2Int relative)
         {
             if (!TryResolveUnit(unitId, relative, out IUnit unit)) return false;
-            return MoveAbsoluteInternal(unitId, unit, unit.Position, unit.Position + relative);
+            Vector2Int direction = NormalizeCardinal(relative);
+            int steps = Mathf.Max(Mathf.Abs(relative.x), Mathf.Abs(relative.y));
+            bool moved = false;
+            for (int step = 0; step < steps; step++)
+            {
+                Vector2Int next = unit.Position + direction;
+                if (!MoveAbsoluteInternal(unitId, unit, unit.Position, next)) break;
+                moved = true;
+            }
+            return moved;
         }
 
         /// <summary>指定マスへの通常移動。初期配置にも使用する。</summary>
