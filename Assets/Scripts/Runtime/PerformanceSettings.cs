@@ -1,34 +1,63 @@
+#if UNITY_EDITOR
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace TestCardGame.Runtime
 {
+    /// <summary>
+    /// Editor の Play Mode 中だけ描画頻度を抑える。
+    /// ビルドにはコンパイルされず、終了時には変更前の設定へ戻す。
+    /// </summary>
+    [InitializeOnLoad]
     public static class PerformanceSettings
     {
-        private const int TargetFrameRate = 30;
-        private const string TargetQualityName = "Low";
+        private const int PlayModeVSyncCount = 1;
+        private const int PlayModeRenderFrameInterval = 2;
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        private static void Apply()
+        private static int previousVSyncCount;
+        private static int previousRenderFrameInterval;
+        private static bool hasCapturedSettings;
+
+        static PerformanceSettings()
         {
-            ApplyQualityLevel();
-            QualitySettings.vSyncCount = 0;
-            Application.targetFrameRate = TargetFrameRate;
+            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
         }
 
-        /// <summary>
-        /// 実行時の品質を低めに固定する。
-        /// </summary>
-        private static void ApplyQualityLevel()
+        private static void OnPlayModeStateChanged(PlayModeStateChange state)
         {
-            string[] qualityNames = QualitySettings.names;
-            for (int i = 0; i < qualityNames.Length; i++)
+            switch (state)
             {
-                if (qualityNames[i] == TargetQualityName)
-                {
-                    QualitySettings.SetQualityLevel(i, true);
-                    return;
-                }
+                case PlayModeStateChange.EnteredPlayMode:
+                    ApplyPlayModeLimits();
+                    break;
+                case PlayModeStateChange.ExitingPlayMode:
+                    RestoreSettings();
+                    break;
             }
+        }
+
+        private static void ApplyPlayModeLimits()
+        {
+            previousVSyncCount = QualitySettings.vSyncCount;
+            previousRenderFrameInterval = OnDemandRendering.renderFrameInterval;
+            hasCapturedSettings = true;
+
+            QualitySettings.vSyncCount = PlayModeVSyncCount;
+            OnDemandRendering.renderFrameInterval = PlayModeRenderFrameInterval;
+        }
+
+        private static void RestoreSettings()
+        {
+            if (!hasCapturedSettings)
+            {
+                return;
+            }
+
+            QualitySettings.vSyncCount = previousVSyncCount;
+            OnDemandRendering.renderFrameInterval = previousRenderFrameInterval;
+            hasCapturedSettings = false;
         }
     }
 }
+#endif

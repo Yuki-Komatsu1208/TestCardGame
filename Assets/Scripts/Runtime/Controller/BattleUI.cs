@@ -316,7 +316,8 @@ namespace TestCardGame.Controller
                 {
                     livingEnemiesCount++;
                     string enemyStatuses = GetStatusEffectsString(enemy as IUnit);
-                    enemiesInfo += $"\n{enemy.Name} HP: {enemy.Hp.CurrentValue} {enemyStatuses}";
+                    var enemyUnit = enemy as IUnit;
+                    enemiesInfo += $"\n{enemy.Name} HP: {enemy.Hp.CurrentValue} / スタン耐性: {enemyUnit.StunResist.CurrentValue}/{enemyUnit.StunResist.MaxValue} {enemyStatuses}";
                 }
                 else
                 {
@@ -335,8 +336,8 @@ namespace TestCardGame.Controller
 
             statusText.text = $"<b>{stageName}</b> (残り敵: {livingEnemiesCount}体)\n" +
                              $"{turnName}\n" +
-                             $"プレイヤーマナ: {player.Mana}/{player.MaxMana}\n" +
-                             $"プレイヤーHP: {player.Hp.CurrentValue} {playerStatusStr}" +
+                             $"プレイヤーマナ: {player.Mana.CurrentValue}/{player.Mana.MaxValue}\n" +
+                             $"プレイヤーHP: {player.Hp.CurrentValue} / スタン耐性: {player.StunResist.CurrentValue}/{player.StunResist.MaxValue} {playerStatusStr}" +
                              $"{runInfo}" +
                              $"{enemiesInfo}";
 
@@ -527,23 +528,6 @@ namespace TestCardGame.Controller
                 return;
             }
 
-            if (!runController.HasSelectedKeystone)
-            {
-                var keystoneChoices = new List<(string label, System.Action action)>();
-                foreach (KeystoneDefinition keystone in runController.AvailableKeystones)
-                {
-                    KeystoneDefinition capturedKeystone = keystone;
-                    keystoneChoices.Add(($"<b><color=yellow>【{capturedKeystone.displayName}】</color></b>\n0G / {capturedKeystone.description}", () =>
-                    {
-                        if (runController.TrySelectKeystone(capturedKeystone.id)) OpenTownMenu();
-                    }));
-                }
-
-                HideTownDepartureButton();
-                ShowChoicePanel("遠征出発前：キーストーンを1つ選んでください（0G）", keystoneChoices, false);
-                return;
-            }
-
             ShowChoicePanel(
                 $"街に到着しました。所持ゴールド: {runController.RunState.ownedGold}\n購入したい項目を選んでください",
                 new List<(string label, System.Action action)>
@@ -616,7 +600,7 @@ namespace TestCardGame.Controller
 
         private void ShowTownDepartureButton()
         {
-            if (runController == null || !runController.IsTownOpen || !runController.HasSelectedKeystone || endTurnButton == null)
+            if (runController == null || !runController.IsTownOpen || endTurnButton == null)
             {
                 return;
             }

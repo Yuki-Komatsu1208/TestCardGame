@@ -42,6 +42,12 @@ namespace TestCardGame.Controller.Services
                 return false;
             }
 
+            if (!statusEffectService.CanAct(player))
+            {
+                Debug.LogWarning("プレイヤーはスタン等の行動不能状態のためカードを使用できません。");
+                return false;
+            }
+
             if (!card.CanBePlayedBy(player))
             {
                 if (card.IsCoolingDown)
@@ -68,7 +74,12 @@ namespace TestCardGame.Controller.Services
                 return;
             }
 
-            player.Mana = card.GetCost(player).PayFrom(player.Mana);
+            if (!player.Mana.TrySpend(card.GetCost(player).Amount))
+            {
+                Debug.LogWarning("マナが足りません。");
+                return;
+            }
+
             card.StartCooldown(player);
         }
 
@@ -144,7 +155,7 @@ namespace TestCardGame.Controller.Services
 
             if (player != null)
             {
-                player.Mana = Mathf.Min(player.Mana + 3, player.MaxMana);
+                player.Mana.RecoverAtTurnStart();
                 // プレイヤーターン開始時の状態異常を処理する
                 statusEffectService?.TickTurnStart(player);
             }

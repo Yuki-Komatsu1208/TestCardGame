@@ -38,9 +38,19 @@ namespace TestCardGame.Run
             return lifecycle.TryStartNextExpedition();
         }
 
-        public bool TrySelectKeystone(KeystoneId keystoneId)
+        public void EnsureShopInventory(ShopCatalogSO catalog)
         {
-            return lifecycle.TrySelectKeystone(keystoneId);
+            lifecycle.EnsureShopInventory(catalog);
+        }
+
+        public bool TryBuyShopCard(ShopCatalogSO catalog, int offerIndex)
+        {
+            return lifecycle.TryBuyShopCard(catalog, offerIndex);
+        }
+
+        public bool TryBuyKeystone(ShopCatalogSO catalog, KeystoneId keystoneId)
+        {
+            return lifecycle.TryBuyKeystone(catalog, keystoneId);
         }
 
         public bool TryUseInn(int maxHp, float baseMultiplier, float expeditionMultiplier, out int cost)

@@ -32,6 +32,8 @@ MonoBehaviour:
         maxRange: 1
         statusEffect: 0
         value: 0
+    - effect: {fileID: 11400000, guid: 4f2a6cd747b347c4a3792e1586526ddc, type: 2}
+      parameters: {StunDamage: 40}
     - effect: {fileID: 11400000, guid: a0000000000000000000000000000051, type: 2}
       parameters:
         step: 1
@@ -63,6 +65,8 @@ MonoBehaviour:
         maxRange: 1
         statusEffect: 0
         value: 0
+    - effect: {fileID: 11400000, guid: 4f2a6cd747b347c4a3792e1586526ddc, type: 2}
+      parameters: {StunDamage: 40}
     - effect: {fileID: 11400000, guid: a0000000000000000000000000000051, type: 2}
       parameters:
         step: 1
@@ -94,6 +98,8 @@ MonoBehaviour:
         maxRange: 1
         statusEffect: 0
         value: 0
+    - effect: {fileID: 11400000, guid: 4f2a6cd747b347c4a3792e1586526ddc, type: 2}
+      parameters: {StunDamage: 40}
     - effect: {fileID: 11400000, guid: a0000000000000000000000000000051, type: 2}
       parameters:
         step: 1

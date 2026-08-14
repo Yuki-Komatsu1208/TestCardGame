@@ -13,6 +13,11 @@ namespace TestCardGame.Actions.Effects
         public virtual string[] ParameterFields => System.Array.Empty<string>();
 
         /// <summary>
+        /// Inspectorでパラメータに表示する名前を返す。既定ではシリアライズ名をそのまま使用する。
+        /// </summary>
+        public virtual string GetParameterDisplayName(string fieldName) => fieldName;
+
+        /// <summary>
         /// カード側パラメータに、この効果の初期値を設定する。
         /// </summary>
         public virtual void SetDefaultParameters(ActionEffectParameters parameters) { }

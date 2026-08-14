@@ -27,13 +27,13 @@ namespace TestCardGame.Controller.Services
             float calculatedAmount = amount;
             if (source != null)
             {
-                bool sourceIsWeak = false;
+                bool sourceIsWeakened = false;
                 int sourcePower = 0;
                 foreach (var effect in source.StatusEffects)
                 {
-                    if (effect.Id == StatusEffectId.Weak)
+                    if (effect.Id == StatusEffectId.Weakened)
                     {
-                        sourceIsWeak = true;
+                        sourceIsWeakened = true;
                     }
                     else if (effect.Id == StatusEffectId.Power)
                     {
@@ -41,22 +41,31 @@ namespace TestCardGame.Controller.Services
                     }
                 }
                 calculatedAmount += sourcePower;
-                if (sourceIsWeak)
+                if (sourceIsWeakened)
                 {
                     calculatedAmount *= 0.5f;
                 }
             }
 
-            bool targetIsWeak = false;
+            bool targetIsVulnerable = false;
+            bool targetIsStunned = false;
             foreach (var effect in target.StatusEffects)
             {
-                if (effect.Id == StatusEffectId.Weak)
+                if (effect.Id == StatusEffectId.Vulnerable)
                 {
-                    targetIsWeak = true;
-                    break;
+                    targetIsVulnerable = true;
+                }
+                else if (effect.Id == StatusEffectId.Stun)
+                {
+                    targetIsStunned = true;
                 }
             }
-            if (targetIsWeak)
+            if (targetIsVulnerable && targetIsStunned)
+            {
+                // 脆弱とスタンの被ダメージ増加は加算し、合計2.0倍に固定する。
+                calculatedAmount *= 2.0f;
+            }
+            else if (targetIsVulnerable || targetIsStunned)
             {
                 calculatedAmount *= 1.5f;
             }

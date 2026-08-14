@@ -61,7 +61,7 @@ namespace TestCardGame.Actions.Effects
 
             int actualStep = Mathf.Min(distance, availableStep);
 
-            context.MoveService.RequestMoveRelative(context.User.ID, dir * actualStep);
+            context.MoveService.Move(context.User.ID, dir * actualStep);
         }
 
         /// <summary>

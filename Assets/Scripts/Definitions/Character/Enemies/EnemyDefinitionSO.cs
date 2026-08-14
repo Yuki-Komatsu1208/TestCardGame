@@ -31,6 +31,7 @@ namespace TestCardGame.Character.Enemies
     {
         public string enemyName;
         public int maxHp;
+        [Min(1)] public int maxStunResist = 100;
         public int characterCode;
         public Color enemyColor = Color.red;
         public BehaviorPattern behaviorPattern;

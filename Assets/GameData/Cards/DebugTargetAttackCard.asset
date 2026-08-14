@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c908b67c4bbf4b54fbdadee6b3525c30, type: 3}
   m_Name: DebugTargetAttackCard
   m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Cards.Core.CardDefinitionSO
-  cardName: "DEBUG: Target Attack"
+  cardName: 'DEBUG: Target Attack'
+  buildTags:
+  intrinsicModifiers: []
   level1:
-    description: "DEBUG: 任意の座標の敵に1000ダメージを与える。"
+    description: "DEBUG: \u4EFB\u610F\u306E\u5EA7\u6A19\u306E\u6575\u306B1000\u30C0\u30E1\u30FC\u30B8\u3092\u4E0E\u3048\u308B\u3002"
     cost:
       amount: 0
     cooldown:
       turns: 0
     effects:
-    - effect: {fileID: 11400000, guid: 9f000000000000000000000000000215, type: 2}
+    - effect: {fileID: 11400000, guid: a1000000000000000000000000000004, type: 2}
       parameters:
         step: 1
         damage: 1000
@@ -29,17 +31,21 @@ MonoBehaviour:
         hitType: 0
         radius: 1
         distance: 1
-        maxRange: 0
+        maxRange: 1000
         statusEffect: 0
         value: 0
+        count: 1
+        moveAwayFromTarget: 0
+    - effect: {fileID: 11400000, guid: 4f2a6cd747b347c4a3792e1586526ddc, type: 2}
+      parameters: {StunDamage: 10}
   level2:
-    description: "DEBUG: 任意の座標の敵に1000ダメージを与える。"
+    description: "DEBUG: \u4EFB\u610F\u306E\u5EA7\u6A19\u306E\u6575\u306B1000\u30C0\u30E1\u30FC\u30B8\u3092\u4E0E\u3048\u308B\u3002"
     cost:
       amount: 0
     cooldown:
       turns: 0
     effects:
-    - effect: {fileID: 11400000, guid: 9f000000000000000000000000000215, type: 2}
+    - effect: {fileID: 11400000, guid: a1000000000000000000000000000004, type: 2}
       parameters:
         step: 1
         damage: 1000
@@ -48,17 +54,21 @@ MonoBehaviour:
         hitType: 0
         radius: 1
         distance: 1
-        maxRange: 0
+        maxRange: 1000
         statusEffect: 0
         value: 0
+        count: 1
+        moveAwayFromTarget: 0
+    - effect: {fileID: 11400000, guid: 4f2a6cd747b347c4a3792e1586526ddc, type: 2}
+      parameters: {StunDamage: 10}
   level3:
-    description: "DEBUG: 任意の座標の敵に1000ダメージを与える。"
+    description: "DEBUG: \u4EFB\u610F\u306E\u5EA7\u6A19\u306E\u6575\u306B1000\u30C0\u30E1\u30FC\u30B8\u3092\u4E0E\u3048\u308B\u3002"
     cost:
       amount: 0
     cooldown:
       turns: 0
     effects:
-    - effect: {fileID: 11400000, guid: 9f000000000000000000000000000215, type: 2}
+    - effect: {fileID: 11400000, guid: a1000000000000000000000000000004, type: 2}
       parameters:
         step: 1
         damage: 1000
@@ -67,6 +77,10 @@ MonoBehaviour:
         hitType: 0
         radius: 1
         distance: 1
-        maxRange: 0
+        maxRange: 1000
         statusEffect: 0
         value: 0
+        count: 1
+        moveAwayFromTarget: 0
+    - effect: {fileID: 11400000, guid: 4f2a6cd747b347c4a3792e1586526ddc, type: 2}
+      parameters: {StunDamage: 10}

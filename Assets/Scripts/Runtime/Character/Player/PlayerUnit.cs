@@ -9,6 +9,7 @@ using TestCardGame.Character.StatusVO;
 using TestCardGame.Character.ValueObjects;
 using TestCardGame.Character.StatusEffects;
 using UnityEngine;
+using ManaStatus = TestCardGame.Character.StatusVO.Mana;
 
 namespace TestCardGame.Character.Player
 {
@@ -23,8 +24,8 @@ namespace TestCardGame.Character.Player
         public UnitID ID { get; } 
         public string Name { get; } 
         public HP Hp { get; } 
-        public int Mana { get; set; }
-        public int MaxMana { get; set; }
+        public STUNResist StunResist { get; }
+        public ManaStatus Mana { get; }
         public Vector2Int Position { get; set; }
         private readonly StatusEffectCollection statusEffects = new();
         public IReadOnlyList<StatusEffectInstance> StatusEffects => statusEffects.Effects;
@@ -71,8 +72,8 @@ namespace TestCardGame.Character.Player
             Name = name;
             Position = position;
             Hp = hp;
-            Mana = 3;
-            MaxMana = 5;
+            StunResist = new STUNResist(100, 100);
+            Mana = new ManaStatus(ManaStatus.DefaultCurrentValue, ManaStatus.DefaultMaxValue, ManaStatus.DefaultRecoveryPerTurn);
             Cards = new List<CardBase>();
         }
 
@@ -85,8 +86,8 @@ namespace TestCardGame.Character.Player
             Name = name;
             Position = position;
             Hp = hp;
-            Mana = 3;
-            MaxMana = 5;
+            StunResist = new STUNResist(100, 100);
+            Mana = new ManaStatus(ManaStatus.DefaultCurrentValue, ManaStatus.DefaultMaxValue, ManaStatus.DefaultRecoveryPerTurn);
             Cards = cards ?? new List<CardBase>();
         }
 
@@ -99,8 +100,8 @@ namespace TestCardGame.Character.Player
             Name = name;
             Position = position;
             Hp = hp;
-            Mana = 3;
-            MaxMana = 5;
+            StunResist = new STUNResist(100, 100);
+            Mana = new ManaStatus(ManaStatus.DefaultCurrentValue, ManaStatus.DefaultMaxValue, ManaStatus.DefaultRecoveryPerTurn);
             Cards = new List<CardBase>();
             if (cardDefinitions != null)
             {
@@ -123,8 +124,12 @@ namespace TestCardGame.Character.Player
             Name = definition != null ? definition.playerName : "Player";
             Position = position;
             Hp = new HP(definition != null ? definition.maxHp : 100);
-            Mana = definition != null ? definition.initialMana : 3;
-            MaxMana = definition != null ? definition.maxMana : 5;
+            int maxStunResist = definition != null ? definition.maxStunResist : 100;
+            StunResist = new STUNResist(maxStunResist, maxStunResist);
+            Mana = new ManaStatus(
+                definition != null ? definition.initialMana : ManaStatus.DefaultCurrentValue,
+                definition != null ? definition.maxMana : ManaStatus.DefaultMaxValue,
+                definition != null ? definition.manaRecoveryPerTurn : ManaStatus.DefaultRecoveryPerTurn);
             Cards = new List<CardBase>();
             if (definition != null && definition.initialCards != null)
             {
@@ -139,6 +144,16 @@ namespace TestCardGame.Character.Player
                     Cards.Add(new CardBase(entry.card, new CardLevel(level)));
                 }
             }
+        }
+
+        /// <summary>
+        /// RUNで維持されたカード・スタン耐性を指定してプレイヤーを作成する。
+        /// </summary>
+        public PlayerUnit(UnitID id, PlayerDefinitionSO definition, Vector2Int position, List<CardBase> cards, int currentStunResist)
+            : this(id, definition, position)
+        {
+            Cards = cards ?? new List<CardBase>();
+            StunResist = new STUNResist(currentStunResist > 0 ? currentStunResist : StunResist.MaxValue, StunResist.MaxValue);
         }
     }
 }

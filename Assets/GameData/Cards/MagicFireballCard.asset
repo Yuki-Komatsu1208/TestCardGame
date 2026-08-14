@@ -32,6 +32,8 @@ MonoBehaviour:
         maxRange: 0
         statusEffect: 0
         value: 5
+    - effect: {fileID: 11400000, guid: 4f2a6cd747b347c4a3792e1586526ddc, type: 2}
+      parameters: {StunDamage: 10}
   level2:
     description: "直線上に火球を放ち、最初の対象に30ダメージと炎上3ターン(毎ターン8ダメージ)を与える。現在の集中をすべて消費し、その値だけ炎上ダメージと継続ターンが増加する。"
     cost:
@@ -51,6 +53,8 @@ MonoBehaviour:
         maxRange: 0
         statusEffect: 0
         value: 8
+    - effect: {fileID: 11400000, guid: 4f2a6cd747b347c4a3792e1586526ddc, type: 2}
+      parameters: {StunDamage: 10}
   level3:
     description: "直線上に火球を放ち、最初の対象に40ダメージと炎上4ターン(毎ターン10ダメージ)を与える。現在の集中をすべて消費し、その値だけ炎上ダメージと継続ターンが増加する。"
     cost:
@@ -70,3 +74,5 @@ MonoBehaviour:
         maxRange: 0
         statusEffect: 0
         value: 10
+    - effect: {fileID: 11400000, guid: 4f2a6cd747b347c4a3792e1586526ddc, type: 2}
+      parameters: {StunDamage: 10}

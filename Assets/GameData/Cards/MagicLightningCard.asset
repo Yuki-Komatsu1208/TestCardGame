@@ -33,6 +33,8 @@ MonoBehaviour:
         statusEffect: 0
         value: 0
         count: 3
+    - effect: {fileID: 11400000, guid: 4f2a6cd747b347c4a3792e1586526ddc, type: 2}
+      parameters: {StunDamage: 10}
   level2:
     description: "対象座標に3回連続で雷を落とし、各22ダメージを与える。現在の集中をすべて消費し、その値だけ雷撃回数が増加する。"
     cost:
@@ -53,6 +55,8 @@ MonoBehaviour:
         statusEffect: 0
         value: 0
         count: 3
+    - effect: {fileID: 11400000, guid: 4f2a6cd747b347c4a3792e1586526ddc, type: 2}
+      parameters: {StunDamage: 10}
   level3:
     description: "対象座標に3回連続で雷を落とし、各30ダメージを与える。現在の集中をすべて消費し、その値だけ雷撃回数が増加する。"
     cost:
@@ -73,3 +77,5 @@ MonoBehaviour:
         statusEffect: 0
         value: 0
         count: 3
+    - effect: {fileID: 11400000, guid: 4f2a6cd747b347c4a3792e1586526ddc, type: 2}
+      parameters: {StunDamage: 10}

@@ -24,6 +24,8 @@ MonoBehaviour:
     effects:
     - effect: {fileID: 11400000, guid: a1000000000000000000000000000004, type: 2}
       parameters: {damage: 3, maxRange: 2}
+    - effect: {fileID: 11400000, guid: 4f2a6cd747b347c4a3792e1586526ddc, type: 2}
+      parameters: {StunDamage: 10}
     - effect: {fileID: 11400000, guid: e8b80bdd9e564cd458dc080d0dafdf82, type: 2}
       parameters: {statusEffect: 8, duration: 1, value: 0}
   level2:
@@ -33,6 +35,8 @@ MonoBehaviour:
     effects:
     - effect: {fileID: 11400000, guid: a1000000000000000000000000000004, type: 2}
       parameters: {damage: 4, maxRange: 2}
+    - effect: {fileID: 11400000, guid: 4f2a6cd747b347c4a3792e1586526ddc, type: 2}
+      parameters: {StunDamage: 10}
     - effect: {fileID: 11400000, guid: e8b80bdd9e564cd458dc080d0dafdf82, type: 2}
       parameters: {statusEffect: 8, duration: 1, value: 0}
   level3:
@@ -42,5 +46,7 @@ MonoBehaviour:
     effects:
     - effect: {fileID: 11400000, guid: a1000000000000000000000000000004, type: 2}
       parameters: {damage: 5, maxRange: 2}
+    - effect: {fileID: 11400000, guid: 4f2a6cd747b347c4a3792e1586526ddc, type: 2}
+      parameters: {StunDamage: 10}
     - effect: {fileID: 11400000, guid: e8b80bdd9e564cd458dc080d0dafdf82, type: 2}
       parameters: {statusEffect: 8, duration: 1, value: 0}

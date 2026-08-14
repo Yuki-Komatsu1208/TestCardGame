@@ -12,3 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96caf1c1a77130447abf0dcfe5e42f96, type: 3}
   m_Name: ForcedMoveEffect
   m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Actions.Effects.ForcedMoveEffectSO
+  defaultDistance: 1
+  defaultDirection: 0
+  defaultStunDamage: 10

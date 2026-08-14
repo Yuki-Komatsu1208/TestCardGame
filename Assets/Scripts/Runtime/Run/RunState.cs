@@ -27,6 +27,7 @@ namespace TestCardGame.Run
         public int currentStageIndex;
         public bool hasStartedCurrentExpedition;
         public int currentHp;
+        public int currentStunResist;
         public int ownedGold;
         // アイテム実装の共通所持状態。遠征遷移では再生成せず、RUN終了まで保持する。
         public List<string> ownedItemIds = new();
@@ -36,5 +37,17 @@ namespace TestCardGame.Run
         public int overhuntDepth;
         public bool isInOverhunt;
         public RunProgressPhase phase;
+        // Outpost滞在中のショップ状態。UIを作り直しても再抽選しない。
+        public bool hasShopInventory;
+        public List<ShopCardOfferState> shopCardOffers = new();
+    }
+
+    [Serializable]
+    public class ShopCardOfferState
+    {
+        public CardDefinitionSO card;
+        public int price;
+        public bool isOnSale;
+        public bool isPurchased;
     }
 }

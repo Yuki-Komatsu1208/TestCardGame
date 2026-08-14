@@ -17,6 +17,7 @@ namespace TestCardGame.Character.Enemies
         public UnitID ID { get; }
         public string Name { get; }
         public HP Hp { get; }
+        public STUNResist StunResist { get; }
         public Vector2Int Position { get; set; }
         public IReadOnlyList<EnemyActionPlan> ActionPlans { get; }
         
@@ -58,6 +59,8 @@ namespace TestCardGame.Character.Enemies
             ID = id;
             Name = definition.enemyName;
             Hp = new HP(definition.maxHp);
+            int maxStunResist = definition.maxStunResist > 0 ? definition.maxStunResist : 100;
+            StunResist = new STUNResist(maxStunResist, maxStunResist);
             Position = position;
             behaviorPattern = definition.behaviorPattern;
             nextActionIndex = 0;

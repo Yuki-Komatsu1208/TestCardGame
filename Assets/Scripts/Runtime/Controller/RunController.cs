@@ -19,7 +19,7 @@ namespace TestCardGame.Controller
         [SerializeField] private List<CardModifierSO> modifierPool = new();
 
         [Header("DEBUG")]
-        [Tooltip("有効時は開始デッキをデバッグ攻撃・移動・ヘヴィストライクだけに置き換え、キーストーン選択後にその初期カードを追加します。")]
+        [Tooltip("有効時は開始デッキをデバッグ攻撃・移動・ヘヴィストライクだけに置き換える。ショップでキーストーンを購入した場合、その初期カードは追加される。")]
         [SerializeField] private bool DEBUG;
         [SerializeField] private CardDefinitionSO debugMoveCard;
         [SerializeField] private CardDefinitionSO debugAttackCard;
@@ -51,8 +51,6 @@ namespace TestCardGame.Controller
         public bool IsTownOpen => runState != null && runState.phase == RunProgressPhase.Town;
         public bool CanGoToOverhunt => runProgressService.CanGoToOverhunt(runDefinition, runState);
         public bool IsFinalExpedition => runProgressService.IsFinalExpedition(runDefinition, runState);
-        public bool HasSelectedKeystone => runProgressService.HasSelectedKeystone(runState);
-        public IReadOnlyList<KeystoneDefinition> AvailableKeystones => runProgressService.GetAvailableKeystones(runDefinition);
         public int TownHealCost => townHealCost;
         public int TownLevelUpCost => townLevelUpCost;
         public int TownModCost => townModCost;
@@ -199,12 +197,14 @@ namespace TestCardGame.Controller
         private void HandleBattleWin()
         {
             int currentHp = runState.currentHp;
+            int currentStunResist = runState.currentStunResist;
             if (gameController != null && gameController.PlayerUnitInstance != null)
             {
                 currentHp = gameController.PlayerUnitInstance.Hp.CurrentValue;
+                currentStunResist = gameController.PlayerUnitInstance.StunResist.CurrentValue;
             }
 
-            var result = runProgressService.HandleBattleWin(runState, runDefinition, CreateEconomyConfig(), currentHp);
+            var result = runProgressService.HandleBattleWin(runState, runDefinition, CreateEconomyConfig(), currentHp, currentStunResist);
             Debug.Log(result.Message);
 
             if (result.Flow == BattleWinFlow.RequestOverhuntChoice)
@@ -330,12 +330,6 @@ namespace TestCardGame.Controller
                 return;
             }
 
-            if (!HasSelectedKeystone)
-            {
-                Debug.LogWarning("キーストーンを選択するまで遠征には出発できません。");
-                return;
-            }
-
             if (RunSession.GetOrCreate().TryStartNextExpedition())
             {
                 Debug.Log($"次の遠征へ進行します。遠征 {runState.currentExpeditionIndex + 1} を開始します。");
@@ -345,16 +339,6 @@ namespace TestCardGame.Controller
             }
 
             WinRun();
-        }
-
-        public bool TrySelectKeystone(KeystoneId keystoneId)
-        {
-            if (!RunSession.GetOrCreate().TrySelectKeystone(keystoneId)) return false;
-
-            KeystoneDefinition selected = AvailableKeystones.FirstOrDefault(keystone => keystone.id == keystoneId);
-            Debug.Log($"キーストーンを取得: {selected?.displayName}。所持カード数: {runState.playerDeck.Count}");
-            RunStateChanged?.Invoke(runState);
-            return true;
         }
 
         private void ApplyDebugStartDeck()

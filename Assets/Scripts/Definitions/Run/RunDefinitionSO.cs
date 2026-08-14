@@ -12,8 +12,7 @@ namespace TestCardGame.Run
     {
         public string runName;
         public PlayerDefinitionSO playerDefinition;
-        [Tooltip("RUN開始時に街で0G購入できるキーストーン候補。")]
-        public List<KeystoneDefinition> keystones = new();
+        [Min(0)] public int startingGold = 100;
         [Tooltip("RUNを構成する遠征。各遠征の最後のステージがボス戦で、OverHunt候補は遠征ごとに設定する。")]
         public List<ExpeditionDefinition> expeditions = new();
 

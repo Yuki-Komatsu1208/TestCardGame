@@ -39,45 +39,7 @@ namespace TestCardGame.Actions.Effects
                 return;
             }
 
-            var targetUnit = cell.Occupant;
-            var user = context.User;
-
-            Vector2Int diff = user.Position - targetUnit.Position;
-            if (diff == Vector2Int.zero)
-            {
-                return;
-            }
-
-            Vector2Int dir = Normalize(diff);
-            int currentDist = Mathf.Abs(diff.x) + Mathf.Abs(diff.y);
-
-            // 使用者を通り越さない範囲で引き寄せる。
-            int pullSteps = Mathf.Min(distance, currentDist - 1);
-            if (pullSteps <= 0)
-            {
-                Debug.Log("引き寄せ効果: 対象はすでに隣接しているため移動しません。");
-                return;
-            }
-
-            Vector2Int targetDest = targetUnit.Position + dir * pullSteps;
-
-            Debug.Log($"引き寄せ効果: {targetUnit.Name} を {targetUnit.Position} から方向 {dir} に {pullSteps} マス移動し、{targetDest} へ引き寄せます。");
-            context.MoveService.RequestForcedMove(targetUnit.ID, targetDest);
-        }
-
-        /// <summary>
-        /// 指定ベクトルを上下左右の単位方向に正規化する。
-        /// </summary>
-        private static Vector2Int Normalize(Vector2Int d)
-        {
-            if (Mathf.Abs(d.x) >= Mathf.Abs(d.y))
-            {
-                return new Vector2Int(d.x == 0 ? 0 : (d.x > 0 ? 1 : -1), 0);
-            }
-            else
-            {
-                return new Vector2Int(0, d.y == 0 ? 0 : (d.y > 0 ? 1 : -1));
-            }
+            context.MoveService.Pull(context.User, cell.Occupant, distance);
         }
     }
 }

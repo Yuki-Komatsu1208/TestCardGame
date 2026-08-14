@@ -30,3 +30,6 @@ ADR番号はカテゴリフォルダごとに `ADR-001` から採番します。
 * [ADR-011: 初期エンジンは各キーストーンに2〜3個ずつ用意する](GameDesign/ADR-011-initial-engine-lineup.md)
 * [ADR-012: 魔法使い・騎士・ガンナーの三すくみコンセプトを明確化する](GameDesign/ADR-012-archetype-triangle-for-mage-knight-gunner.md)
 * [ADR-013: Outpostを遠征間の恒久拠点とし、施設ごとに成長判断を分ける](GameDesign/ADR-013-outpost-facilities-and-workshop-flow.md)
+* [ADR-014: スタン耐性とスタンダメージで行動不能を蓄積型にする](GameDesign/ADR-014-stun-resistance-and-stun-damage.md)
+* [ADR-015: Outpostショップでキーストーンを任意購入し、カード在庫を滞在単位で固定する](GameDesign/ADR-015-outpost-shop-inventory-and-keystone-purchase.md)
+* [ADR-016: 移動4系統とFORCEMOVE衝突規則をUnitMoveServiceへ集約する](GameDesign/ADR-016-unit-movement-and-force-move-collision.md)

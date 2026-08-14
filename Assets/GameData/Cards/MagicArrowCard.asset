@@ -34,6 +34,8 @@ MonoBehaviour:
         maxRange: 0
         statusEffect: 0
         value: 0
+    - effect: {fileID: 11400000, guid: 4f2a6cd747b347c4a3792e1586526ddc, type: 2}
+      parameters: {StunDamage: 10}
   level2:
     description: "射程3の直線上に魔法の矢を放ち、最初に当たった対象に26ダメージを与える。現在の集中をすべて消費し、その値だけ射程が増加する。"
     cost:
@@ -53,6 +55,8 @@ MonoBehaviour:
         maxRange: 0
         statusEffect: 0
         value: 0
+    - effect: {fileID: 11400000, guid: 4f2a6cd747b347c4a3792e1586526ddc, type: 2}
+      parameters: {StunDamage: 10}
   level3:
     description: "射程3の直線上に魔法の矢を放ち、最初に当たった対象に34ダメージを与える。現在の集中をすべて消費し、その値だけ射程が増加する。"
     cost:
@@ -72,3 +76,5 @@ MonoBehaviour:
         maxRange: 0
         statusEffect: 0
         value: 0
+    - effect: {fileID: 11400000, guid: 4f2a6cd747b347c4a3792e1586526ddc, type: 2}
+      parameters: {StunDamage: 10}

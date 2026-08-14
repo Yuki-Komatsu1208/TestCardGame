@@ -127,7 +127,7 @@ namespace TestCardGame.Cards.Core
 
         public bool CanBePlayedBy(PlayerUnit player)
         {
-            return player != null && !IsCoolingDown && GetCost(player).CanPayWith(player.Mana);
+            return player != null && !IsCoolingDown && player.Mana.CanPay(GetCost(player).Amount);
         }
 
         public void StartCooldown(PlayerUnit player)

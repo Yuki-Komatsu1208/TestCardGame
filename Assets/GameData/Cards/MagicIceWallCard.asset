@@ -32,6 +32,8 @@ MonoBehaviour:
         maxRange: 0
         statusEffect: 0
         value: 15
+    - effect: {fileID: 11400000, guid: 4f2a6cd747b347c4a3792e1586526ddc, type: 2}
+      parameters: {StunDamage: 0}
   level2:
     description: "自身にバリア20を2ターン付与し、周囲4マスに14ダメージと凍傷2ターンを与える。現在の集中をすべて消費し、その値だけバリア値が増加する。"
     cost:
@@ -51,6 +53,8 @@ MonoBehaviour:
         maxRange: 0
         statusEffect: 0
         value: 20
+    - effect: {fileID: 11400000, guid: 4f2a6cd747b347c4a3792e1586526ddc, type: 2}
+      parameters: {StunDamage: 0}
   level3:
     description: "自身にバリア28を3ターン付与し、周囲4マスに18ダメージと凍傷3ターンを与える。現在の集中をすべて消費し、その値だけバリア値が増加する。"
     cost:
@@ -70,3 +74,5 @@ MonoBehaviour:
         maxRange: 0
         statusEffect: 0
         value: 28
+    - effect: {fileID: 11400000, guid: 4f2a6cd747b347c4a3792e1586526ddc, type: 2}
+      parameters: {StunDamage: 0}

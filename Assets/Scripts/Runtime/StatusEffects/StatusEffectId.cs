@@ -7,11 +7,13 @@ namespace TestCardGame.Character.StatusEffects
         Poison = 2,
         Shield = 3,
         Sleep = 4,
-        Weak = 5,
+        Weakened = 5,
         Focus = 6,
         Power = 7,
         Frostbite = 8,
-        Barrier = 9
+        Barrier = 9,
+        Vulnerable = 10,
+        Stun = 11
     }
 
     public static class StatusEffectIdExtensions
@@ -25,10 +27,12 @@ namespace TestCardGame.Character.StatusEffects
                 StatusEffectId.Shield => "シールド",
                 StatusEffectId.Barrier => "バリア",
                 StatusEffectId.Sleep => "睡眠",
-                StatusEffectId.Weak => "弱体",
+                StatusEffectId.Weakened => "脱力",
                 StatusEffectId.Focus => "集中",
                 StatusEffectId.Power => "力上昇",
                 StatusEffectId.Frostbite => "凍傷",
+                StatusEffectId.Vulnerable => "脆弱",
+                StatusEffectId.Stun => "スタン",
                 _ => "なし"
             };
         }

@@ -26,6 +26,11 @@ namespace TestCardGame.Controller.Services
                 return;
             }
 
+            if (status == StatusEffectId.Stun && HasStatus(unit, StatusEffectId.Stun))
+            {
+                return;
+            }
+
             int normalizedDuration = status == StatusEffectId.Shield
                 ? 1
                 : Mathf.Max(1, duration);
@@ -39,6 +44,30 @@ namespace TestCardGame.Controller.Services
         {
             if (unit == null) return true;
             return unit.CanAct;
+        }
+
+        /// <summary>
+        /// スタン中でなければ耐性を減らし、尽きた時にスタンを1ターン付与する。
+        /// </summary>
+        public void DealStunDamage(IUnit unit, int amount)
+        {
+            if (unit == null || amount <= 0 || HasStatus(unit, StatusEffectId.Stun)) return;
+
+            unit.StunResist.TakeDamage(amount);
+            if (!unit.StunResist.IsDepleted) return;
+
+            unit.StunResist.RestoreToRatio(0.75f);
+            ApplyStatus(unit, StatusEffectId.Stun, 1);
+            Debug.Log($"{unit.Name}のスタン耐性が尽きたため、スタンを付与しました。耐性は {unit.StunResist.CurrentValue}/{unit.StunResist.MaxValue} まで回復します。");
+        }
+
+        private static bool HasStatus(IUnit unit, StatusEffectId status)
+        {
+            foreach (var effect in unit.StatusEffects)
+            {
+                if (effect.Id == status && effect.RemainingTurns > 0) return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -149,9 +178,13 @@ namespace TestCardGame.Controller.Services
                     effect.TickDuration();
                     Debug.Log($"{unit.Name}はおやすみしています（睡眠残り: {effect.RemainingTurns}ターン）。");
                     break;
-                case StatusEffectId.Weak:
+                case StatusEffectId.Weakened:
                     effect.TickDuration();
-                    Debug.Log($"{unit.Name}は弱体化しています（弱体化残り: {effect.RemainingTurns}ターン）。");
+                    Debug.Log($"{unit.Name}は脱力しています（脱力残り: {effect.RemainingTurns}ターン）。");
+                    break;
+                case StatusEffectId.Vulnerable:
+                    effect.TickDuration();
+                    Debug.Log($"{unit.Name}は脆弱です（脆弱残り: {effect.RemainingTurns}ターン）。");
                     break;
                 case StatusEffectId.Shield:
                     break;
@@ -167,6 +200,10 @@ namespace TestCardGame.Controller.Services
                 case StatusEffectId.Frostbite:
                     effect.TickDuration();
                     Debug.Log($"{unit.Name}は凍傷で動きが鈍っています（凍傷残り: {effect.RemainingTurns}ターン）。");
+                    break;
+                case StatusEffectId.Stun:
+                    effect.TickDuration();
+                    Debug.Log($"{unit.Name}はスタンしています。");
                     break;
             }
         }

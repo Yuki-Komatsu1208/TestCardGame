@@ -9,6 +9,7 @@ namespace TestCardGame.Run
     public sealed class RunLifecycleService
     {
         private readonly RunProgressService progressService;
+        private readonly ShopService shopService;
 
         public RunDefinitionSO Definition { get; private set; }
         public RunState State { get; private set; }
@@ -17,9 +18,10 @@ namespace TestCardGame.Run
             && State.phase != RunProgressPhase.Completed
             && State.phase != RunProgressPhase.Failed;
 
-        public RunLifecycleService(RunProgressService progressService = null)
+        public RunLifecycleService(RunProgressService progressService = null, ShopService shopService = null)
         {
             this.progressService = progressService ?? new RunProgressService();
+            this.shopService = shopService ?? new ShopService(new SystemRandomService());
         }
 
         public RunState Begin(RunDefinitionSO definition)
@@ -51,13 +53,22 @@ namespace TestCardGame.Run
         public bool TryStartNextExpedition()
         {
             return State != null
-                && State.selectedKeystone != KeystoneId.None
                 && progressService.StartNextExpedition(State, Definition);
         }
 
-        public bool TrySelectKeystone(KeystoneId keystoneId)
+        public void EnsureShopInventory(ShopCatalogSO catalog)
         {
-            return progressService.TrySelectKeystone(State, Definition, keystoneId);
+            shopService.EnsureInventory(State, catalog);
+        }
+
+        public bool TryBuyShopCard(ShopCatalogSO catalog, int offerIndex)
+        {
+            return shopService.TryBuyCard(State, catalog, offerIndex);
+        }
+
+        public bool TryBuyKeystone(ShopCatalogSO catalog, KeystoneId keystoneId)
+        {
+            return shopService.TryBuyKeystone(State, catalog, keystoneId);
         }
 
         public bool TryUseInn(int maxHp, float baseMultiplier, float expeditionMultiplier, out int cost)

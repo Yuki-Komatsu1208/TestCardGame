@@ -103,7 +103,7 @@ namespace TestCardGame.BoardManage
                         card.ResetBattleState();
                     }
                 }
-                playerUnit = new PlayerUnit(UnitID.defaultPlayerUnit, playerDefinition.playerName, new HP(playerDefinition.maxHp), new Vector2Int(0, 0), runState.playerDeck);
+                playerUnit = new PlayerUnit(UnitID.defaultPlayerUnit, playerDefinition, new Vector2Int(0, 0), runState.playerDeck, runState.currentStunResist);
                 playerUnit.Hp.TakeDamage(playerDefinition.maxHp - runState.currentHp);
             }
             else

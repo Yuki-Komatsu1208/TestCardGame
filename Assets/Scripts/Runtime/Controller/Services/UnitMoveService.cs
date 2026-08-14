@@ -1,12 +1,31 @@
+using System;
+using System.Collections.Generic;
+using TestCardGame.Actions.Effects;
 using TestCardGame.BoardManage;
 using TestCardGame.Character;
 using TestCardGame.Character.ValueObjects;
 using UnityEngine;
-using System;
-using System.Collections.Generic;
 
 namespace TestCardGame.Controller.Services
 {
+    public enum ForceMoveCollision { None, Obstacle, Unit }
+
+    public readonly struct ForceMoveResult
+    {
+        public int MovedSteps { get; }
+        public ForceMoveCollision Collision { get; }
+        public IUnit CollidedUnit { get; }
+        public bool DidCollide => Collision != ForceMoveCollision.None;
+
+        public ForceMoveResult(int movedSteps, ForceMoveCollision collision, IUnit collidedUnit = null)
+        {
+            MovedSteps = movedSteps;
+            Collision = collision;
+            CollidedUnit = collidedUnit;
+        }
+    }
+
+    /// <summary>通常移動、強制移動、引き寄せ、転移を扱う盤面移動サービス。</summary>
     public class UnitMoveService
     {
         private readonly Board board;
@@ -25,195 +44,134 @@ namespace TestCardGame.Controller.Services
             this.statusEffectService = statusEffectService;
         }
 
-        /// <summary>
-        /// 指定座標にいるユニットを取得する。
-        /// </summary>
-        public IUnit GetUnitAt(Vector2Int pos)
+        public IUnit GetUnitAt(Vector2Int pos) => board != null && board.IsInside(pos.x, pos.y) ? board.GetCell(pos.x, pos.y).Occupant : null;
+        public Cell GetCellAt(Vector2Int pos) => board != null && board.IsInside(pos.x, pos.y) ? board.GetCell(pos.x, pos.y) : null;
+
+        /// <summary>通常移動。移動不能なら失敗し、位置補正は行わない。</summary>
+        public bool Move(UnitID unitId, Vector2Int relative)
         {
-            if (board.IsInside(pos.x, pos.y))
-            {
-                return board.GetCell(pos.x, pos.y).Occupant;
-            }
-            return null;
+            if (!TryResolveUnit(unitId, relative, out IUnit unit)) return false;
+            return MoveAbsoluteInternal(unitId, unit, unit.Position, unit.Position + relative);
+        }
+
+        /// <summary>指定マスへの通常移動。初期配置にも使用する。</summary>
+        public bool Teleport(UnitID unitId, Vector2Int destination)
+        {
+            if (!TryResolveUnit(unitId, destination, out IUnit unit)) return false;
+            return MoveAbsoluteInternal(unitId, unit, unit.Position, destination);
         }
 
         /// <summary>
-        /// 指定座標のセルを取得する。
+        /// 一方向へ1マスずつ対象を移動させる。衝突時だけ双方へ基礎値の2倍のスタン耐性ダメージを与える。
         /// </summary>
-        public Cell GetCellAt(Vector2Int pos)
+        public ForceMoveResult ForceMove(IUnit user, IUnit target, int distance, ForceMoveDirection direction, int baseStunDamage)
         {
-            if (board.IsInside(pos.x, pos.y))
+            if (user == null || target == null || distance <= 0 || board == null) return new ForceMoveResult(0, ForceMoveCollision.None);
+            Vector2Int moveDirection = ResolveForceMoveDirection(user.Position, target.Position, direction);
+            if (moveDirection == Vector2Int.zero) return new ForceMoveResult(0, ForceMoveCollision.None);
+
+            int movedSteps = 0;
+            for (int step = 0; step < distance; step++)
             {
-                return board.GetCell(pos.x, pos.y);
-            }
-            return null;
-        }
-        /// <summary>
-        /// ユニットの移動をリクエストする（相対座標）
-        /// </summary>
-        public bool RequestMoveRelative(UnitID unitId, Vector2Int relative)
-        {
-            if (!TryResolveUnit(unitId, relative, out var unit))
-            {
-                return false;
-            }
-
-            var from = unit.Position;
-            var to = from + relative;
-            return RequestMoveAbsoluteInternal(unitId, unit, from, to);
-        }
-        /// <summary>
-        /// ユニットの移動をリクエストする（絶対座標）
-        /// </summary>
-        public bool RequestMoveAbsolute(UnitID unitId, Vector2Int absolute)
-        {
-            if (!TryResolveUnit(unitId, absolute, out var unit))
-            {
-                return false;
-            }
-
-            var from = unit.Position;
-            return RequestMoveAbsoluteInternal(unitId, unit, from, absolute);
-        }
-
-        /// <summary>
-        /// ユニットの強制移動をリクエストする。
-        /// 移動先が盤面外またはブロックされている場合は、最も近い移動可能セルに補正されます。
-        /// </summary>
-        public bool RequestForcedMove(UnitID unitId, Vector2Int target)
-        {
-            if (!TryResolveUnit(unitId, target, out var unit))
-            {
-                return false;
-            }
-
-            var from = unit.Position;
-            var to = target;
-
-            // 目的地が有効ならそのまま移動する。
-            if (board.IsInside(to.x, to.y) && board.GetCell(to.x, to.y).CanMove)
-            {
-                return RequestMoveAbsoluteInternal(unitId, unit, from, to);
-            }
-
-            // 目的地が無効なら、目的地に最も近い移動可能セルを探す。
-            Vector2Int nearestWalkable = from;
-            int minDistance = int.MaxValue;
-            bool found = false;
-
-            for (int x = 0; x < board.Width; x++)
-            {
-                for (int y = 0; y < board.Height; y++)
+                Vector2Int next = target.Position + moveDirection;
+                if (!board.IsInside(next.x, next.y))
                 {
-                    var cell = board.GetCell(x, y);
-                    if (cell.CanMove)
-                    {
-                        int dist = Mathf.Abs(x - to.x) + Mathf.Abs(y - to.y);
-                        if (dist < minDistance)
-                        {
-                            minDistance = dist;
-                            nearestWalkable = new Vector2Int(x, y);
-                            found = true;
-                        }
-                    }
+                    DealCollisionStun(target, null, baseStunDamage);
+                    return new ForceMoveResult(movedSteps, ForceMoveCollision.Obstacle);
                 }
+
+                Cell nextCell = board.GetCell(next.x, next.y);
+                if (!nextCell.CanMove)
+                {
+                    IUnit collidedUnit = nextCell.Occupant;
+                    DealCollisionStun(target, collidedUnit, baseStunDamage);
+                    return new ForceMoveResult(movedSteps, collidedUnit == null ? ForceMoveCollision.Obstacle : ForceMoveCollision.Unit, collidedUnit);
+                }
+
+                if (!MoveAbsoluteInternal(target.ID, target, target.Position, next))
+                    return new ForceMoveResult(movedSteps, ForceMoveCollision.Obstacle);
+                movedSteps++;
             }
 
-            if (found && nearestWalkable != from)
-            {
-                Debug.Log($"強制移動: 目的地 {to} が使用できないため、最寄りの移動可能セル {nearestWalkable} に補正します。");
-                return RequestMoveAbsoluteInternal(unitId, unit, from, nearestWalkable);
-            }
-
-            Debug.LogWarning($"強制移動: 目的地 {to} が使用できず、代替の移動可能セルも見つかりませんでした。");
-            MoveRejected?.Invoke(unitId, to, "強制移動に失敗しました（移動可能な目的地がありません）。");
-            return false;
+            return new ForceMoveResult(movedSteps, ForceMoveCollision.None);
         }
-        
-        /// <summary>
-        /// ユニットIDからユニットを解決する。失敗した場合はエラーイベントを発火する。
-        /// </summary>
+
+        /// <summary>対象を使用者へ近づける。衝突時にもスタン耐性ダメージを与えない。</summary>
+        public bool Pull(IUnit user, IUnit target, int distance)
+        {
+            if (user == null || target == null || distance <= 0 || user == target) return false;
+            Vector2Int direction = NormalizeCardinal(user.Position - target.Position);
+            int remainingAxisDistance = Mathf.Max(Mathf.Abs(user.Position.x - target.Position.x), Mathf.Abs(user.Position.y - target.Position.y));
+            int steps = Mathf.Min(distance, Mathf.Max(0, remainingAxisDistance - 1));
+            bool moved = false;
+            for (int step = 0; step < steps; step++)
+            {
+                Vector2Int next = target.Position + direction;
+                if (GetCellAt(next)?.CanMove != true) break;
+                if (!MoveAbsoluteInternal(target.ID, target, target.Position, next)) break;
+                moved = true;
+            }
+            return moved;
+        }
+
+        // 既存の初期配置・UI呼び出し用の薄い互換窓口。強制移動には使わない。
+        public bool RequestMoveRelative(UnitID unitId, Vector2Int relative) => Move(unitId, relative);
+        public bool RequestMoveAbsolute(UnitID unitId, Vector2Int absolute) => Teleport(unitId, absolute);
+
+        private void DealCollisionStun(IUnit movedUnit, IUnit collidedUnit, int baseStunDamage)
+        {
+            int collisionDamage = Mathf.Max(0, baseStunDamage) * 2;
+            if (collisionDamage == 0) return;
+            statusEffectService?.DealStunDamage(movedUnit, collisionDamage);
+            if (collidedUnit != null && collidedUnit != movedUnit)
+                statusEffectService?.DealStunDamage(collidedUnit, collisionDamage);
+        }
+
+        private static Vector2Int ResolveForceMoveDirection(Vector2Int userPosition, Vector2Int targetPosition, ForceMoveDirection direction)
+        {
+            return direction switch
+            {
+                ForceMoveDirection.AwayFromUser => NormalizeCardinal(targetPosition - userPosition),
+                ForceMoveDirection.TowardUser => NormalizeCardinal(userPosition - targetPosition),
+                ForceMoveDirection.BoardUp => Vector2Int.up,
+                ForceMoveDirection.BoardRight => Vector2Int.right,
+                ForceMoveDirection.BoardDown => Vector2Int.down,
+                ForceMoveDirection.BoardLeft => Vector2Int.left,
+                _ => Vector2Int.zero
+            };
+        }
+
+        private static Vector2Int NormalizeCardinal(Vector2Int offset)
+        {
+            if (offset == Vector2Int.zero) return Vector2Int.zero;
+            return Mathf.Abs(offset.x) >= Mathf.Abs(offset.y)
+                ? new Vector2Int(Math.Sign(offset.x), 0)
+                : new Vector2Int(0, Math.Sign(offset.y));
+        }
+
         private bool TryResolveUnit(UnitID unitId, Vector2Int targetForError, out IUnit unit)
         {
             unit = null;
-
-            if (board == null)
-            {
-                MoveRejected?.Invoke(unitId, targetForError, "盤面が初期化されていません。");
-                return false;
-            }
-
-            if (isBusy)
-            {
-                MoveRejected?.Invoke(unitId, targetForError, "移動サービスが処理中です。");
-                return false;
-            }
-
-            if (unitsById == null || !unitsById.TryGetValue(unitId, out unit))
-            {
-                MoveRejected?.Invoke(unitId, targetForError, "指定されたユニットが見つかりません。");
-                return false;
-            }
-
+            if (board == null) { MoveRejected?.Invoke(unitId, targetForError, "盤面が初期化されていません。"); return false; }
+            if (isBusy) { MoveRejected?.Invoke(unitId, targetForError, "移動サービスが処理中です。"); return false; }
+            if (unitsById == null || !unitsById.TryGetValue(unitId, out unit)) { MoveRejected?.Invoke(unitId, targetForError, "指定されたユニットが見つかりません。"); return false; }
             return true;
         }
 
-        /// <summary>
-        /// モデル上の絶対座標移動を実行し、移動イベントと炎上マス処理を行う。
-        /// </summary>
-        private bool RequestMoveAbsoluteInternal(UnitID unitId, IUnit unit, Vector2Int from, Vector2Int to)
+        private bool MoveAbsoluteInternal(UnitID unitId, IUnit unit, Vector2Int from, Vector2Int to)
         {
-            if (!board.IsInside(to.x, to.y))
-            {
-                MoveRejected?.Invoke(unitId, to, "目的地が盤面外です。");
-                return false;
-            }
-
-            if (from == to)
-            {
-                var sameCell = board.GetCell(to.x, to.y);
-                if (sameCell.Occupant == unit)
-                {
-                    MoveRejected?.Invoke(unitId, to, "すでに目的地にいます。");
-                    return false;
-                }
-
-                if (!sameCell.CanMove)
-                {
-                    MoveRejected?.Invoke(unitId, to, "目的地に移動できません。");
-                    return false;
-                }
-
-                if (!board.TryMoveUnit(unit, to.x, to.y))
-                {
-                    MoveRejected?.Invoke(unitId, to, "盤面モデル上の初期配置に失敗しました。");
-                    return false;
-                }
-
-                MoveCompleted?.Invoke(unitId, from, to);
-                return true;
-            }
+            if (!board.IsInside(to.x, to.y)) { MoveRejected?.Invoke(unitId, to, "目的地が盤面外です。"); return false; }
+            if (from == to && board.GetCell(to.x, to.y).Occupant == unit) { MoveRejected?.Invoke(unitId, to, "すでに目的地にいます。"); return false; }
+            if (!board.GetCell(to.x, to.y).CanMove) { MoveRejected?.Invoke(unitId, to, "目的地に移動できません。"); return false; }
 
             MoveStarted?.Invoke(unitId, from, to);
             isBusy = true;
-
-            if (!board.TryMoveUnit(unit, to.x, to.y))
-            {
-                isBusy = false;
-                MoveRejected?.Invoke(unitId, to, "盤面モデル上の移動に失敗しました。");
-                return false;
-            }
-
+            bool moved = board.TryMoveUnit(unit, to.x, to.y);
             isBusy = false;
+            if (!moved) { MoveRejected?.Invoke(unitId, to, "盤面モデル上の移動に失敗しました。"); return false; }
 
-            // 炎上しているマスに移動した場合の状態異常付与
-            var targetCell = board.GetCell(to.x, to.y);
-            if (targetCell.IsOnFire && unit != null)
-            {
-                statusEffectService?.ApplyBurn(unit, targetCell.FireTurns, targetCell.FireDamage);
-                Debug.Log($"移動効果: 炎上マス（{to.x}, {to.y}）に進入したため、{unit.Name}に炎上状態（{targetCell.FireTurns}ターン、ダメージ: {targetCell.FireDamage}）を適用しました。");
-            }
-
+            Cell targetCell = board.GetCell(to.x, to.y);
+            if (targetCell.IsOnFire) statusEffectService?.ApplyBurn(unit, targetCell.FireTurns, targetCell.FireDamage);
             MoveCompleted?.Invoke(unitId, from, to);
             return true;
         }

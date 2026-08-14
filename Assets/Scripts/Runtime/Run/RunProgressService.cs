@@ -43,7 +43,8 @@ namespace TestCardGame.Run
                 currentStageIndex = 0,
                 hasStartedCurrentExpedition = false,
                 currentHp = runDefinition.playerDefinition != null ? runDefinition.playerDefinition.maxHp : 100,
-                ownedGold = 0,
+                currentStunResist = runDefinition.playerDefinition != null ? runDefinition.playerDefinition.maxStunResist : 100,
+                ownedGold = runDefinition.startingGold,
                 pendingGold = 0,
                 overhuntDepth = 0,
                 isInOverhunt = false,
@@ -64,7 +65,7 @@ namespace TestCardGame.Run
             return runState;
         }
 
-        public BattleWinResult HandleBattleWin(RunState runState, RunDefinitionSO runDefinition, RunEconomyConfig economyConfig, int currentHp)
+        public BattleWinResult HandleBattleWin(RunState runState, RunDefinitionSO runDefinition, RunEconomyConfig economyConfig, int currentHp, int currentStunResist)
         {
             if (runState == null)
             {
@@ -77,6 +78,7 @@ namespace TestCardGame.Run
             }
 
             runState.currentHp = currentHp;
+            runState.currentStunResist = currentStunResist;
             RemoveInstantCards(runState);
             ResetPlayerDeckBattleState(runState);
 
@@ -196,6 +198,8 @@ namespace TestCardGame.Run
             runState.pendingGold = 0;
             runState.overhuntDepth = 0;
             runState.isInOverhunt = false;
+            runState.hasShopInventory = false;
+            runState.shopCardOffers?.Clear();
             runState.phase = RunProgressPhase.Expedition;
             return true;
         }
@@ -203,38 +207,6 @@ namespace TestCardGame.Run
         public bool IsFinalExpedition(RunDefinitionSO runDefinition, RunState runState)
         {
             return runState != null && runState.currentExpeditionIndex >= GetExpeditionCount(runDefinition) - 1;
-        }
-
-        public IReadOnlyList<KeystoneDefinition> GetAvailableKeystones(RunDefinitionSO runDefinition)
-        {
-            return runDefinition?.keystones?.Where(keystone => keystone != null && keystone.id != KeystoneId.None).ToList()
-                ?? new List<KeystoneDefinition>();
-        }
-
-        public bool HasSelectedKeystone(RunState runState)
-        {
-            return runState != null && runState.selectedKeystone != KeystoneId.None;
-        }
-
-        public bool TrySelectKeystone(RunState runState, RunDefinitionSO runDefinition, KeystoneId keystoneId)
-        {
-            if (runState == null || runState.phase != RunProgressPhase.Town || HasSelectedKeystone(runState)) return false;
-
-            KeystoneDefinition keystone = GetAvailableKeystones(runDefinition).FirstOrDefault(candidate => candidate.id == keystoneId);
-            if (keystone == null) return false;
-
-            runState.selectedKeystone = keystone.id;
-            runState.ownedItemIds ??= new List<string>();
-            runState.ownedItemIds.Add(keystone.id.ToString());
-            runState.favoredBuildTags = keystone.favoredTags?.Distinct().ToList() ?? new List<BuildTag>();
-
-            if (keystone.initialCards != null)
-            {
-                foreach (CardDefinitionSO card in keystone.initialCards.Where(card => card != null))
-                    runState.playerDeck.Add(new CardBase(card, CardLevel.one));
-            }
-
-            return true;
         }
 
         public bool HasExpeditions(RunDefinitionSO runDefinition)

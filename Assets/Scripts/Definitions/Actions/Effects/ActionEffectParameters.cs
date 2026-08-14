@@ -4,6 +4,8 @@ using UnityEngine;
 
 namespace TestCardGame.Actions.Effects
 {
+    public enum ForceMoveDirection { AwayFromUser, TowardUser, BoardUp, BoardRight, BoardDown, BoardLeft }
+
     /// <summary>
     /// カード効果ごとの調整値を保持する。
     /// </summary>
@@ -15,6 +17,9 @@ namespace TestCardGame.Actions.Effects
 
         [Min(0)]
         public int damage = 1;
+
+        [Min(0)]
+        public int StunDamage;
 
         [Min(1)]
         public int duration = 1;
@@ -42,5 +47,10 @@ namespace TestCardGame.Actions.Effects
         public int count = 1;
 
         public bool moveAwayFromTarget;
+
+        public ForceMoveDirection forceMoveDirection = ForceMoveDirection.AwayFromUser;
+
+        [Min(0)]
+        public int forceMoveStunDamage;
     }
 }

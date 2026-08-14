@@ -23,6 +23,8 @@ MonoBehaviour:
     effects:
     - effect: {fileID: 11400000, guid: 8d4c2a1e5b6f47a8901234567890abd0, type: 2}
       parameters: {range: 10}
+    - effect: {fileID: 11400000, guid: 4f2a6cd747b347c4a3792e1586526ddc, type: 2}
+      parameters: {StunDamage: 10}
   level2:
     description: "\u5F3E\u4E38\u30921\u679A\u6D88\u8CBB\u3057\u3001\u5C04\u7A0B10\u30DE\u30B9\u3078\u9283\u6483\u3002\u30C0\u30E1\u30FC\u30B8: \u9283\u6483Lv\u00D710 + \u5F3E\u4E38Lv\u00D710\u3002\u653B\u6483\u5F8C\u3001\u53CD\u5BFE\u65B9\u5411\u30781\u30DE\u30B9\u79FB\u52D5\u3002"
     cost: {amount: 2}
@@ -30,6 +32,8 @@ MonoBehaviour:
     effects:
     - effect: {fileID: 11400000, guid: 8d4c2a1e5b6f47a8901234567890abd0, type: 2}
       parameters: {range: 10}
+    - effect: {fileID: 11400000, guid: 4f2a6cd747b347c4a3792e1586526ddc, type: 2}
+      parameters: {StunDamage: 10}
   level3:
     description: "\u5F3E\u4E38\u30921\u679A\u6D88\u8CBB\u3057\u3001\u5C04\u7A0B10\u30DE\u30B9\u3078\u9283\u6483\u3002\u30C0\u30E1\u30FC\u30B8: \u9283\u6483Lv\u00D710 + \u5F3E\u4E38Lv\u00D710\u3002\u653B\u6483\u5F8C\u3001\u53CD\u5BFE\u65B9\u5411\u30781\u30DE\u30B9\u79FB\u52D5\u3002"
     cost: {amount: 2}
@@ -37,3 +41,5 @@ MonoBehaviour:
     effects:
     - effect: {fileID: 11400000, guid: 8d4c2a1e5b6f47a8901234567890abd0, type: 2}
       parameters: {range: 10}
+    - effect: {fileID: 11400000, guid: 4f2a6cd747b347c4a3792e1586526ddc, type: 2}
+      parameters: {StunDamage: 10}

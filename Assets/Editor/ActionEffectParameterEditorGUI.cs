@@ -31,7 +31,7 @@ internal static class ActionEffectParameterEditorGUI
 
         foreach (string fieldName in effect.ParameterFields)
         {
-            DrawField(ref line, parameters, fieldName);
+            DrawField(ref line, parameters, fieldName, effect.GetParameterDisplayName(fieldName));
         }
     }
 
@@ -57,7 +57,7 @@ internal static class ActionEffectParameterEditorGUI
             var field = parameters.FindPropertyRelative(fieldName);
             if (field != null)
             {
-                EditorGUILayout.PropertyField(field);
+                EditorGUILayout.PropertyField(field, new GUIContent(effect.GetParameterDisplayName(fieldName)));
             }
             else
             {
@@ -73,6 +73,7 @@ internal static class ActionEffectParameterEditorGUI
     {
         parameters.FindPropertyRelative("step").intValue = source.step;
         parameters.FindPropertyRelative("damage").intValue = source.damage;
+        parameters.FindPropertyRelative("StunDamage").intValue = source.StunDamage;
         parameters.FindPropertyRelative("duration").intValue = source.duration;
         parameters.FindPropertyRelative("range").intValue = source.range;
         parameters.FindPropertyRelative("hitType").enumValueIndex = (int)source.hitType;
@@ -82,6 +83,8 @@ internal static class ActionEffectParameterEditorGUI
         parameters.FindPropertyRelative("statusEffect").enumValueIndex = (int)source.statusEffect;
         parameters.FindPropertyRelative("value").intValue = source.value;
         parameters.FindPropertyRelative("count").intValue = source.count;
+        parameters.FindPropertyRelative("forceMoveDirection").enumValueIndex = (int)source.forceMoveDirection;
+        parameters.FindPropertyRelative("forceMoveStunDamage").intValue = source.forceMoveStunDamage;
     }
 
     /// <summary>
@@ -91,6 +94,7 @@ internal static class ActionEffectParameterEditorGUI
     {
         return parameters.FindPropertyRelative("step").intValue == 1
             && parameters.FindPropertyRelative("damage").intValue == 1
+            && parameters.FindPropertyRelative("StunDamage").intValue == 0
             && parameters.FindPropertyRelative("duration").intValue == 1
             && parameters.FindPropertyRelative("range").intValue == 1
             && parameters.FindPropertyRelative("hitType").enumValueIndex == 0
@@ -99,18 +103,20 @@ internal static class ActionEffectParameterEditorGUI
             && parameters.FindPropertyRelative("maxRange").intValue == 0
             && parameters.FindPropertyRelative("statusEffect").enumValueIndex == 0
             && parameters.FindPropertyRelative("value").intValue == 0
-            && parameters.FindPropertyRelative("count").intValue == 1;
+            && parameters.FindPropertyRelative("count").intValue == 1
+            && parameters.FindPropertyRelative("forceMoveDirection").enumValueIndex == (int)ForceMoveDirection.AwayFromUser
+            && parameters.FindPropertyRelative("forceMoveStunDamage").intValue == 0;
     }
 
     /// <summary>
     /// 指定名のパラメータを1行描画する。
     /// </summary>
-    private static void DrawField(ref Rect line, SerializedProperty parameters, string fieldName)
+    private static void DrawField(ref Rect line, SerializedProperty parameters, string fieldName, string displayName)
     {
         var field = parameters.FindPropertyRelative(fieldName);
         if (field != null)
         {
-            EditorGUI.PropertyField(line, field);
+            EditorGUI.PropertyField(line, field, new GUIContent(displayName));
         }
         else
         {

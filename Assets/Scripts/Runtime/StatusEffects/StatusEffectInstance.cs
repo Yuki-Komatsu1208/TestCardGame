@@ -101,7 +101,7 @@ namespace TestCardGame.Character.StatusEffects
         /// </summary>
         public bool CanAct()
         {
-            return Id != StatusEffectId.Sleep;
+            return Id != StatusEffectId.Sleep && Id != StatusEffectId.Stun;
         }
 
         private bool IsPersistentShield => Id == StatusEffectId.Shield;

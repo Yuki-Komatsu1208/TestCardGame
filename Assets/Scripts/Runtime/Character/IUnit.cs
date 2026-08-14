@@ -23,6 +23,10 @@ namespace TestCardGame.Character
         /// </summary>
         HP Hp { get; }
         /// <summary>
+        /// HPとは独立したスタン耐性。
+        /// </summary>
+        STUNResist StunResist { get; }
+        /// <summary>
         /// ユニットの位置
         /// </summary>
         Vector2Int Position { get; set; }

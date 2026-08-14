@@ -47,16 +47,9 @@ MonoBehaviour:
       statusEffect: 0
       value: 0
   - targetKind: 1
-    effect: {fileID: 11400000, guid: b1a91a014125a854dbb537a9ae6c26ab, type: 2}
+    effect: {fileID: 11400000, guid: 417f5890da311b84a83f3b7594e3a82e, type: 2}
     useCustomParameters: 1
     parameters:
-      step: 1
-      damage: 12
-      duration: 1
-      range: 1
-      hitType: 0
-      radius: 1
       distance: 2
-      maxRange: 0
-      statusEffect: 0
-      value: 0
+      forceMoveDirection: 0
+      forceMoveStunDamage: 10
