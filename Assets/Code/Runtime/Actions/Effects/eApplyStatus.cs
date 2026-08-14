@@ -1,0 +1,65 @@
+using TestCardGame.Actions.Core;
+using TestCardGame.Actions.Preview;
+using System;
+using TestCardGame.Character.StatusEffects;
+using UnityEngine;
+
+namespace TestCardGame.Actions.Effects
+{
+    public sealed class eApplyStatus : ActionEffect, IActionPreviewProvider
+    {
+        private readonly StatusEffectId statusEffect;
+        private readonly int duration;
+        private readonly int value;
+
+        /// <summary>
+        /// 付与する状態異常、持続ターン、補助値を指定して効果を作成する。
+        /// </summary>
+        public eApplyStatus(StatusEffectId statusEffect, int duration, int value = 0)
+        {
+            this.statusEffect = statusEffect;
+            this.duration = duration;
+            this.value = value;
+        }
+
+        /// <summary>
+        /// 対象マスが盤面上に存在するか判定する。
+        /// </summary>
+        public override bool CanExecute(ActionContext context)
+        {
+            var cell = context.MoveService.GetCellAt(context.TargetPosition);
+            return statusEffect != StatusEffectId.None && cell != null && cell.Occupant != null;
+        }
+
+        /// <summary>
+        /// 対象マスのユニットへ状態異常を付与する。
+        /// </summary>
+        public override void Execute(ActionContext context)
+        {
+            if (statusEffect == StatusEffectId.None)
+            {
+                Debug.LogWarning("状態異常付与効果の状態異常IDが設定されていません。");
+                return;
+            }
+
+            var cell = context.MoveService.GetCellAt(context.TargetPosition);
+            if (cell != null && cell.Occupant != null)
+            {
+                context.StatusEffectService?.ApplyStatus(cell.Occupant, statusEffect, duration, value);
+                Debug.Log($"{cell.Occupant.Name}に状態異常 {statusEffect.GetDisplayName()}（{duration}ターン, 値: {value}）を付与しました。");
+            }
+            else
+            {
+                Debug.LogWarning("状態異常付与効果の対象マスにユニットが存在しません。");
+            }
+        }
+
+        /// <summary>状態異常を付与できる対象セルを返す。</summary>
+        public ActionPreviewResult GetPreview(ActionPreviewContext context)
+        {
+            bool valid = context != null && CanExecute(context.ToActionContext());
+            return valid ? new ActionPreviewResult(true, new[] { context.CandidatePosition }, new[] { context.CandidatePosition })
+                : new ActionPreviewResult(true, Array.Empty<UnityEngine.Vector2Int>(), Array.Empty<UnityEngine.Vector2Int>());
+        }
+    }
+}

@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c908b67c4bbf4b54fbdadee6b3525c30, type: 3}
+  m_Name: DoubleSlashCard
+  m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Cards.Core.CardDefinitionSO
+  cardName: "\uFF12\u6BB5\u5207\u308A"
+  buildTags: [1]
+  intrinsicModifiers: []
+  level1:
+    description: "\u6307\u5B9A\u3057\u305F\u96A3\u63A51\u30DE\u30B9\u306E\u6575\u306B8\u30C0\u30E1\u30FC\u30B8\u30922\u56DE\u4E0E\u3048\u308B\u3002"
+    cost: {amount: 1}
+    cooldown: {turns: 2}
+    effects:
+    - effect: {fileID: 11400000, guid: a1000000000000000000000000000004, type: 2}
+      parameters: {damage: 8, maxRange: 1}
+    - effect: {fileID: 11400000, guid: a1000000000000000000000000000004, type: 2}
+      parameters: {damage: 8, maxRange: 1}
+    - effect: {fileID: 11400000, guid: 4f2a6cd747b347c4a3792e1586526ddc, type: 2}
+      parameters: {StunDamage: 10}
+  level2:
+    description: "\u6307\u5B9A\u3057\u305F\u96A3\u63A51\u30DE\u30B9\u306E\u6575\u306B10\u30C0\u30E1\u30FC\u30B8\u30922\u56DE\u4E0E\u3048\u308B\u3002"
+    cost: {amount: 1}
+    cooldown: {turns: 2}
+    effects:
+    - effect: {fileID: 11400000, guid: a1000000000000000000000000000004, type: 2}
+      parameters: {damage: 10, maxRange: 1}
+    - effect: {fileID: 11400000, guid: a1000000000000000000000000000004, type: 2}
+      parameters: {damage: 10, maxRange: 1}
+    - effect: {fileID: 11400000, guid: 4f2a6cd747b347c4a3792e1586526ddc, type: 2}
+      parameters: {StunDamage: 10}
+  level3:
+    description: "\u6307\u5B9A\u3057\u305F\u96A3\u63A51\u30DE\u30B9\u306E\u6575\u306B12\u30C0\u30E1\u30FC\u30B8\u30922\u56DE\u4E0E\u3048\u308B\u3002"
+    cost: {amount: 1}
+    cooldown: {turns: 2}
+    effects:
+    - effect: {fileID: 11400000, guid: a1000000000000000000000000000004, type: 2}
+      parameters: {damage: 12, maxRange: 1}
+    - effect: {fileID: 11400000, guid: a1000000000000000000000000000004, type: 2}
+      parameters: {damage: 12, maxRange: 1}
+    - effect: {fileID: 11400000, guid: 4f2a6cd747b347c4a3792e1586526ddc, type: 2}
+      parameters: {StunDamage: 10}

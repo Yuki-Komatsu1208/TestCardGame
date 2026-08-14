@@ -1,4 +1,4 @@
-# 次回リファクタメモ: C#ランタイム状態管理とUnity境界の整理
+﻿# 次回リファクタメモ: C#ランタイム状態管理とUnity境界の整理
 
 作成日: 2026-06-28
 
@@ -42,50 +42,42 @@
 
 ## 優先度A: 先に直すべき責務違反
 
-### 1. StatusEffectSOからゲームロジックを外す
+### 1. StatusEffectのランタイム管理（完了）
 
 対象:
 
-* `Assets/Scripts/Definitions/StatusEffects/StatusEffectSO.cs`
-* `Assets/Scripts/Definitions/StatusEffects/BurnStatusEffectSO.cs`
-* `Assets/Scripts/Definitions/StatusEffects/PoisonStatusEffectSO.cs`
-* `Assets/Scripts/Definitions/StatusEffects/ShieldStatusEffectSO.cs`
-* `Assets/Scripts/Definitions/StatusEffects/SleepStatusEffectSO.cs`
-* `Assets/Scripts/Definitions/StatusEffects/WeakStatusEffectSO.cs`
-* `Assets/Scripts/Runtime/StatusEffects/StatusEffectInstance.cs`
-* `Assets/Scripts/Runtime/StatusEffects/StatusEffectCollection.cs`
-* `Assets/Scripts/Runtime/Controller/Services/StatusEffectService.cs`
-* `Assets/Scripts/Runtime/Controller/Services/DamageService.cs`
+* `Assets/Code/Runtime/StatusEffects/StatusEffectId.cs`
+* `Assets/Code/Runtime/StatusEffects/StatusEffectInstance.cs`
+* `Assets/Code/Runtime/StatusEffects/StatusEffectCollection.cs`
+* `Assets/Code/Runtime/Controller/Services/StatusEffectService.cs`
+* `Assets/Code/Runtime/Controller/Services/DamageService.cs`
 
-現状の問題:
+現在の構成:
 
-* `StatusEffectSO` と派生SOが `OnTurnStart`、`OnTurnEnd`、`CanAct`、`Merge` などのゲーム処理を持っている。
-* SOが定義データではなく、状態異常の挙動そのものになっている。
-* `DamageService` が `ShieldStatusEffectSO` や `WeakStatusEffectSO` の型、またはEffectIdに依存してダメージ計算している。
+* `StatusEffectId` が状態異常の種類を表す。
+* `StatusEffectInstance` が残りターンやスタック量などのランタイム状態を保持する。
+* `StatusEffectCollection` と `StatusEffectService` がターン開始、ターン終了、行動可否、マージを処理する。
+* `DamageService` はSO型に依存せず、ランタイム状態とサービスを通して処理する。
 
-望ましい形:
+維持する責務:
 
-* `StatusEffectSO` はID、表示名、説明、デフォルト値、アイコンなどの定義だけを持つ。
-* 状態異常の挙動はC#ランタイム側の `StatusEffectBehavior` か `StatusEffectRule` に移す。
-* `StatusEffectInstance` は「どの状態異常か」「残りターン」「スタック量」などのランタイム状態を持つ。
-* `StatusEffectService` がターン開始、ターン終了、行動可否、マージ、ダメージ補正を処理する。
-* `DamageService` はSO型ではなく、ランタイム側の状態種別またはルール結果に依存する。
+* 状態異常の挙動と状態は、`Assets/Code/Runtime/StatusEffects/` とサービス側に置く。
+* Unityの定義アセットへ状態異常の実行時状態やゲーム処理を持たせない。
+* 新しい状態異常は、SO型の分岐ではなく `StatusEffectId` とランタイムサービスの責務として追加する。
 
-推奨作業:
+追加時の確認:
 
-1. `StatusEffectId` または状態異常種別VOを作る。
-2. `StatusEffectSO` を定義データに縮小する。
-3. 現在SOにある `OnTurnStart` / `OnTurnEnd` / `CanAct` / `Merge` をランタイムサービスへ移す。
-4. `DamageService` のShield/Weak参照をSO型依存から外す。
-5. 既存アセットはIDと初期値を保持するだけにする。
+1. `StatusEffectId` に状態異常種別を追加する。
+2. `StatusEffectInstance`、`StatusEffectCollection`、`StatusEffectService` の責務をまたぐ状態を作らない。
+3. ダメージや行動制限への影響は、既存サービスを経由して実装する。
 
 ### 2. GameController.Instance依存をランタイムロジックから外す
 
 対象:
 
-* `Assets/Scripts/Runtime/Actions/Effects/eSummonEnemy.cs`
-* `Assets/Scripts/Runtime/Character/Enemies/EnemyActionPlan.cs`
-* `Assets/Scripts/Runtime/Controller/GameController.cs`
+* `Assets/Code/Runtime/Actions/Effects/eSummonEnemy.cs`
+* `Assets/Code/Runtime/Character/Enemies/EnemyActionPlan.cs`
+* `Assets/Code/Runtime/Controller/GameController.cs`
 
 現状の問題:
 
@@ -111,10 +103,10 @@
 
 対象:
 
-* `Assets/Scripts/Runtime/BoardManage/CellBuilder.cs`
-* `Assets/Scripts/Runtime/Controller/GameController.cs`
-* `Assets/Scripts/Definitions/Stage/StageDefinitionSO.cs`
-* `Assets/Scripts/Definitions/Character/Enemies/EnemySpawnDefinition.cs`
+* `Assets/Code/Runtime/BoardManage/CellBuilder.cs`
+* `Assets/Code/Runtime/Controller/GameController.cs`
+* `Assets/Code/Definitions/Stage/StageDefinitionSO.cs`
+* `Assets/Code/Definitions/Character/Enemies/EnemySpawnDefinition.cs`
 
 現状の問題:
 
@@ -142,9 +134,9 @@
 
 対象:
 
-* `Assets/Scripts/Runtime/Controller/BattleUI.cs`
-* `Assets/Scripts/Runtime/Controller/RunController.cs`
-* `Assets/Scripts/Runtime/Run/RewardChoice.cs`
+* `Assets/Code/Runtime/Controller/BattleUI.cs`
+* `Assets/Code/Runtime/Controller/RunController.cs`
+* `Assets/Code/Runtime/Run/RewardChoice.cs`
 
 現状の問題:
 
@@ -169,9 +161,9 @@
 
 対象:
 
-* `Assets/Scripts/Runtime/UIs/CardListSelectionOverlay.cs`
-* `Assets/Scripts/Runtime/Cards/Views/CardView.cs`
-* `Assets/Scripts/Runtime/Run/RewardChoice.cs`
+* `Assets/Code/Runtime/UIs/CardListSelectionOverlay.cs`
+* `Assets/Code/Runtime/Cards/Views/CardView.cs`
+* `Assets/Code/Runtime/Run/RewardChoice.cs`
 
 現状の問題:
 
@@ -196,9 +188,9 @@
 
 対象:
 
-* `Assets/Scripts/Runtime/Cards/Views/CardView.cs`
-* `Assets/Scripts/Runtime/UIs/MoveCardDragHandler.cs`
-* `Assets/Scripts/Runtime/Cards/Views/HandView.cs`
+* `Assets/Code/Runtime/Cards/Views/CardView.cs`
+* `Assets/Code/Runtime/UIs/MoveCardDragHandler.cs`
+* `Assets/Code/Runtime/Cards/Views/HandView.cs`
 
 現状の問題:
 
@@ -223,7 +215,7 @@
 
 対象:
 
-* `Assets/Scripts/Runtime/Controller/GameController.cs`
+* `Assets/Code/Runtime/Controller/GameController.cs`
 
 現状の問題:
 
@@ -248,8 +240,8 @@
 
 対象:
 
-* `Assets/Scripts/Runtime/Controller/Services/CardPlayService.cs`
-* `Assets/Scripts/Runtime/Controller/Services/BoardTargetingService.cs`
+* `Assets/Code/Runtime/Controller/Services/CardPlayService.cs`
+* `Assets/Code/Runtime/Controller/Services/BoardTargetingService.cs`
 
 現状の問題:
 
@@ -294,14 +286,14 @@
 
 対象例:
 
-* `Assets/Scripts/Runtime/Actions/Effects/eForcedMove.cs`
-* `Assets/Scripts/Runtime/Actions/Effects/eTeleportTarget.cs`
-* `Assets/Scripts/Runtime/Actions/Effects/eSummonEnemy.cs`
+* `Assets/Code/Runtime/Actions/Effects/eForcedMove.cs`
+* `Assets/Code/Runtime/Actions/Effects/eTeleport.cs`
+* `Assets/Code/Runtime/Actions/Effects/eSummonEnemy.cs`
 
 現状の問題:
 
 * `UnityEngine.Random` をランタイム効果内で直接使っている。
-* `eTeleportTarget` に `0..10` のようなボード範囲の直書きがある。
+* テレポート処理にボード範囲を直接書かず、盤面サービスから有効なセルを取得する。
 
 望ましい形:
 
@@ -312,7 +304,7 @@
 
 対象:
 
-* `Assets/Scripts/Runtime/BoardManage/Cell.cs`
+* `Assets/Code/Runtime/BoardManage/Cell.cs`
 * Tooltip系View
 
 現状の問題:
@@ -328,8 +320,8 @@
 
 対象:
 
-* `Assets/Scripts/Runtime/Character/Player/PlayerUnit.cs`
-* `Assets/Scripts/Runtime/Character/Enemies/Units/EnemyUnit.cs`
+* `Assets/Code/Runtime/Character/Player/PlayerUnit.cs`
+* `Assets/Code/Runtime/Character/Enemies/Units/EnemyUnit.cs`
 
 現状の問題:
 

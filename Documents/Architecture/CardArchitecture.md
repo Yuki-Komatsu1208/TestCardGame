@@ -2,105 +2,73 @@
 
 ## 概要
 
-カードは「カード情報」と「実行する効果」を分離して管理する。
+カードは、Unity上で編集する定義データと、戦闘中に使用するランタイム状態を分離して管理する。
 
-- `CardBase`: 名前、説明、コスト、レベル、効果、エンチャントを保持する。
-- `ActionEffect`: カードや敵行動から実行されるActionの基底クラス。実行可否と実行処理を持つ。
-- `ActionContext`: 効果の実行に必要な使用者、対象座標、移動サービスを保持する。
-- `CardModifier`: カードを追加強化するための基底クラス。
-- `CardView` / `HandView`: カード情報の表示のみを担当する。
+- `CardDefinitionSO`: カード名、説明、コスト、クールタイム、レベルごとの効果定義を持つアセット型。
+- `CardEffectEntry`: 効果定義アセットと、そのカード・レベル固有のパラメータを組にして保持する。
+- `ActionEffectSO`: `eXxx` の実行時効果を生成する効果定義アセット型。
+- `ActionEffect` / `eXxx`: 戦闘中の実行可否と実行処理を持つランタイム効果。
+- `CardBase`: `CardDefinitionSO` から生成されるランタイムカード。レベル、エンチャント、残りクールタイム、実行時効果を保持する。
+- `CardModifierSO` / `CardModifier`: カード固有または報酬由来の追加効果を定義・実行する。
 
-カード固有クラスは `cXxx`、効果クラスは `eXxx` の形式で命名する。
+効果クラスは `eXxx`、効果定義型は `XxxEffectSO` の形式で命名する。
 
-## 構成
+## ディレクトリ構成
 
 ```text
-Assets/Cards/
-├── Core/            CardBase
-├── Card/            cMove、cPunch、cIgnite などのカード定義
-├── Modifiers/       CardModifier 基底クラス
-├── CardModifiers/   mMove、mNone などの具体的な修飾
-├── VOs/             CardLevel
-└── Views/           CardView、HandView
-
-Assets/Actions/
-├── Core/            ActionContext
-└── Effects/         ActionEffect と eMove、eLineAttack、ePositionAttack などの効果
+Assets/
+├── Code/
+│   ├── Runtime/
+│   │   ├── Actions/
+│   │   │   ├── Core/          ActionContext、ActionEffect
+│   │   │   └── Effects/       eMove、eLineAttack、eApplyStatus など
+│   │   └── Cards/
+│   │       └── Core/          CardBase、CardModifier
+│   └── Definitions/
+│       ├── Actions/Effects/   ActionEffectSO、XxxEffectSO
+│       └── Cards/             CardDefinitionSO、CardModifierSO
+└── GameData/
+    ├── Cards/                 MoveCard.asset などのカード定義アセット
+    ├── Effects/               MoveEffect.asset などの効果定義アセット
+    └── CardModifiers/         Modifier定義アセット
 ```
 
 ## 依存関係
 
 ```mermaid
 flowchart LR
-    PlayerUnit --> CardBase
-    HandView --> CardView
-    CardView --> CardBase
-    MoveCardDragHandler --> GameController
-    GameController --> CardBase
-    GameController --> ActionContext
-    CardBase --> CardLevel
-    CardBase --> ActionEffect
-    CardBase --> CardModifier
-    ActionEffect --> ActionContext
-    ActionContext --> IUnit
-    ActionContext --> UnitMoveService
+    CardDefinition[CardDefinitionSO asset] --> CardBase
+    CardDefinition --> LevelData[CardLevelData]
+    LevelData --> Entry[CardEffectEntry]
+    Entry --> EffectDefinition[ActionEffectSO asset]
+    Entry --> Parameters[ActionEffectParameters]
+    EffectDefinition --> RuntimeEffect[eXxx / ActionEffect]
+    Parameters --> RuntimeEffect
+    CardBase --> RuntimeEffect
+    CardBase --> Modifier[CardModifier]
+    RuntimeEffect --> Context[ActionContext]
 ```
 
-依存方向の原則は次のとおり。
+## カード生成と使用
 
-- 具体カードは `CardBase` を継承し、必要な `ActionEffect` を生成する。
-- `ActionEffect` は具体カードを参照しない。
-- Viewはカード情報を表示するが、効果ロジックを持たない。
-- `GameController` がカード使用条件を判定し、効果実行を仲介する。
+1. `CardDefinitionSO` のレベルデータが、`CardEffectEntry` のリストを保持する。
+2. `CardBase` はカード定義とレベルから生成される。
+3. `CardBase` は各 `CardEffectEntry` に対して、効果定義アセットとカード側パラメータを渡し、実行時の `eXxx` を生成する。
+4. カード使用時、`CardBase.Effects` の各Effectを順番に実行する。
+5. コスト、クールタイム、エンチャント処理は `CardBase` と `CardModifier` が担当する。
 
-## カード使用フロー
+## 効果の実装方針
 
-1. `PlayerUnit` が `CardBase` の一覧を保持する。
-2. `HandView` が各カードを `CardView` にバインドして表示する。
-3. カードのドロップ操作から `GameController.UseCardAtDropScreenPosition` を呼ぶ。
-4. `GameController` がターン、マナ、クールタイム、対象座標を検証する。カード使用枚数に固定上限は置かない。
-5. `ActionContext` を生成する。
-6. `CardBase.Effects` を順番に確認し、各 `ActionEffect.CanExecute` が通れば `Execute` を実行する。
-7. コストを消費し、盤面とUIを更新する。
-
-## CardBaseの制約
-
-`Enchants` 以外は生成時に必須とする。
-
-- `CardName`: `null`、空文字を禁止。
-- `Description`: `null`、空文字を禁止。
-- `Level`: `null` を禁止。
-- `Effects`: `null`、空リスト、`null` 要素を禁止。
-- `Enchants`: 省略可能。省略時は空リストになる。
-
-レベルによって効果値が変化するカードは、`LevelUp` / `LevelDown` 後に説明文と効果インスタンスを更新する。
-
-## ActionEffectの方針
-
-カードや敵行動の具体的な処理は `ActionEffect` の派生クラスに実装する。
-実行できるかどうかもAction側の `CanExecute` に閉じ込める。
-
-- `eMove`: 対象方向への移動。
-- `eLineAttack`: 射程と命中方式を指定する直線攻撃。
-- `ePositionAttack`: 指定座標にいる対象への攻撃。
-- `eIgnite`: 射程内のマスへの炎上付与。
-- `eIgniteAround`: 使用者の上下左右4マスへの炎上付与。
-- `eSleep`: 何もせず行動を消費する。
-
-敵は `EnemyActionPlan` で `ActionEffect` と対象指定ロジックを組み合わせる。敵クラスは「どのActionを使うか」と「どの対象指定を使うか」だけを持ち、実行可能かどうかはAction側に任せる。
-
-`eLineAttack` は射程によって近距離と遠距離を表現し、`HitType.FirstTargetOnly` と `HitType.Penetrating` で貫通の有無を切り替える。使用者の位置に依存せず指定座標だけを攻撃する場合は `ePositionAttack` を使用する。
+- カード効果の最小単位は `eXxx` とする。
+- 既存の `eXxx` と `XxxEffectSO` で表現できる場合は再利用し、カードごとの専用Effectを安易に追加しない。
+- カードの発動効果は、可能な限り複数の既存Effectを `effects` に組み合わせて構成する。
+- 新しいEffectは、既存Effectの組み合わせでは表現できない最小の効果単位が必要な場合だけ追加する。
+- `eXxx` は具体カードを参照しない。カード固有の数値は `CardEffectEntry.parameters` に置く。
 
 ## 新規カード追加手順
 
-1. `Card/Card/cXxx.cs` を作り、`CardBase` を継承する。
-2. 必要なら `Actions/Effects/eXxx.cs` を作り、`ActionEffect` を継承する。
-3. カードのコンストラクタで1つ以上の効果を `Effects` に設定する。
-4. レベル依存値がある場合は `LevelUp` / `LevelDown` で効果を更新する。
-5. 使用可能にする場合は、カードを生成するデッキまたはユニットのカード一覧へ追加する。
-
-## 現在の注意点
-
-- `CardModifier` は保持・追加・削除できるが、現在のカード実行フローでは各フックが呼ばれていない。
-- `ActionEffect.Execute` は既定実装が空のため、派生クラスでのオーバーライド忘れをコンパイル時には検出できない。
-- カード使用と効果実行の調停が `GameController` に集中しているため、規模拡大時には専用サービスへの分離を検討する。
+1. 既存Effectの組み合わせで表現できるか確認する。
+2. 必要なEffectがなければ、最小単位の `eXxx`、対応する `XxxEffectSO`、および効果定義アセットを追加する。
+3. `Assets/GameData/Cards/` に `CardDefinitionSO` のカード定義アセットを作成または編集する。
+4. レベルごとの `effects` に効果定義アセットを設定し、カード固有パラメータを設定する。
+5. 使用可能にする場合は、対応する初期デッキ、報酬プール、ショップなどのカード一覧へ追加する。

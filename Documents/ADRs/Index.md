@@ -33,3 +33,4 @@ ADR番号はカテゴリフォルダごとに `ADR-001` から採番します。
 * [ADR-014: スタン耐性とスタンダメージで行動不能を蓄積型にする](GameDesign/ADR-014-stun-resistance-and-stun-damage.md)
 * [ADR-015: Outpostショップでキーストーンを任意購入し、カード在庫を滞在単位で固定する](GameDesign/ADR-015-outpost-shop-inventory-and-keystone-purchase.md)
 * [ADR-016: 移動4系統とFORCEMOVE衝突規則をUnitMoveServiceへ集約する](GameDesign/ADR-016-unit-movement-and-force-move-collision.md)
+* [ADR-017: UIを事前構築し、画面表示とゲーム進行ロジックを分離する](GameDesign/ADR-017-serialized-ui-and-screen-interaction-design.md)

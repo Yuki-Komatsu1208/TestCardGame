@@ -14,13 +14,68 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Character.Enemies.EnemyDefinitionSO
   enemyName: "\u30D5\u30A1\u30A4\u30A2\u30B9\u30E9\u30A4\u30E0"
   maxHp: 60
+  maxStunResist: 100
   characterCode: 3
   enemyColor: {r: 0.957, g: 0.263, b: 0.212, a: 1}
   behaviorPattern: 1
   actionPlans:
   - targetKind: 1
+    intentKind: 3
     effect: {fileID: 11400000, guid: a1000000000000000000000000000001, type: 2}
+    useCustomParameters: 0
+    parameters:
+      step: 1
+      damage: 1
+      StunDamage: 0
+      duration: 1
+      range: 1
+      hitType: 0
+      radius: 1
+      distance: 1
+      maxRange: 0
+      statusEffect: 0
+      value: 0
+      count: 1
+      moveAwayFromTarget: 0
+      forceMoveDirection: 0
+      forceMoveStunDamage: 0
   - targetKind: 0
+    intentKind: 2
     effect: {fileID: 11400000, guid: a1000000000000000000000000000005, type: 2}
+    useCustomParameters: 0
+    parameters:
+      step: 1
+      damage: 1
+      StunDamage: 0
+      duration: 1
+      range: 1
+      hitType: 0
+      radius: 1
+      distance: 1
+      maxRange: 0
+      statusEffect: 0
+      value: 0
+      count: 1
+      moveAwayFromTarget: 0
+      forceMoveDirection: 0
+      forceMoveStunDamage: 0
   - targetKind: 0
+    intentKind: 2
     effect: {fileID: 11400000, guid: a0000000000000000000000000000051, type: 2}
+    useCustomParameters: 0
+    parameters:
+      step: 1
+      damage: 1
+      StunDamage: 0
+      duration: 1
+      range: 1
+      hitType: 0
+      radius: 1
+      distance: 1
+      maxRange: 0
+      statusEffect: 0
+      value: 0
+      count: 1
+      moveAwayFromTarget: 0
+      forceMoveDirection: 0
+      forceMoveStunDamage: 0

@@ -14,16 +14,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Character.Enemies.EnemyDefinitionSO
   enemyName: "\u30B9\u30E9\u30A4\u30E0"
   maxHp: 50
+  maxStunResist: 100
   characterCode: 2
   enemyColor: {r: 0.2, g: 0.8, b: 0.3, a: 1}
   behaviorPattern: 0
   actionPlans:
   - targetKind: 1
+    intentKind: 1
     effect: {fileID: 11400000, guid: a1000000000000000000000000000004, type: 2}
     useCustomParameters: 0
     parameters:
       step: 1
       damage: 10
+      StunDamage: 0
       duration: 1
       range: 1
       hitType: 0
@@ -32,12 +35,18 @@ MonoBehaviour:
       maxRange: 1
       statusEffect: 0
       value: 0
+      count: 1
+      moveAwayFromTarget: 0
+      forceMoveDirection: 0
+      forceMoveStunDamage: 0
   - targetKind: 1
+    intentKind: 3
     effect: {fileID: 11400000, guid: a1000000000000000000000000000001, type: 2}
     useCustomParameters: 0
     parameters:
       step: 1
       damage: 1
+      StunDamage: 0
       duration: 1
       range: 1
       hitType: 0
@@ -46,3 +55,7 @@ MonoBehaviour:
       maxRange: 0
       statusEffect: 0
       value: 0
+      count: 1
+      moveAwayFromTarget: 0
+      forceMoveDirection: 0
+      forceMoveStunDamage: 0
