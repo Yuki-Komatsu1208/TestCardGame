@@ -75,10 +75,9 @@ namespace TestCardGame.UIs.Battle
         /// <summary>盤面上の事前配置・複製UnitViewをセル内へ収まる寸法にそろえる。</summary>
         private void ResizeUnitViews(float cellSize)
         {
-            float unitSize = Mathf.Max(1f, cellSize * 0.78f);
             foreach (UnitView unitView in GetComponentsInChildren<UnitView>(true))
             {
-                if (unitView.TryGetComponent(out RectTransform unitRect)) unitRect.sizeDelta = Vector2.one * unitSize;
+                unitView.FitToCell(cellSize);
             }
         }
 

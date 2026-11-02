@@ -24,6 +24,11 @@ namespace TestCardGame.Cards.Core
     public class CardDefinitionSO : ScriptableObject
     {
         public string cardName;
+        [Header("Card Artwork")]
+        [SerializeField, Tooltip("カード中央の画像。未設定でも既存カードは使用できます。")]
+        private Sprite artwork;
+        public Sprite Artwork => artwork;
+
         public List<BuildTag> buildTags = new();
         [Tooltip("このカード自身が常に持つModifier。報酬で付与するEnchantとは別に、カード固有の性質を表す。")]
         public List<CardModifierSO> intrinsicModifiers = new();

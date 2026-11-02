@@ -1,0 +1,307 @@
+TARGET Assets/GameData/Scenes/BattleScene.unity
+DIRECT
+Assets/GameData/Prefabs/CardList/CardListSelectionOverlay.prefab
+Assets/GameData/Prefabs/UI/Battle/BattleHud.prefab
+Packages/com.unity.ugui/Runtime/UGUI/UI/Core/Layout/GridLayoutGroup.cs
+Assets/GameData/Cards/DebugTargetAttackCard.asset
+Assets/GameData/CardModifiers/Maintenance.asset
+Assets/GameData/Prefabs/Cell.prefab
+Assets/GameData/Cards/MoveCard.asset
+Packages/com.unity.ugui/Runtime/TMP/TextMeshProUGUI.cs
+Assets/Code/Runtime/Controller/GameController.cs
+Assets/GameData/Prefabs/UI/Battle/BattleHand.prefab
+Assets/GameData/Character/Player/Player_Attack_Right_Final.png
+Assets/GameData/Prefabs/UI/Battle/UnitHoverDetails.prefab
+Assets/GameData/CardModifiers/Overheat.asset
+Packages/com.unity.2d.sprite/Editor/ObjectMenuCreation/DefaultAssets/Textures/v2/Square.png
+Packages/com.unity.ugui/Runtime/UGUI/UI/Core/Image.cs
+Assets/Code/Runtime/Character/UnitView.cs
+Assets/GameData/Prefabs/UI/Battle/UnitOverheadBars.prefab
+Assets/Code/Runtime/UIs/Battle/UnitHoverDetailsView.cs
+Assets/Code/Runtime/Controller/RewardController.cs
+Assets/Code/Runtime/UIs/Battle/BoardView.cs
+Assets/Code/Runtime/UIs/Battle/BattleUnitHudPresenter.cs
+Assets/Code/Runtime/UIs/PostBattle/PostBattleRootView.cs
+Assets/Code/Runtime/UIs/Battle/BattleHudView.cs
+Assets/Code/Runtime/Controller/RunController.cs
+Assets/GameData/CardModifiers/Reprieve.asset
+Assets/Code/Runtime/UIs/Battle/EnemyIntentPresenter.cs
+Assets/Code/Runtime/GameStarter.cs
+Assets/GameData/Character/Player/Player_Idle_Right_Final.png
+Packages/com.unity.ugui/Runtime/UGUI/UI/Core/Layout/CanvasScaler.cs
+Assets/Code/Runtime/UIs/TooltipView.cs
+Assets/GameData/CardModifiers/FocusChanneling.asset
+Assets/Code/Runtime/BoardManage/CellBuilder.cs
+Assets/GameData/Character/Enemies/SlimeEnemy.asset
+Assets/ThirdParty/Cainos/Pixel Art Top Down - Basic/Texture/TX Tileset Stone Ground.png
+Packages/com.unity.ugui/Runtime/UGUI/UI/Core/GraphicRaycaster.cs
+Assets/Code/Runtime/Cards/Views/HandView.cs
+Packages/com.unity.ugui/Runtime/UGUI/UI/Core/Button.cs
+Assets/Code/Runtime/UIs/Battle/EnemyIntentView.cs
+Assets/GameData/CardModifiers/Kindling.asset
+Packages/com.unity.ugui/Runtime/UGUI/EventSystem/EventSystem.cs
+Assets/GameData/Prefabs/CommonUI/CommonUiRoot.prefab
+Assets/Code/Runtime/UIs/CommonUiController.cs
+Packages/com.unity.inputsystem/InputSystem/Plugins/PlayerInput/DefaultInputActions.inputactions
+Packages/com.unity.ugui/Runtime/UGUI/UI/Core/RectMask2D.cs
+Assets/GameData/CardModifiers/Instant.asset
+Assets/ThirdParty/Cainos/Pixel Art Top Down - Basic/Texture/TX Tileset Grass.png
+Packages/com.unity.inputsystem/InputSystem/Plugins/UI/InputSystemUIInputModule.cs
+Assets/GameData/Cards/HeavyStrik.asset
+Assets/Code/Runtime/UIs/CardListSelectionOverlay.cs
+Assets/GameData/CardModifiers/Lightweight.asset
+Assets/UI/UnityResource/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF.asset
+Assets/GameData/Prefabs/UI/PostBattle/PostBattleRoot.prefab
+Assets/GameData/Runs/DefaultRun.asset
+Assets/GameData/Character/Player/DefaultPlayer.asset
+Assets/Code/Runtime/Controller/BattleUI.cs
+RECURSIVE
+Assets/GameData/Cards/MagicIceWallCard.asset
+Assets/Code/Runtime/UIs/CommonStatusBarView.cs
+Assets/Code/Definitions/Cards/Modifiers/OverheatModifierSO.cs
+Assets/Code/Definitions/Cards/Modifiers/ApplyStatusOnUseModifierSO.cs
+Assets/GameData/Stages/Stage_09_ArchmageSanctum.asset
+Assets/GameData/CardModifiers/Maintenance.asset
+Assets/Code/Runtime/UIs/PostBattle/RewardChoicePanelView.cs
+Assets/Code/Definitions/Actions/Effects/AreaAttackEffectSO.cs
+Assets/Code/Runtime/UIs/PostBattle/RewardChoiceSlotView.cs
+Packages/com.unity.ugui/Runtime/UGUI/UI/Core/ScrollRect.cs
+Assets/GameData/Cards/MoveCard.asset
+Assets/Code/Runtime/Controller/GameController.cs
+Packages/com.unity.ugui/Editor Resources/Gizmos/TMP - Text Component Icon.psd
+Assets/GameData/Character/Enemies/GoblinArcherEnemy.asset
+Assets/GameData/Cards/MagicFireballCard.asset
+Assets/Code/Definitions/Stage/StageDefinitionSO.cs
+Packages/com.unity.2d.sprite/Editor/ObjectMenuCreation/DefaultAssets/Textures/v2/Square.png
+Assets/GameData/Character/Enemies/SlimeKingEnemy.asset
+Assets/GameData/Cards/MagicConcentrateCard.asset
+Assets/Code/Definitions/Actions/Effects/MagicFireballEffectSO.cs
+Packages/com.unity.ugui/Runtime/UGUI/UI/Core/Image.cs
+Assets/Code/Runtime/UIs/Battle/BattleConsoleLogForwarder.cs
+Assets/GameData/Character/Enemies/GoblinFighterEnemy.asset
+Assets/Code/Definitions/Actions/Effects/IgniteEffectSO.cs
+Assets/Code/Runtime/Controller/RewardController.cs
+Assets/Code/Definitions/Cards/Modifiers/FocusChannelingModifierSO.cs
+Assets/GameData/Effects/DragonAreaAttackEffect.asset
+Assets/GameData/Cards/KnockbackCard.asset
+Assets/Code/Runtime/UIs/Battle/BattleUnitHudPresenter.cs
+Packages/com.unity.ugui/Runtime/UGUI/UI/Core/Layout/ContentSizeFitter.cs
+Assets/Code/Runtime/UIs/Cards/CardDetailPanelView.cs
+Assets/GameData/Effects/Sleep.asset
+Packages/com.unity.ugui/Runtime/UGUI/UI/Core/Layout/CanvasScaler.cs
+Assets/GameData/Stages/Stage_01_Slime.asset
+Assets/Code/Runtime/UIs/TooltipView.cs
+Assets/Code/Runtime/Cards/Views/CardView.cs
+Assets/Code/Runtime/UIs/PostBattle/RunEndPanelView.cs
+Assets/Code/Definitions/Cards/Modifiers/ManaCostModifierSO.cs
+Assets/Code/Runtime/UIs/Battle/EnemyIntentView.cs
+Assets/GameData/Effects/ChargeEffect.asset
+Assets/Code/Runtime/UIs/CommonUiController.cs
+Assets/GameData/Effects/LineAttackEffect.asset
+Packages/com.unity.ugui/Runtime/UGUI/UI/Core/RectMask2D.cs
+Assets/Code/Runtime/UIs/CardListSelectionOverlay.cs
+Assets/ThirdParty/Cainos/Pixel Art Top Down - Basic/Texture/TX Tileset Grass.png
+Assets/GameData/Cards/MagicLightningCard.asset
+Assets/GameData/CardModifiers/Lightweight.asset
+Assets/UI/UnityResource/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF.asset
+Assets/GameData/Character/Enemies/DragonEnemy.asset
+Assets/GameData/Runs/DefaultRun.asset
+Assets/GameData/Prefabs/UI/Battle/BattleHud.prefab
+Assets/Code/Definitions/Actions/Effects/MagicLightningEffectSO.cs
+Packages/com.unity.inputsystem/InputSystem/Actions/InputActionAsset.cs
+Assets/GameData/Cards/ShieldCard.asset
+Packages/com.unity.inputsystem/InputSystem/Editor/Icons/InputSystemUIInputModule@64.png
+Packages/com.unity.ugui/Runtime/UGUI/UI/Core/VertexModifiers/Outline.cs
+Assets/Code/Runtime/UIs/Battle/UnitOverheadBarsView.cs
+Assets/Code/Definitions/Cards/Modifiers/HealOnCooldownReadyModifierSO.cs
+Assets/GameData/Prefabs/UI/Battle/BattleHand.prefab
+Assets/Code/Runtime/UIs/Battle/BattleHandCardSlotView.cs
+Assets/GameData/Prefabs/UI/Battle/UnitHoverDetails.prefab
+Assets/GameData/CardModifiers/Overheat.asset
+Assets/Code/Runtime/UIs/Cards/CardListSlotView.cs
+Assets/Code/Runtime/UIs/MoveCardDragHandler.cs
+Packages/com.unity.inputsystem/InputSystem/Actions/InputActionReference.cs
+Packages/com.unity.2d.sprite/Editor/ObjectMenuCreation/DefaultAssets/Textures/v2/Circle.png
+Assets/Code/Runtime/Character/UnitView.cs
+Packages/com.unity.ugui/Runtime/UGUI/UI/Core/Toggle.cs
+Assets/GameData/Scenes/BattleScene.unity
+Assets/GameData/Prefabs/CardList/CardListSlot.prefab
+Assets/Code/Definitions/Actions/Effects/ApplyStatusEffectSO.cs
+Assets/GameData/Effects/ForcedMoveEffect.asset
+Assets/GameData/Stages/Stage_04_GoblinScout.asset
+Assets/GameData/Effects/GainPowerEffect.asset
+Assets/Code/Runtime/UIs/SettingsController.cs
+Assets/UI/Fonts/msgothic.ttc
+Assets/GameData/Effects/ApplyStatusEffect.asset
+Assets/GameData/Cards/IgniteCard.asset
+Assets/GameData/CardModifiers/FocusChanneling.asset
+Assets/GameData/Effects/IgniteAroundEffect.asset
+Assets/Code/Definitions/Cards/Modifiers/MaintenanceModifierSO.cs
+Assets/GameData/Cards/ForcedMoveCard.asset
+Assets/Code/Runtime/Cards/Views/HandView.cs
+Assets/GameData/CardModifiers/Kindling.asset
+Packages/com.unity.ugui/Runtime/UGUI/EventSystem/EventSystem.cs
+Assets/GameData/Prefabs/CardList/CardListSelectionOverlay.prefab
+Assets/Code/Definitions/Character/Enemies/EnemyDefinitionSO.cs
+Assets/GameData/Effects/MagicConcentrateEffect.asset
+Assets/Code/Definitions/Run/RunDefinitionSO.cs
+Assets/GameData/Prefabs/UI/PostBattle/PostBattleRoot.prefab
+Assets/GameData/Character/Player/DefaultPlayer.asset
+Packages/com.unity.ugui/Runtime/UGUI/UI/Core/Slider.cs
+Assets/GameData/Stages/Stage_08_DoubleKings.asset
+Assets/Code/Runtime/UIs/SettingsModalView.cs
+Assets/GameData/Character/Enemies/FireSlimeEnemy.asset
+Assets/Code/Runtime/UIs/CellHoverHandler.cs
+Assets/Code/Definitions/Actions/Effects/ForcedMoveEffectSO.cs
+Assets/GameData/Stages/Stage_02_FireSlime.asset
+Assets/GameData/Character/Enemies/MiniGoblinEnemy.asset
+Packages/com.unity.ugui/Runtime/TMP/TextMeshProUGUI.cs
+Assets/UI/UnityResource/TextMesh Pro/Shaders/TMP_SDF-Mobile.shader
+Assets/GameData/Effects/MagicFireballEffect.asset
+Assets/GameData/Character/Player/Player_Attack_Right_Final.png
+Assets/Code/Definitions/Actions/Effects/MoveEffectSO.cs
+Assets/Code/Definitions/Actions/Effects/PoisonSpreadEffectSO.cs
+Assets/GameData/Stages/Stage_10_ElementalAltar.asset
+Assets/GameData/Prefabs/UI/Battle/UnitOverheadBars.prefab
+Assets/Code/Runtime/UIs/Battle/UnitHoverDetailsView.cs
+Assets/GameData/Effects/IgniteEffect.asset
+Assets/Code/Runtime/UIs/PostBattle/PostBattleRootView.cs
+Assets/Code/Definitions/Cards/Modifiers/InstantModifierSO.cs
+Assets/Code/Runtime/UIs/Battle/BattleHudView.cs
+Assets/Code/Runtime/UIs/Cards/CardEnhancementConfirmationView.cs
+Assets/GameData/CardModifiers/Reprieve.asset
+Assets/Code/Runtime/UIs/Battle/EnemyIntentPresenter.cs
+Assets/Code/Runtime/UIs/CommonMessageLogView.cs
+Assets/GameData/Cards/PunchCard.asset
+Assets/GameData/Character/Player/Player_Idle_Right_Final.png
+Packages/com.unity.ugui/Runtime/UGUI/UI/Core/Mask.cs
+Assets/GameData/Character/Enemies/GoblinKingEnemy.asset
+Assets/GameData/Effects/MagicArrowEffect.asset
+Assets/Code/Definitions/Actions/Effects/IgniteAroundEffectSO.cs
+Packages/com.unity.ugui/Editor Resources/Gizmos/TMP - Font Asset Icon.psd
+Assets/GameData/Effects/GolemTelegraphEffect.asset
+Assets/Code/Runtime/UIs/PostBattle/RouteChoicePanelView.cs
+Assets/Code/Definitions/Actions/Effects/TelegraphEffectSO.cs
+Assets/ThirdParty/Cainos/Pixel Art Top Down - Basic/Texture/TX Tileset Stone Ground.png
+Assets/GameData/Effects/MagicLightningEffect.asset
+Packages/com.unity.ugui/Runtime/UGUI/UI/Core/Button.cs
+Assets/UI/Fonts/msgothic SDF.asset
+Assets/GameData/Prefabs/CommonUI/CommonUiRoot.prefab
+Packages/com.unity.ugui/Runtime/TMP/TMP_FontAsset.cs
+Assets/Code/Definitions/Actions/Effects/ChargeEffectSO.cs
+Assets/Code/Definitions/Actions/Effects/MagicIceWallEffectSO.cs
+Assets/GameData/Stages/Stage_06_SlimeKingSwamp.asset
+Assets/Code/Runtime/UIs/Battle/UnitHudSlotView.cs
+Packages/com.unity.ugui/Runtime/UGUI/UI/Core/Layout/GridLayoutGroup.cs
+Assets/GameData/Cards/DebugTargetAttackCard.asset
+Assets/GameData/Effects/MoveEffect.asset
+Assets/GameData/Prefabs/Cell.prefab
+Assets/Code/Definitions/Actions/Effects/GainPowerEffectSO.cs
+Assets/UI/UnityResource/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF - Fallback.asset
+Assets/Code/Definitions/Actions/Effects/SummonEnemyEffectSO.cs
+Assets/Code/Definitions/Cards/CardDefinitionSO.cs
+Assets/GameData/Effects/PositionAttackEffect.asset
+Assets/GameData/Effects/PoisonSpreadEffect.asset
+Assets/GameData/Rewards/BasicRewardPool.asset
+Assets/Code/Runtime/UIs/Battle/BoardView.cs
+Assets/GameData/Character/Enemies/GolemEnemy.asset
+Assets/Code/Definitions/Rewards/CardRewardPoolSO.cs
+Assets/Code/Definitions/Actions/Effects/PositionAttackEffectSO.cs
+Assets/Code/Definitions/Actions/Effects/MagicConcentrateEffectSO.cs
+Assets/Code/Definitions/Actions/Effects/MagicArrowEffectSO.cs
+Assets/GameData/Effects/StunDamageEffect.asset
+Assets/Code/Definitions/Actions/Effects/LineAttackEffectSO.cs
+Assets/GameData/Effects/SummonMiniGoblinEffect.asset
+Assets/Code/Runtime/Controller/RunController.cs
+Packages/com.unity.inputsystem/InputSystem/Editor/AssetImporter/InputActionImporter.cs
+Assets/Code/Runtime/GameStarter.cs
+Assets/Code/Definitions/Character/Player/PlayerDefinitionSO.cs
+Assets/GameData/Character/Enemies/SlimeEnemy.asset
+Assets/Code/Runtime/BoardManage/CellBuilder.cs
+Assets/Code/Runtime/UIs/Battle/CellView.cs
+Packages/com.unity.ugui/Runtime/UGUI/UI/Core/GraphicRaycaster.cs
+Assets/GameData/Stages/Stage_03_Mixed.asset
+Assets/GameData/Stages/Stage_05_GoblinVanguard.asset
+Packages/com.unity.inputsystem/InputSystem/Plugins/PlayerInput/DefaultInputActions.inputactions
+Assets/GameData/Effects/MagicIceWallEffect.asset
+Assets/GameData/CardModifiers/Instant.asset
+Assets/GameData/Stages/Stage_07_GoblinKingThrone.asset
+Packages/com.unity.inputsystem/InputSystem/Plugins/UI/InputSystemUIInputModule.cs
+Assets/GameData/Cards/HeavyStrik.asset
+Assets/Code/Definitions/Actions/Effects/StunDamageEffectSO.cs
+Assets/GameData/Character/Enemies/AccumulatorEnemy.asset
+Assets/UI/UnityResource/TextMesh Pro/Fonts/LiberationSans.ttf
+Assets/Code/Runtime/Controller/BattleUI.cs
+Assets/GameData/Cards/MagicArrowCard.asset
+REFERENCED BY
+
+TARGET Assets/GameData/Prefabs/UI/Battle/BattleHud.prefab
+DIRECT
+Assets/Code/Runtime/UIs/Battle/UnitHudSlotView.cs
+Assets/Code/Runtime/UIs/Battle/BattleHudView.cs
+Packages/com.unity.ugui/Runtime/UGUI/UI/Core/ScrollRect.cs
+Packages/com.unity.ugui/Runtime/TMP/TextMeshProUGUI.cs
+Packages/com.unity.ugui/Runtime/UGUI/UI/Core/Button.cs
+Assets/UI/Fonts/msgothic SDF.asset
+Packages/com.unity.2d.sprite/Editor/ObjectMenuCreation/DefaultAssets/Textures/v2/Square.png
+Packages/com.unity.ugui/Runtime/UGUI/UI/Core/RectMask2D.cs
+Packages/com.unity.ugui/Runtime/UGUI/UI/Core/Image.cs
+Assets/Code/Runtime/UIs/Battle/BattleConsoleLogForwarder.cs
+Assets/UI/UnityResource/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF.asset
+RECURSIVE
+Assets/Code/Runtime/UIs/Battle/UnitHudSlotView.cs
+Assets/GameData/Prefabs/UI/Battle/BattleHud.prefab
+Assets/Code/Runtime/UIs/Battle/BattleHudView.cs
+Assets/UI/Fonts/msgothic.ttc
+Packages/com.unity.ugui/Runtime/UGUI/UI/Core/ScrollRect.cs
+Packages/com.unity.ugui/Editor Resources/Gizmos/TMP - Font Asset Icon.psd
+Packages/com.unity.ugui/Runtime/TMP/TextMeshProUGUI.cs
+Assets/UI/UnityResource/TextMesh Pro/Shaders/TMP_SDF-Mobile.shader
+Packages/com.unity.ugui/Editor Resources/Gizmos/TMP - Text Component Icon.psd
+Assets/UI/UnityResource/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF - Fallback.asset
+Packages/com.unity.ugui/Runtime/UGUI/UI/Core/Button.cs
+Packages/com.unity.2d.sprite/Editor/ObjectMenuCreation/DefaultAssets/Textures/v2/Square.png
+Assets/UI/Fonts/msgothic SDF.asset
+Packages/com.unity.ugui/Runtime/UGUI/UI/Core/RectMask2D.cs
+Packages/com.unity.ugui/Runtime/UGUI/UI/Core/Image.cs
+Packages/com.unity.ugui/Runtime/TMP/TMP_FontAsset.cs
+Assets/Code/Runtime/UIs/Battle/BattleConsoleLogForwarder.cs
+Assets/UI/UnityResource/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF.asset
+Assets/UI/UnityResource/TextMesh Pro/Fonts/LiberationSans.ttf
+REFERENCED BY
+Assets/_Recovery/0.unity
+Assets/GameData/Scenes/BattleScene.unity
+TARGET Assets/GameData/Prefabs/UI/Battle/UnitOverheadBars.prefab
+DIRECT
+Assets/Code/Runtime/UIs/Battle/UnitOverheadBarsView.cs
+Packages/com.unity.2d.sprite/Editor/ObjectMenuCreation/DefaultAssets/Textures/v2/Square.png
+Packages/com.unity.ugui/Runtime/UGUI/UI/Core/Image.cs
+RECURSIVE
+Assets/Code/Runtime/UIs/Battle/UnitOverheadBarsView.cs
+Packages/com.unity.2d.sprite/Editor/ObjectMenuCreation/DefaultAssets/Textures/v2/Square.png
+Packages/com.unity.ugui/Runtime/UGUI/UI/Core/Image.cs
+Assets/GameData/Prefabs/UI/Battle/UnitOverheadBars.prefab
+REFERENCED BY
+Assets/GameData/Scenes/BattleScene.unity
+TARGET Assets/GameData/Prefabs/UI/Battle/UnitHoverDetails.prefab
+DIRECT
+Packages/com.unity.ugui/Runtime/TMP/TextMeshProUGUI.cs
+Packages/com.unity.ugui/Runtime/UGUI/UI/Core/Image.cs
+Assets/UI/UnityResource/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF.asset
+Assets/Code/Runtime/UIs/Battle/UnitHoverDetailsView.cs
+RECURSIVE
+Assets/UI/Fonts/msgothic.ttc
+Packages/com.unity.ugui/Editor Resources/Gizmos/TMP - Font Asset Icon.psd
+Packages/com.unity.ugui/Runtime/TMP/TextMeshProUGUI.cs
+Assets/UI/UnityResource/TextMesh Pro/Shaders/TMP_SDF-Mobile.shader
+Packages/com.unity.ugui/Editor Resources/Gizmos/TMP - Text Component Icon.psd
+Assets/UI/UnityResource/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF - Fallback.asset
+Assets/GameData/Prefabs/UI/Battle/UnitHoverDetails.prefab
+Assets/UI/Fonts/msgothic SDF.asset
+Packages/com.unity.ugui/Runtime/UGUI/UI/Core/Image.cs
+Packages/com.unity.ugui/Runtime/TMP/TMP_FontAsset.cs
+Assets/UI/UnityResource/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF.asset
+Assets/Code/Runtime/UIs/Battle/UnitHoverDetailsView.cs
+Assets/UI/UnityResource/TextMesh Pro/Fonts/LiberationSans.ttf
+REFERENCED BY
+Assets/GameData/Scenes/BattleScene.unity

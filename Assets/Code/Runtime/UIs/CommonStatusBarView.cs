@@ -18,6 +18,20 @@ namespace TestCardGame.UIs
             for (int i = 0; i < SlotCount; i++)
             {
                 bool visible = i < itemCount;
+                if (labels[i].transform.parent == values[i].transform.parent)
+                {
+                    var slot = labels[i].transform.parent as RectTransform;
+                    if (slot != null)
+                    {
+                        slot.gameObject.SetActive(visible);
+                        if (visible)
+                        {
+                            int visibleCount = Mathf.Min(itemCount, SlotCount);
+                            slot.anchorMin = new Vector2((float)i / visibleCount, 0f);
+                            slot.anchorMax = new Vector2((float)(i + 1) / visibleCount, 1f);
+                        }
+                    }
+                }
                 labels[i].gameObject.SetActive(visible);
                 values[i].gameObject.SetActive(visible);
                 if (!visible)

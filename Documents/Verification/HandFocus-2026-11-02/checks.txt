@@ -1,0 +1,4 @@
+PASS focus HandCardSlot_01: scale=1.6 depth=87 boardDepth=4
+PASS focus HandCardSlot_20: scale=1.6 depth=429 boardDepth=3
+PASS focus HandCardSlot_50: scale=1.6 depth=1039 boardDepth=3
+ALL PASS: 復元・ドラッグ・20/50枚・画面端・モーダル・再割当

@@ -39,6 +39,7 @@ namespace TestCardGame.Actions.Effects
         /// </summary>
         public override void Execute(ActionContext context)
         {
+            context.SetHitTarget(null);
             if (!CanExecute(context))
             {
                 Debug.LogWarning("射撃方向を指定してください。");
@@ -67,6 +68,7 @@ namespace TestCardGame.Actions.Effects
                     continue;
                 }
 
+                context.SetHitTarget(targetUnit);
                 if (context.StatusEffectService?.DamageService != null)
                 {
                     context.StatusEffectService.DamageService.DealDamage(user, targetUnit, damage, TestCardGame.Controller.Services.DamageType.Normal);

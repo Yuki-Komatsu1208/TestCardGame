@@ -27,3 +27,17 @@ MemoryCaptures/
 *.mdb
 *.opendb
 *.VC.db
+
+# ローカルエディター設定
+/.zed/
+
+# Unityの計測記録・復旧用Scene・クラッシュ出力
+/[Pp]rofilerCaptures/
+/mono_crash.*
+/Assets/_Recovery/
+/Assets/_Recovery.meta
+
+# Unity AIの生成履歴と一時ファイル（採用済み素材はAssets側で管理）
+/GeneratedAssets/
+/Assets/AI Toolkit/Temp/
+/Assets/AI Toolkit/Temp.meta

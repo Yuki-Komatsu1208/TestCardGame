@@ -78,6 +78,16 @@ namespace TestCardGame.Controller
 
             if (rewardController == null)
             {
+                rewardController = GetComponentInChildren<RewardController>(true);
+            }
+
+            if (rewardController == null)
+            {
+                rewardController = GetComponentInParent<RewardController>(true);
+            }
+
+            if (rewardController == null)
+            {
                 FatalRunRecoveryService.TryRecover(runDefinition,
                     "RunControllerにRewardControllerが事前配置されていません。");
                 return;

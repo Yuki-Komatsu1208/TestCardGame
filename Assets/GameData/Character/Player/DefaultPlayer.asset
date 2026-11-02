@@ -14,10 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Character.Player.PlayerDefinitionSO
   playerName: "\u52C7\u8005"
   maxHp: 100
+  maxStunResist: 100
   initialMana: 3
   maxMana: 5
   manaRecoveryPerTurn: 3
-  playerSprite: {fileID: 6221534257167143075, guid: e42df1363f7d5664cb6b708ed0e08051, type: 3}
+  playerSprite: {fileID: 86927769, guid: 194fe0424b28f49c9951141386137830, type: 3}
   initialCards:
   - card: {fileID: 11400000, guid: 6e4c9d8b13f64540a9e2c7b1f0d68452, type: 2}
     level: 1

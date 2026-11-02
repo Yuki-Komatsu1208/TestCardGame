@@ -9,17 +9,19 @@ using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 /// <summary>
 /// Battle専用の事前配置済み50枠へ手札を割り当て、重なりと横スクロールを制御する。
 /// </summary>
-public sealed class HandView : MonoBehaviour, ICombatCardSelectionView
+public sealed class HandView : MonoBehaviour, ICombatCardSelectionView, IScrollHandler
 {
     public const int RequiredSlotCount = 50;
 
     [SerializeField] private ScrollRect scrollRect;
     [SerializeField] private RectTransform viewport;
     [SerializeField] private RectTransform content;
+    [SerializeField] private RectTransform focusedCardRoot;
     [SerializeField] private List<BattleHandCardSlotView> slots = new();
     [SerializeField, Min(1)] private int scrollThreshold = 20;
     [SerializeField, Min(1f)] private float cardWidth = 150f;
@@ -52,18 +54,19 @@ public sealed class HandView : MonoBehaviour, ICombatCardSelectionView
     public IReadOnlyList<BattleHandCardSlotView> Slots => slots;
     public int ScrollThreshold => scrollThreshold;
     public bool IsScrollEnabled => scrollRect != null && scrollRect.horizontal;
+    public RectTransform FocusedCardRoot => focusedCardRoot;
 
     private void Awake()
     {
-        selectionOkButton?.onClick.AddListener(NotifyConfirmRequested);
-        selectionCancelButton?.onClick.AddListener(NotifyCancelRequested);
-        selectionHeaderRoot?.SetActive(false);
+        if (selectionOkButton != null) selectionOkButton.onClick.AddListener(NotifyConfirmRequested);
+        if (selectionCancelButton != null) selectionCancelButton.onClick.AddListener(NotifyCancelRequested);
+        if (selectionHeaderRoot != null) selectionHeaderRoot.SetActive(false);
     }
 
     private void OnDestroy()
     {
-        selectionOkButton?.onClick.RemoveListener(NotifyConfirmRequested);
-        selectionCancelButton?.onClick.RemoveListener(NotifyCancelRequested);
+        if (selectionOkButton != null) selectionOkButton.onClick.RemoveListener(NotifyConfirmRequested);
+        if (selectionCancelButton != null) selectionCancelButton.onClick.RemoveListener(NotifyCancelRequested);
     }
 
     /// <summary>ゲーム操作の入口を一度だけ各カードへ渡す。</summary>
@@ -203,6 +206,21 @@ public sealed class HandView : MonoBehaviour, ICombatCardSelectionView
         }
     }
 
+    /// <summary>ターン進行などで変化したカード表示を、割り当てを変えずに更新する。</summary>
+    public void RefreshCardViews()
+    {
+        for (int i = 0; i < boundCount; i++)
+            slots[i]?.CardView?.RefreshView();
+    }
+
+    /// <summary>マスク外の拡大カード上でも、既存の手札スクロールへホイール入力を渡す。</summary>
+    public void OnScroll(PointerEventData eventData) => scrollRect?.OnScroll(eventData);
+
+    private void OnRectTransformDimensionsChange()
+    {
+        RefreshLayout();
+    }
+
     /// <summary>現在の枚数と表示幅からカードの位置とContent幅を再計算する。</summary>
     public void RefreshLayout()
     {
@@ -211,8 +229,9 @@ public sealed class HandView : MonoBehaviour, ICombatCardSelectionView
             return;
         }
 
-        bool useScroll = ShouldUseScroll(boundCount, scrollThreshold);
         float viewportWidth = Mathf.Max(1f, viewport.rect.width);
+        bool useScroll = ShouldUseScroll(boundCount, scrollThreshold)
+            || cardWidth + minimumVisibleWidth * Mathf.Max(0, boundCount - 1) + sidePadding * 2f > viewportWidth;
         float step = CalculateCardStep(boundCount, viewportWidth, cardWidth, minimumVisibleWidth,
             cardOverlap, scrollCardStep, sidePadding, useScroll);
         float contentWidth = boundCount <= 0
@@ -258,19 +277,21 @@ public sealed class HandView : MonoBehaviour, ICombatCardSelectionView
             return Mathf.Max(minimumWidth, scrollStep);
         }
 
-        float configured = Mathf.Max(minimumWidth, width - overlap);
         float available = Mathf.Max(0f, viewportWidth - padding * 2f - width);
-        return Mathf.Max(minimumWidth, Mathf.Min(configured, available / (cardCount - 1)));
+        float fittingStep = available / (cardCount - 1);
+        float preferredStep = width + Mathf.Max(0f, padding * 0.5f);
+        return Mathf.Max(minimumWidth, Mathf.Min(preferredStep, fittingStep));
     }
 
     /// <summary>Inspector参照と50枠が揃っているか検証する。</summary>
     public bool ValidateReferences()
     {
-        if (scrollRect == null || viewport == null || content == null || selectionHeaderRoot == null
+        if (scrollRect == null || viewport == null || content == null || focusedCardRoot == null
+            || focusedCardRoot.IsChildOf(viewport) || selectionHeaderRoot == null
             || selectionTitleText == null || selectionCountText == null || selectionOkButton == null
             || selectionCancelButton == null)
         {
-            Debug.LogError("HandView: ScrollRect、選択操作UI、または必須参照が不足しています。", this);
+            Debug.LogError("HandView: ScrollRect、マスク外の拡大表示先、選択操作UI、または必須参照が不足しています。", this);
             return false;
         }
 

@@ -13,14 +13,16 @@ public sealed class BattleHandCardSlotView : MonoBehaviour, IPointerEnterHandler
 {
     [SerializeField] private CardView cardView;
     [SerializeField] private CanvasGroup canvasGroup;
-    [SerializeField, Min(1f)] private float focusedScale = 1.18f;
-    [SerializeField, Min(0f)] private float focusedYOffset = 42f;
+    [SerializeField, Min(1f)] private float focusedScale = 1.6f;
 
     private HandView owner;
     private RectTransform rectTransform;
+    private Transform layoutParent;
+    private readonly Vector3[] corners = new Vector3[4];
     private Vector2 layoutPosition;
     private int layoutSiblingIndex;
     private bool selected;
+    private bool restoreFocusOnNextFrame;
     private bool combatSelectionMode;
     private bool combatSelected;
     private CardSelectionToken combatToken;
@@ -31,6 +33,7 @@ public sealed class BattleHandCardSlotView : MonoBehaviour, IPointerEnterHandler
     private void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
+        layoutParent = transform.parent;
         dragHandler = GetComponent<MoveCardDragHandler>();
     }
 
@@ -57,6 +60,7 @@ public sealed class BattleHandCardSlotView : MonoBehaviour, IPointerEnterHandler
     {
         cardView?.Bind(null);
         selected = false;
+        SetFocused(false);
     }
 
     /// <summary>操作可否をCanvasGroupへ反映する。</summary>
@@ -78,13 +82,15 @@ public sealed class BattleHandCardSlotView : MonoBehaviour, IPointerEnterHandler
         layoutSiblingIndex = siblingIndex;
         if (!selected)
         {
-            rectTransform.anchoredPosition = layoutPosition;
-            rectTransform.localScale = Vector3.one;
-            transform.SetSiblingIndex(layoutSiblingIndex);
+            SetFocused(false);
         }
     }
 
-    public void OnPointerEnter(PointerEventData eventData) => SetFocused(true);
+    /// <summary>押下中の再ホバーでは、運搬用の縮小とドラッグ位置を上書きしない。</summary>
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (!selected) SetFocused(true);
+    }
 
     public void OnPointerExit(PointerEventData eventData)
     {
@@ -141,15 +147,24 @@ public sealed class BattleHandCardSlotView : MonoBehaviour, IPointerEnterHandler
         SetFocused(value);
     }
 
-    /// <summary>フォーカス時だけカードを上へ移動・拡大し、最前面へ出す。</summary>
+    /// <summary>フォーカス時はマスク外へ移して前面に表示し、解除時に元の手札枠へ戻す。</summary>
     private void SetFocused(bool focused)
     {
+        restoreFocusOnNextFrame = false;
         rectTransform ??= GetComponent<RectTransform>();
+        layoutParent ??= transform.parent;
+        if (layoutParent == null) return;
+        if (rectTransform.parent != layoutParent) rectTransform.SetParent(layoutParent, false);
         if (focused)
         {
-            rectTransform.anchoredPosition = layoutPosition + Vector2.up * focusedYOffset;
+            // Pivotの位置に関わらず、拡大前の下端を維持する。
+            rectTransform.anchoredPosition = layoutPosition
+                + Vector2.up * rectTransform.rect.height * rectTransform.pivot.y * (focusedScale - 1f);
             rectTransform.localScale = Vector3.one * focusedScale;
+            if (owner != null && owner.FocusedCardRoot != null)
+                rectTransform.SetParent(owner.FocusedCardRoot, true);
             transform.SetAsLastSibling();
+            ClampToCanvasHorizontally();
         }
         else
         {
@@ -158,5 +173,33 @@ public sealed class BattleHandCardSlotView : MonoBehaviour, IPointerEnterHandler
             transform.SetSiblingIndex(Mathf.Clamp(layoutSiblingIndex, 0, transform.parent.childCount - 1));
         }
     }
+
+    /// <summary>下端の高さを変えず、画面の左右端からはみ出す分だけ補正する。</summary>
+    private void ClampToCanvasHorizontally()
+    {
+        var canvas = GetComponentInParent<Canvas>();
+        if (canvas == null) return;
+        var bounds = (RectTransform)canvas.rootCanvas.transform;
+        rectTransform.GetWorldCorners(corners);
+        Vector3 min = bounds.InverseTransformPoint(corners[0]);
+        Vector3 max = bounds.InverseTransformPoint(corners[2]);
+        float x = min.x < bounds.rect.xMin + 8f ? bounds.rect.xMin + 8f - min.x
+            : max.x > bounds.rect.xMax - 8f ? bounds.rect.xMax - 8f - max.x : 0f;
+        rectTransform.position += bounds.TransformVector(new Vector3(x, 0f, 0f));
+    }
+
+    /// <summary>親の有効状態が切り替わる間の階層変更を避け、次の表示時に復元する。</summary>
+    private void OnDisable()
+    {
+        selected = false;
+        restoreFocusOnNextFrame = true;
+    }
+
+    /// <summary>再表示時は有効化処理が完了したフレームで通常の配置へ戻す。</summary>
+    private void LateUpdate()
+    {
+        if (restoreFocusOnNextFrame) SetFocused(false);
+    }
+
 }
 }

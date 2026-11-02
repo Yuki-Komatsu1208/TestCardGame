@@ -14,6 +14,15 @@ namespace TestCardGame.Actions.Core
         public Vector2Int TargetPosition { get; }
         public StatusEffectService StatusEffectService { get; }
         public CardTargetSelectionService CardTargetSelectionService { get; }
+        public bool HasResolvedHitTarget { get; private set; }
+        public IUnit HitTarget { get; private set; }
+
+        /// <summary>実際の命中先をMODへ渡す。nullは対象未解決ではなく空振りを表す。</summary>
+        public void SetHitTarget(IUnit target)
+        {
+            HitTarget = target;
+            HasResolvedHitTarget = true;
+        }
 
         public ActionContext(UnitMoveService moveService, IUnit user, Vector2Int targetPosition, StatusEffectService statusEffectService, CardTargetSelectionService cardTargetSelectionService = null)
         {

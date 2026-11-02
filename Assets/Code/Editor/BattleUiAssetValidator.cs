@@ -4,6 +4,10 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem.UI;
+using TestCardGame.Controller;
 
 namespace TestCardGame.Editor
 {
@@ -46,16 +50,32 @@ namespace TestCardGame.Editor
                 throw new InvalidOperationException("BattleHud.prefabに戦闘ログ転送Componentがありません。");
             if (!hud.ValidateReferences())
                 throw new InvalidOperationException("BattleHud.prefabの必須参照が不足しています。");
+            foreach (var slot in prefab.GetComponentsInChildren<UnitHudSlotView>(true))
+                if (!slot.HasRequiredReferences()) throw new InvalidOperationException("非表示の既存HUD枠の参照が失われています。");
             if (hud.EnemySlots.Count != 12)
                 throw new InvalidOperationException("敵HUDは確定仕様どおり12枠必要です。");
             RectTransform hudRect = prefab.GetComponent<RectTransform>();
-            if (hudRect.anchorMax.y > 0.76f || hudRect.anchorMin.y < 0.58f)
-                throw new InvalidOperationException("Battle HUDが共通上部領域の直下へ収まっていません。");
+            if (!hud.IsCompactLayout || hudRect.anchorMin.y != 1f || hudRect.anchorMax.y != 1f
+                || Mathf.Abs(hudRect.sizeDelta.y - 48f) > 0.01f)
+                throw new InvalidOperationException("Battle HUDが48pxの上部帯になっていません。");
+            ValidatePassiveGraphics(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameData/Prefabs/UI/Battle/UnitOverheadBars.prefab"));
+            ValidatePassiveGraphics(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/GameData/Prefabs/UI/Battle/UnitHoverDetails.prefab"));
+            var bars = AssetDatabase.LoadAssetAtPath<UnitOverheadBarsView>("Assets/GameData/Prefabs/UI/Battle/UnitOverheadBars.prefab");
+            if (bars == null || !bars.ValidateReferences()) throw new InvalidOperationException("頭上バーのSpriteまたはFilled設定が不正です。");
         }
 
         private static void ValidateScene()
         {
-            var scene = EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
+            var scene = SceneManager.GetSceneByPath(ScenePath);
+            bool opened = !scene.IsValid() || !scene.isLoaded;
+            if (opened) scene = EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Additive);
+            try { ValidateScene(scene); }
+            finally { if (opened) EditorSceneManager.CloseScene(scene, true); }
+        }
+
+        /// <summary>渡されたSceneを保存・置換せず、戦闘専用の表示経路を検証する。</summary>
+        public static void ValidateScene(Scene scene)
+        {
             var canvas = FindSceneCanvas(scene)
                 ?? throw new InvalidOperationException("BattleSceneにCanvasがありません。");
             var scaler = canvas.GetComponent<CanvasScaler>()
@@ -75,6 +95,50 @@ namespace TestCardGame.Editor
                 throw new InvalidOperationException($"BattleSceneの戦闘ログ転送Componentは1個必要です。現在{logForwarders.Length}個です。");
             if (hudViews[0].transform != hudRoot || handViews[0].transform != handRoot)
                 throw new InvalidOperationException("BattleSceneのHUDまたは手札Componentが規定ルートにありません。");
+            BattleUI battleUi = FindSceneComponent<BattleUI>(scene);
+            if (battleUi == null || !battleUi.ValidateReferences()) throw new InvalidOperationException("戦闘UIと頭上表示の参照が不足しています。");
+            var module = FindSceneComponent<InputSystemUIInputModule>(scene);
+            if (FindSceneComponent<EventSystem>(scene) == null || module == null || !module.enabled
+                || module.point?.action == null || module.leftClick?.action == null || module.actionsAsset == null)
+                throw new InvalidOperationException("EventSystemのInput System接続が不足しています。");
+            var common = FindSceneComponent<TestCardGame.UIs.CommonUiController>(scene);
+            if (common == null || !common.ValidateReferences() || common.StatusBar.gameObject.activeSelf || common.MessageLog.MaxVisibleMessages != 1)
+                throw new InvalidOperationException("共通UIの通知または重複ステータス表示が不正です。");
+            if (hudRoot.Find("PlayerHud").gameObject.activeSelf || hudRoot.Find("Enemies").gameObject.activeSelf)
+                throw new InvalidOperationException("固定個体HUDが常設されています。");
+            var overlay = canvas.transform.Find("BattleUnitOverlay");
+            if (overlay == null || overlay.GetComponentsInChildren<UnitHoverDetailsView>(true).Length != 1)
+                throw new InvalidOperationException("共有ホバーパネルは1枚必要です。");
+            ValidatePassiveGraphics(overlay.gameObject);
+            var board = FindSceneComponent<BoardView>(scene)
+                ?? throw new InvalidOperationException("BattleSceneの盤面表示参照がありません。");
+            var data = new SerializedObject(board);
+            float maximum = data.FindProperty("maximumCellSize").floatValue;
+            Vector4 padding = data.FindProperty("padding").vector4Value;
+            foreach (var size in new[] {new Vector2Int(5,5),new Vector2Int(6,6),new Vector2Int(8,4),new Vector2Int(4,8)})
+            {
+                var result = BoardLayoutCalculator.Calculate(board.Viewport.rect.size, size, 5f, padding, maximum);
+                if (result.ContentSize.x > board.Viewport.rect.width + 0.01f || result.ContentSize.y > board.Viewport.rect.height + 0.01f)
+                    throw new InvalidOperationException($"盤面{size}が表示領域に収まりません。");
+            }
+        }
+
+        /// <summary>バー・説明パネルの全Graphicが操作を遮らないことを確認する。</summary>
+        private static void ValidatePassiveGraphics(GameObject root)
+        {
+            if (root == null) throw new InvalidOperationException("頭上表示のPrefabがありません。");
+            foreach (var graphic in root.GetComponentsInChildren<Graphic>(true))
+                if (graphic.raycastTarget) throw new InvalidOperationException($"{graphic.name}がポインター操作を遮ります。");
+        }
+
+        private static T FindSceneComponent<T>(Scene scene) where T : Component
+        {
+            foreach (var root in scene.GetRootGameObjects())
+            {
+                var component = root.GetComponentInChildren<T>(true);
+                if (component != null) return component;
+            }
+            return null;
         }
 
         /// <summary>対象Scene内からCanvasScalerを持つ基準Canvasだけを取得する。</summary>

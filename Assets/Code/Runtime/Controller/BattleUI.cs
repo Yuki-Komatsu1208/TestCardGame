@@ -13,6 +13,12 @@ namespace TestCardGame.Controller
     {
         [Header("Pre-configured UI References")]
         [SerializeField] private BattleHudView battleHudView;
+        [SerializeField] private BattleUnitHudPresenter unitHudPresenter;
+
+        /// <summary>個体説明を閉じる必要がある戦闘状態とデッキ表示を返す。</summary>
+        public bool IsUnitHoverBlocked => gameController == null || gameController.CurrentBattleResult != BattleResult.None
+            || (cardListOverlay != null && cardListOverlay.IsOpen)
+            || (runController != null && (runController.IsTownOpen || runController.IsAwaitingRouteChoice || runController.IsAwaitingOverhuntChoice));
         [SerializeField] private PostBattleRootView postBattleView;
 
         [Header("Deck overlay")]
@@ -53,7 +59,9 @@ namespace TestCardGame.Controller
             bool interactionEnabled = gameController.CurrentBattleResult == BattleResult.None
                 && (runController == null || (!runController.IsTownOpen && !runController.IsAwaitingRouteChoice
                     && !runController.IsAwaitingOverhuntChoice));
-            battleHudView.Render(battleHudPresenter.CreateViewModel(interactionEnabled));
+            BattleHudViewModel model = battleHudPresenter.CreateViewModel(interactionEnabled);
+            battleHudView.Render(model);
+            unitHudPresenter?.Render(model);
         }
 
         private void BindViewEvents()
@@ -273,7 +281,8 @@ namespace TestCardGame.Controller
         public bool ValidateReferences()
         {
             bool valid = GetComponent<RunController>() != null && GetComponent<RewardController>() != null
-                && battleHudView != null && postBattleView != null && cardListOverlay != null;
+                && battleHudView != null && postBattleView != null && cardListOverlay != null
+                && unitHudPresenter != null && unitHudPresenter.ValidateReferences();
             return valid && battleHudView.ValidateReferences() && postBattleView.ValidateReferences();
         }
 

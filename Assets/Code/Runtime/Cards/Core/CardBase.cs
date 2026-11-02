@@ -24,7 +24,6 @@ namespace TestCardGame.Cards.Core
         private readonly List<CardModifier> enchants;
         private readonly List<CardModifierSO> intrinsicModifierDefinitions;
         private readonly List<CardModifierSO> enchantDefinitions;
-        private bool skipNextTurnEndCooldownTick;
 
         public string CardName => Definition != null ? Definition.cardName : string.Empty;
         public string Description => Definition != null ? Definition.GetDataForLevel(Level.Level).description : string.Empty;
@@ -73,7 +72,6 @@ namespace TestCardGame.Cards.Core
             Level = nextLevel ?? throw new ArgumentNullException(nameof(nextLevel));
             Effects = BuildEffects(Definition.GetDataForLevel(Level.Level));
             RemainingCooldown = RemainingCooldown.ClampTo(BaseCooldown);
-            skipNextTurnEndCooldownTick = RemainingCooldown.IsActive && skipNextTurnEndCooldownTick;
         }
 
         public CardBase Clone()
@@ -133,7 +131,6 @@ namespace TestCardGame.Cards.Core
         public void StartCooldown(PlayerUnit player)
         {
             RemainingCooldown = RemainingCooldown.StartFrom(GetCooldown(player));
-            skipNextTurnEndCooldownTick = RemainingCooldown.IsActive;
         }
 
         /// <summary>
@@ -142,26 +139,15 @@ namespace TestCardGame.Cards.Core
         public void TickCooldown()
         {
             RemainingCooldown = RemainingCooldown.Tick();
-            if (!RemainingCooldown.IsActive)
-            {
-                skipNextTurnEndCooldownTick = false;
-            }
         }
 
         /// <summary>
-        /// ターン終了時のクールタイム更新を行う。使用直後のカードは既定CTを保持する。
+        /// 使用したターンの終了時から残りクールタイムを1減らす。
         /// </summary>
         public void TickCooldownAtTurnEnd(PlayerUnit player)
         {
             if (!IsCoolingDown)
             {
-                skipNextTurnEndCooldownTick = false;
-                return;
-            }
-
-            if (skipNextTurnEndCooldownTick)
-            {
-                skipNextTurnEndCooldownTick = false;
                 return;
             }
 
@@ -215,7 +201,6 @@ namespace TestCardGame.Cards.Core
         public void ResetBattleState()
         {
             RemainingCooldown = CardCooldown.None;
-            skipNextTurnEndCooldownTick = false;
         }
 
         private void RebuildEnchants()

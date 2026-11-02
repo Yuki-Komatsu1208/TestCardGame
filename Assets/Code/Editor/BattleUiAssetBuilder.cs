@@ -33,7 +33,7 @@ namespace TestCardGame.Editor
         public static void BuildAll()
         {
             EnsureDirectory(PrefabDirectory);
-            BuildHudPrefab();
+            BuildHudPrefab(HudPrefabPath);
             BuildHandPrefab();
             InstallIntoScene();
             AssetDatabase.SaveAssets();
@@ -59,9 +59,20 @@ namespace TestCardGame.Editor
             BattleUiAssetValidator.Validate();
         }
 
-        /// <summary>12枠の敵HUDを含む常設HUD Prefabを作成する。</summary>
-        private static void BuildHudPrefab()
+        /// <summary>既存HUDの参照とゲージを保持して細帯を更新する。未作成時だけ旧参照枠も構築する。</summary>
+        private static void BuildHudPrefab(string outputPath)
         {
+            if (AssetDatabase.LoadAssetAtPath<GameObject>(outputPath) != null)
+            {
+                var existing = PrefabUtility.LoadPrefabContents(outputPath);
+                try
+                {
+                    ConfigureCompactHud(existing);
+                    PrefabUtility.SaveAsPrefabAsset(existing, outputPath);
+                }
+                finally { PrefabUtility.UnloadPrefabContents(existing); }
+                return;
+            }
             var root = CreateImage("BattleHudRoot", null, new Vector2(0.02f, 0.58f), new Vector2(0.98f, 0.76f),
                 Vector2.zero, Vector2.zero, Iron, false);
             var view = root.AddComponent<BattleHudView>();
@@ -115,8 +126,155 @@ namespace TestCardGame.Editor
             SetReference(view, "pendingGoldText", pending);
             SetReference(view, "endTurnButton", endTurn);
             SetReference(view, "deckButton", deck);
-            PrefabUtility.SaveAsPrefabAsset(root, HudPrefabPath);
+            ConfigureCompactHud(root);
+            PrefabUtility.SaveAsPrefabAsset(root, outputPath);
             UnityEngine.Object.DestroyImmediate(root);
+        }
+
+        /// <summary>既存手札とカードを生成し直さず、戦闘HUDの表示と接続だけを更新する。</summary>
+        [MenuItem("Tools/Test Card Game/UI/Apply Compact Battle HUD Only")]
+        public static void ApplyCompactHudOnly()
+        {
+            var scene = SceneManager.GetActiveScene();
+            if (EditorApplication.isPlayingOrWillChangePlaymode || scene.path != ScenePath || scene.isDirty)
+                throw new InvalidOperationException("再生を停止し、保存済みのBattleSceneを開いてから実行してください。");
+            var root = PrefabUtility.LoadPrefabContents(HudPrefabPath);
+            try
+            {
+                ConfigureCompactHud(root);
+                PrefabUtility.SaveAsPrefabAsset(root, HudPrefabPath);
+            }
+            finally { PrefabUtility.UnloadPrefabContents(root); }
+            ApplyCompactLayout(scene);
+            EditorSceneManager.MarkSceneDirty(scene);
+            EditorSceneManager.SaveScene(scene);
+        }
+
+        /// <summary>固定個体枠の参照を保持し、全体情報だけを48pxの帯へ配置する。</summary>
+        private static void ConfigureCompactHud(GameObject root)
+        {
+            SetRect(root.transform, new Vector2(0.02f, 1f), new Vector2(0.98f, 1f), new Vector2(0f, -56f), new Vector2(0f, -8f));
+            SetRect(root.transform.Find("Progress"), Vector2.zero, Vector2.one, Vector2.zero, new Vector2(-82f, 0f));
+            string[] names = { "Turn", "Expedition", "Stage", "OverHunt", "Mana", "PendingGold", "CheckDeckButton" };
+            float[] left = { 0.008f, 0.14f, 0.33f, 0.51f, 0.62f, 0.73f, 0.835f };
+            float[] right = { 0.137f, 0.327f, 0.507f, 0.617f, 0.727f, 0.832f, 0.915f };
+            var progress = root.transform.Find("Progress");
+            var mana = progress.Find("Mana");
+            if (mana == null)
+                mana = CreateText("Mana", progress, "マナ --", 21f, FontStyles.Bold, TextAlignmentOptions.Left,
+                    Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, Ink).transform;
+            for (int i = 0; i < names.Length; i++)
+                SetRect(progress.Find(names[i]), new Vector2(left[i], 0.08f), new Vector2(right[i], 0.92f), Vector2.zero, Vector2.zero);
+            var end = root.transform.Find("EndTurnButton") ?? progress.Find("EndTurnButton");
+            end.SetParent(progress, false);
+            SetRect(end, new Vector2(0.92f, 0.08f), new Vector2(0.997f, 0.92f), Vector2.zero, Vector2.zero);
+            foreach (TMP_Text text in progress.GetComponentsInChildren<TMP_Text>(true))
+            {
+                text.font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/UI/Fonts/msgothic SDF.asset");
+                text.fontSize = 21f;
+                text.enableAutoSizing = true;
+                text.fontSizeMin = 17f;
+                text.fontSizeMax = 21f;
+                text.textWrappingMode = TextWrappingModes.NoWrap;
+                text.overflowMode = TextOverflowModes.Ellipsis;
+                text.raycastTarget = false;
+            }
+            // 非表示でも旧参照は残し、既存の検証・別表示形式と互換性を保つ。
+            root.transform.Find("PlayerHud").gameObject.SetActive(false);
+            root.transform.Find("Enemies").gameObject.SetActive(false);
+            var view = root.GetComponent<BattleHudView>();
+            SetReference(view, "manaText", mana.GetComponent<TMP_Text>());
+            var serialized = new SerializedObject(view);
+            serialized.FindProperty("compactLayout").boolValue = true;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        /// <summary>渡されたSceneだけに戦闘専用の余白と頭上表示を適用する。手札・共通Prefabは変更しない。</summary>
+        public static void ApplyCompactLayout(Scene scene)
+        {
+            var canvas = FindSceneCanvas(scene);
+            var hud = FindSceneComponent<BattleHudView>(scene);
+            var board = FindSceneComponent<BoardView>(scene);
+            var battleUi = FindSceneComponent<BattleUI>(scene);
+            var common = FindSceneComponent<TestCardGame.UIs.CommonUiController>(scene);
+            if (canvas == null || hud == null || board == null || battleUi == null || common == null)
+                throw new InvalidOperationException("戦闘レイアウトに必要なScene参照がありません。");
+            // 再実行時には移動済みボタンを含む既存オブジェクトを再利用する。
+            ConfigureCompactHud(hud.gameObject);
+            SetRect(board.Viewport, new Vector2(0.02f, 0.29f), new Vector2(0.98f, 1f), Vector2.zero, new Vector2(0f, -94f));
+            var boardData = new SerializedObject(board);
+            boardData.FindProperty("maximumCellSize").floatValue = 4096f;
+            boardData.FindProperty("padding").vector4Value = new Vector4(8f, 8f, 8f, 28f);
+            boardData.ApplyModifiedPropertiesWithoutUndo();
+            var background = canvas.transform.Find("Background_BattlefieldStone");
+            if (background != null)
+            {
+                SetRect(background, board.Viewport.anchorMin, board.Viewport.anchorMax, board.Viewport.offsetMin, board.Viewport.offsetMax);
+                if (background.TryGetComponent<Image>(out var backgroundImage)) backgroundImage.raycastTarget = false;
+            }
+            var frame = common.transform.Find("TopFrame");
+            SetRect(frame, new Vector2(0.02f, 1f), new Vector2(0.98f, 1f), new Vector2(0f, -88f), Vector2.zero);
+            if (frame.TryGetComponent<Image>(out var frameImage)) frameImage.enabled = false;
+            common.StatusBar.gameObject.SetActive(false);
+            SetRect(common.MessageLog.transform, new Vector2(0f, 1f), Vector2.one, new Vector2(0f, -86f), new Vector2(0f, -60f));
+            var log = new SerializedObject(common.MessageLog);
+            log.FindProperty("maxVisibleMessages").intValue = 1;
+            log.ApplyModifiedPropertiesWithoutUndo();
+            var message = common.MessageLog.GetComponentInChildren<TMP_Text>(true);
+            SetRect(message.transform, Vector2.zero, Vector2.one, new Vector2(10f, 1f), new Vector2(-10f, -1f));
+            message.fontSize = 19f;
+            message.textWrappingMode = TextWrappingModes.NoWrap;
+            message.overflowMode = TextOverflowModes.Ellipsis;
+            message.raycastTarget = false;
+            SetRect(frame.Find("SettingsButton"), Vector2.one, Vector2.one, new Vector2(-76f, -52f), new Vector2(-4f, -12f));
+            var settingsText = frame.Find("SettingsButton").GetComponentInChildren<TMP_Text>(true);
+            settingsText.fontSize = 20f;
+            settingsText.textWrappingMode = TextWrappingModes.NoWrap;
+            // 旧デバッグ表示は参照を残し、重複だけを隠す。
+            var oldPanel = canvas.transform.Find("BattleUIPanel");
+            if (oldPanel != null) oldPanel.gameObject.SetActive(false);
+            var overlay = canvas.transform.Find("BattleUnitOverlay") as RectTransform;
+            if (overlay == null) overlay = CreateRectObject("BattleUnitOverlay", canvas.transform, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero).GetComponent<RectTransform>();
+            // 手札のフォーカス表示とモーダルは説明より前面に残す。
+            overlay.SetSiblingIndex(board.Viewport.GetSiblingIndex() + 1);
+            var hover = overlay.GetComponentInChildren<UnitHoverDetailsView>(true);
+            if (hover == null) hover = InstantiatePrefab(PrefabDirectory + "/UnitHoverDetails.prefab", "UnitHoverDetails", scene, overlay).GetComponent<UnitHoverDetailsView>();
+            hover.Hide();
+            var presenter = battleUi.GetComponent<BattleUnitHudPresenter>();
+            if (presenter == null) presenter = battleUi.gameObject.AddComponent<BattleUnitHudPresenter>();
+            SetReference(presenter, "controller", FindSceneComponent<GameController>(scene));
+            SetReference(presenter, "battleUi", battleUi);
+            SetReference(presenter, "cellBuilder", FindSceneComponent<TestCardGame.BoardManage.CellBuilder>(scene));
+            SetReference(presenter, "overlayRoot", overlay);
+            SetReference(presenter, "boardViewport", board.Viewport);
+            SetReference(presenter, "barsPrefab", AssetDatabase.LoadAssetAtPath<UnitOverheadBarsView>(PrefabDirectory + "/UnitOverheadBars.prefab"));
+            SetReference(presenter, "hoverDetails", hover);
+            SetReference(presenter, "commonUi", common);
+            SetReference(presenter, "cellTooltip", FindSceneComponent<TooltipView>(scene));
+            SetReference(battleUi, "unitHudPresenter", presenter);
+            var player = board.Viewport.Find("Player");
+            if (player != null) SetReference(player.GetComponent<TestCardGame.Character.UnitView>(), "unitLabel", player.Find("Text").GetComponent<TMP_Text>());
+            foreach (var child in frame.GetComponentsInChildren<Transform>(true))
+            {
+                PrefabUtility.RecordPrefabInstancePropertyModifications(child.gameObject);
+                foreach (var graphic in child.GetComponents<Graphic>()) PrefabUtility.RecordPrefabInstancePropertyModifications(graphic);
+            }
+            foreach (var component in new Component[] { common, common.MessageLog, message, frameImage, settingsText, hud, presenter, board })
+                if (component != null) PrefabUtility.RecordPrefabInstancePropertyModifications(component);
+            common.transform.SetAsLastSibling();
+            Canvas.ForceUpdateCanvases();
+            board.ApplyLayout();
+        }
+
+        /// <summary>親の寸法に対する配置を明示し、再適用時にも同じ座標へ揃える。</summary>
+        private static void SetRect(Transform target, Vector2 min, Vector2 max, Vector2 offsetMin, Vector2 offsetMax)
+        {
+            var rect = (RectTransform)target;
+            rect.anchorMin = min;
+            rect.anchorMax = max;
+            rect.offsetMin = offsetMin;
+            rect.offsetMax = offsetMax;
+            PrefabUtility.RecordPrefabInstancePropertyModifications(rect);
         }
 
         /// <summary>ScrollRectと50個のカード枠を持つBattle手札Prefabを作成する。</summary>
@@ -137,6 +295,9 @@ namespace TestCardGame.Editor
             SetReference(hand, "scrollRect", scroll);
             SetReference(hand, "viewport", viewport);
             SetReference(hand, "content", content);
+            var focusedCards = CreateRectObject("FocusedCards", root.transform, Vector2.zero, Vector2.one,
+                Vector2.zero, Vector2.zero).GetComponent<RectTransform>();
+            SetReference(hand, "focusedCardRoot", focusedCards);
             SetArray(hand, "slots", slots.ToArray());
             GameObject selectionHeader = CreateImage("CombatSelectionHeader", root.transform,
                 new Vector2(0.20f, 0.80f), new Vector2(0.80f, 1f), Vector2.zero, Vector2.zero,
@@ -186,7 +347,7 @@ namespace TestCardGame.Editor
 
             var hud = hudObject.GetComponent<BattleHudView>();
             var hand = handObject.GetComponent<HandView>();
-            Button endTurn = hudObject.transform.Find("EndTurnButton").GetComponent<Button>();
+            Button endTurn = hudObject.transform.Find("Progress/EndTurnButton").GetComponent<Button>();
             Button deck = hudObject.transform.Find("Progress/CheckDeckButton").GetComponent<Button>();
             SetReference(gameController, "handView", hand);
             SetReference(battleUi, "battleHudView", hud);
@@ -198,6 +359,7 @@ namespace TestCardGame.Editor
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(1920f, 1080f);
             scaler.matchWidthOrHeight = 0.5f;
+            ApplyCompactLayout(scene);
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene);
         }
@@ -273,6 +435,7 @@ namespace TestCardGame.Editor
             SetReference(card, "descriptionText", description);
             SetReference(slot, "cardView", card);
             SetReference(slot, "canvasGroup", group);
+            CardTemplateAssetBuilder.ApplyLayout(card);
             return slot;
         }
 
@@ -284,8 +447,13 @@ namespace TestCardGame.Editor
             GameObject fillObject = CreateImage("Fill", root.transform, Vector2.zero, Vector2.one, new Vector2(2f, 2f),
                 new Vector2(-2f, -2f), fillColor, false);
             fill = fillObject.GetComponent<Image>();
+            // Filled Images need a sprite; without one uGUI renders a full quad regardless of fillAmount.
+            fill.sprite = AssetDatabase.LoadAssetAtPath<Sprite>(
+                "Packages/com.unity.2d.sprite/Editor/ObjectMenuCreation/DefaultAssets/Textures/v2/Square.png")
+                ?? throw new InvalidOperationException("HP/スタンゲージ用のSquareスプライトがありません。");
             fill.type = Image.Type.Filled;
             fill.fillMethod = Image.FillMethod.Horizontal;
+            fill.fillOrigin = (int)Image.OriginHorizontal.Left;
             fill.fillAmount = 1f;
             text = CreateText("Text", root.transform, label, 16f, FontStyles.Bold, TextAlignmentOptions.Center,
                 Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, Color.white);

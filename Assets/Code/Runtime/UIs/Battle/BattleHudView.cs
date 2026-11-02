@@ -9,7 +9,10 @@ namespace TestCardGame.UIs.Battle
     /// <summary>Battle常設HUDの表示とボタン入力通知だけを担当するView。</summary>
     public sealed class BattleHudView : MonoBehaviour
     {
+        [SerializeField] private bool compactLayout;
+        [SerializeField] private TMP_Text manaText;
         [SerializeField] private UnitHudSlotView playerSlot;
+        public bool IsCompactLayout => compactLayout;
         [SerializeField] private List<UnitHudSlotView> enemySlots = new();
         [SerializeField] private ScrollRect enemyScrollRect;
         [SerializeField] private RectTransform enemyContent;
@@ -45,17 +48,27 @@ namespace TestCardGame.UIs.Battle
         public void Render(BattleHudViewModel model)
         {
             if (model == null) return;
-            playerSlot?.Render(model.Player);
-            int enemyCount = model.Enemies?.Count ?? 0;
-            if (enemyCount > enemySlots.Count)
+            if (compactLayout)
             {
-                Debug.LogError($"BattleHudView: 敵HUD枠が不足しています。必要{enemyCount}枠、設定{enemySlots.Count}枠です。", this);
+                if (playerSlot != null) playerSlot.gameObject.SetActive(false);
+                if (enemyScrollRect != null) enemyScrollRect.transform.parent.gameObject.SetActive(false);
             }
-            for (int i = 0; i < enemySlots.Count; i++)
+            else
             {
-                enemySlots[i]?.Render(i < enemyCount ? model.Enemies[i] : null);
+                playerSlot?.Render(model.Player);
+                int enemyCount = model.Enemies?.Count ?? 0;
+                if (enemyCount > enemySlots.Count)
+                {
+                    Debug.LogError($"BattleHudView: 敵HUD枠が不足しています。必要{enemyCount}枠、設定{enemySlots.Count}枠です。", this);
+                }
+                for (int i = 0; i < enemySlots.Count; i++)
+                {
+                    enemySlots[i]?.Render(i < enemyCount ? model.Enemies[i] : null);
+                }
+                UpdateEnemyScroll(enemyCount);
             }
-            UpdateEnemyScroll(enemyCount);
+            if (manaText != null) manaText.text = model.Player != null
+                ? $"マナ {model.Player.CurrentMana} / {model.Player.MaxMana}" : "マナ --";
 
             if (turnText != null) turnText.text = model.TurnLabel;
             if (expeditionText != null) expeditionText.text = model.ExpeditionLabel;
@@ -73,9 +86,10 @@ namespace TestCardGame.UIs.Battle
         /// <summary>必須参照が揃っているか日本語エラーで検証する。</summary>
         public bool ValidateReferences()
         {
-            bool valid = playerSlot != null && playerSlot.HasRequiredReferences() && turnText != null
+            bool valid = (compactLayout ? manaText != null : playerSlot != null && playerSlot.HasRequiredReferences()) && turnText != null
                 && expeditionText != null && stageText != null && overHuntText != null && pendingGoldText != null
-                && endTurnButton != null && deckButton != null && enemyScrollRect != null && enemyContent != null;
+                && endTurnButton != null && deckButton != null
+                && (compactLayout || (enemyScrollRect != null && enemyContent != null));
             if (!valid) Debug.LogError("BattleHudView: 必須のInspector参照が不足しています。", this);
             return valid;
         }

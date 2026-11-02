@@ -34,3 +34,4 @@ ADR番号はカテゴリフォルダごとに `ADR-001` から採番します。
 * [ADR-015: Outpostショップでキーストーンを任意購入し、カード在庫を滞在単位で固定する](GameDesign/ADR-015-outpost-shop-inventory-and-keystone-purchase.md)
 * [ADR-016: 移動4系統とFORCEMOVE衝突規則をUnitMoveServiceへ集約する](GameDesign/ADR-016-unit-movement-and-force-move-collision.md)
 * [ADR-017: UIを事前構築し、画面表示とゲーム進行ロジックを分離する](GameDesign/ADR-017-serialized-ui-and-screen-interaction-design.md)
+* [ADR-018: CT値を再使用可能になる自分ターンまでの間隔に合わせる](GameDesign/ADR-018-cooldown-matches-reuse-turn-interval.md)

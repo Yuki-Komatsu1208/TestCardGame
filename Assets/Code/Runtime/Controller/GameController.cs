@@ -530,6 +530,7 @@ namespace TestCardGame.Controller
         {
             HandleUnitDeaths();
             SyncCellVisuals();
+            handView?.RefreshCardViews();
             handView?.SetInteractionEnabled(IsPlayerTurn && CurrentBattleResult == BattleResult.None);
             if (battleUIInstance != null)
             {

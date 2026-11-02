@@ -76,6 +76,8 @@ namespace TestCardGame.BoardManage
         /// </summary>
         public bool InitializeStage(StageDefinitionSO stageDef, Run.RunState runState)
         {
+            if (playerView != null) playerView.SetParent(transform.parent, false);
+
             // 以前のセルと敵ビューを破棄する。
             foreach (var cellObj in cellRects.Values)
             {
@@ -186,11 +188,7 @@ namespace TestCardGame.BoardManage
                         image.color = spawn.enemy.enemyColor;
                     }
 
-                    var textComp = eview.GetComponentInChildren<TextMeshProUGUI>();
-                    if (textComp != null)
-                    {
-                        textComp.text = spawn.enemy.enemyName[0].ToString();
-                    }
+                    eUnitView.SetLabel(string.IsNullOrEmpty(spawn.enemy.enemyName) ? "E" : spawn.enemy.enemyName[0].ToString());
 
                     eUnitView.Initialize(null);
                     if (eview.TryGetComponent(out EnemyIntentView intentView)) intentView.Bind(unitID);
@@ -252,18 +250,8 @@ namespace TestCardGame.BoardManage
                 }
             }
 
-            var textComp = eview.GetComponentInChildren<TextMeshProUGUI>();
-            if (textComp != null)
-            {
-                if (enemyDefinition != null && !string.IsNullOrEmpty(enemyDefinition.enemyName))
-                {
-                    textComp.text = enemyDefinition.enemyName[0].ToString();
-                }
-                else
-                {
-                    textComp.text = "E";
-                }
-            }
+            eUnitView.SetLabel(enemyDefinition != null && !string.IsNullOrEmpty(enemyDefinition.enemyName)
+                ? enemyDefinition.enemyName[0].ToString() : "E");
 
             eUnitView.Initialize(null);
             if (eview.TryGetComponent(out EnemyIntentView intentView)) intentView.Bind(enemies[0].ID);
@@ -307,11 +295,7 @@ namespace TestCardGame.BoardManage
                 image.color = def.enemyColor;
             }
 
-            var textComp = eview.GetComponentInChildren<TextMeshProUGUI>();
-            if (textComp != null)
-            {
-                textComp.text = def.enemyName[0].ToString();
-            }
+            eUnitView.SetLabel(string.IsNullOrEmpty(def.enemyName) ? "E" : def.enemyName[0].ToString());
 
             eUnitView.Initialize(null);
             if (eview.TryGetComponent(out EnemyIntentView intentView)) intentView.Bind(unitID);
@@ -348,11 +332,8 @@ namespace TestCardGame.BoardManage
                 }
             }
 
-            var textComp = playerView.GetComponentInChildren<TextMeshProUGUI>();
-            if (textComp != null)
-            {
-                textComp.text = "P";
-            }
+            playerUnitView.SetLabel(playerView.TryGetComponent<Image>(out var playerImage) && playerImage.sprite != null
+                    ? string.Empty : "P");
 
             playerUnitView.Initialize(playerDefinition != null ? playerDefinition.playerSprite : null);
             if (playerView.TryGetComponent(out EnemyIntentView intentView)) intentView.DisableIntent();

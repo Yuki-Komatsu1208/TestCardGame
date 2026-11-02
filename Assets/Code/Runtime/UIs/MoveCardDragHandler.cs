@@ -55,12 +55,11 @@ public class MoveCardDragHandler : MonoBehaviour, IPointerDownHandler, IDragHand
         pointerDownScreenPos = eventData.position;
         isDragging = true;
         cardIndex = ResolveCardIndex();
-        if (cardRect != null) cardRect.localScale = initialScale * dragScale;
         (gameController as ICardDragPreviewController)?.BeginPreview(cardIndex);
     }
 
     /// <summary>
-    /// ドラッグ中のカードUI位置をポインター移動に追従させる。
+    /// ドラッグ開始後だけカードを縮小し、ポインター移動に追従させる。
     /// </summary>
     public void OnDrag(PointerEventData eventData)
     {
@@ -69,6 +68,8 @@ public class MoveCardDragHandler : MonoBehaviour, IPointerDownHandler, IDragHand
             return;
         }
 
+        // 選択時の拡大率に掛けず、運搬中は通常カードを基準とした倍率にする。
+        cardRect.localScale = Vector3.one * dragScale;
         var scale = parentCanvas != null ? parentCanvas.scaleFactor : 1f;
         cardRect.anchoredPosition += eventData.delta / scale;
         (gameController as ICardDragPreviewController)?.UpdatePreview(cardIndex, eventData.position);

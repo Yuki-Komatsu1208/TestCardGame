@@ -24,16 +24,22 @@ namespace TestCardGame.Cards.Modifiers
 
         public Vector2Int TargetPosition => ActionContext?.TargetPosition ?? default;
 
+        /// <summary>攻撃が命中先を解決済みならその結果を使い、それ以外は従来の指定セルを使う。</summary>
         public IUnit TargetUnit
         {
             get
             {
-                if (ActionContext?.MoveService == null)
+                if (ActionContext == null)
                 {
                     return null;
                 }
 
-                return ActionContext.MoveService.GetUnitAt(ActionContext.TargetPosition);
+                if (ActionContext.HasResolvedHitTarget)
+                {
+                    return ActionContext.HitTarget;
+                }
+
+                return ActionContext.MoveService?.GetUnitAt(ActionContext.TargetPosition);
             }
         }
     }

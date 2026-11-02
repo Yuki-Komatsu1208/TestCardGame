@@ -57,6 +57,12 @@ flowchart LR
 4. カード使用時、`CardBase.Effects` の各Effectを順番に実行する。
 5. コスト、クールタイム、エンチャント処理は `CardBase` と `CardModifier` が担当する。
 
+### MODへ渡す命中先
+
+`eMagicArrow` は実際に命中したユニットを `ActionContext.SetHitTarget` へ記録する。空振りでは `null` を記録する。`CardModifierContext.TargetUnit` はこの命中結果を優先するため、空きマスで方向を指定した場合も「過熱」などの対象が命中したユニットと一致する。
+
+命中結果を記録しない既存Effectでは、従来どおり指定セルのユニットを参照する。
+
 ## 効果の実装方針
 
 - カード効果の最小単位は `eXxx` とする。

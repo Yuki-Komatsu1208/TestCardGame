@@ -9,6 +9,18 @@ namespace TestCardGame.Character
     {
         [SerializeField] private RectTransform rectTransform;
         [SerializeField] private Image image;
+        [SerializeField] private TMPro.TMP_Text unitLabel;
+
+        /// <summary>ユニット本体の識別文字だけを変更する。</summary>
+        public void SetLabel(string text) { if (unitLabel != null) unitLabel.text = text; }
+
+        /// <summary>セルの78%を占める中央アンカーへ統一し、Stretchによる二重拡大を防ぐ。</summary>
+        public void FitToCell(float cellSize)
+        {
+            rectTransform ??= GetComponent<RectTransform>();
+            rectTransform.anchorMin = rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+            rectTransform.sizeDelta = Vector2.one * Mathf.Max(1f, cellSize * 0.78f);
+        }
 
         [Header("Animation Frames")]
         [SerializeField] private Sprite[] idleFrames;
@@ -137,11 +149,9 @@ namespace TestCardGame.Character
             }
 
             rectTransform.SetParent(cellRect, false);
-            rectTransform.anchorMin = Vector2.zero;
-            rectTransform.anchorMax = Vector2.one;
+            FitToCell(Mathf.Min(cellRect.rect.width, cellRect.rect.height));
             rectTransform.pivot = new Vector2(0.5f, 0.5f);
             rectTransform.anchoredPosition = Vector2.zero;
-            rectTransform.sizeDelta = Vector2.zero;
             rectTransform.SetAsLastSibling();
         }
     }

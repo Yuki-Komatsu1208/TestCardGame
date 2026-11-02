@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 namespace TestCardGame.UIs.Battle
 {
-    /// <summary>敵の頭上記号、選択枠、クリック通知だけを担当する。</summary>
+    /// <summary>敵の行動予告の保持、選択枠、クリック通知を担当する。</summary>
     public sealed class EnemyIntentView : MonoBehaviour, IPointerClickHandler
     {
         [SerializeField] private TextMeshProUGUI intentText;
@@ -18,36 +18,31 @@ namespace TestCardGame.UIs.Battle
         private bool bound;
 
         public event Action<UnitID> EnemySelected;
+        public EnemyIntentPreview Preview { get; private set; }
 
-        /// <summary>対応する敵IDを保持し、頭上表示を有効にする。</summary>
+        /// <summary>対応する敵IDを保持し、クリックによる選択を有効にする。</summary>
         public void Bind(UnitID id)
         {
             enemyId = id;
             bound = id != null;
-            if (intentText != null) intentText.gameObject.SetActive(bound);
+            if (intentText != null) intentText.gameObject.SetActive(false);
         }
 
         /// <summary>敵ではないテンプレート本体の意図表示を隠す。</summary>
         public void DisableIntent()
         {
             bound = false;
+            Preview = null;
             enemyId = null;
             if (intentText != null) intentText.gameObject.SetActive(false);
             SetSelected(false);
         }
 
-        /// <summary>バックエンドが明示した分類を記号へ変換して表示する。</summary>
+        /// <summary>既存の予告を共有説明用に保持し、常設記号を隠す。</summary>
         public void ShowIntent(EnemyIntentPreview preview)
         {
-            if (intentText == null || preview == null) return;
-            intentText.gameObject.SetActive(true);
-            intentText.text = !preview.CanExecute ? "—" : preview.Kind switch
-            {
-                EnemyIntentKind.Attack => "⚔",
-                EnemyIntentKind.StatusEffect => "↻",
-                EnemyIntentKind.Other => "?",
-                _ => "—"
-            };
+            Preview = preview;
+            if (intentText != null) intentText.gameObject.SetActive(false);
         }
 
         public void SetSelected(bool selected)

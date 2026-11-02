@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: MagicArrowCard
   m_EditorClassIdentifier: Assembly-CSharp::TestCardGame.Cards.Core.CardDefinitionSO
   cardName: "\u9B54\u6CD5\uFF1A\u9B54\u6CD5\u306E\u77E2"
-  buildTags:
-  - 0
+  artwork: {fileID: 0}
+  buildTags: 00000000
+  intrinsicModifiers: []
   level1:
-    description: "射程3の直線上に魔法の矢を放ち、最初に当たった対象に18ダメージを与える。現在の集中をすべて消費し、その値だけ射程が増加する。"
+    description: "\u76F4\u7DDA\u4E0A\u306B\u9B54\u6CD5\u306E\u77E2\u3092\u653E\u3061\u3001\u6700\u521D\u306B\u5F53\u305F\u3063\u305F\u5BFE\u8C61\u306B18\u30C0\u30E1\u30FC\u30B8\u3092\u4E0E\u3048\u308B\u3002\u73FE\u5728\u306E\u96C6\u4E2D\u3092\u3059\u3079\u3066\u6D88\u8CBB\u3057\u3001\u305D\u306E\u5024\u3060\u3051\u5C04\u7A0B\u304C\u5897\u52A0\u3059\u308B\u3002"
     cost:
       amount: 1
     cooldown:
@@ -26,18 +27,38 @@ MonoBehaviour:
       parameters:
         step: 1
         damage: 18
+        StunDamage: 0
         duration: 1
-        range: 3
+        range: 1
         hitType: 0
         radius: 1
         distance: 1
         maxRange: 0
         statusEffect: 0
         value: 0
+        count: 1
+        moveAwayFromTarget: 0
+        forceMoveDirection: 0
+        forceMoveStunDamage: 0
     - effect: {fileID: 11400000, guid: 4f2a6cd747b347c4a3792e1586526ddc, type: 2}
-      parameters: {StunDamage: 10}
+      parameters:
+        step: 1
+        damage: 1
+        StunDamage: 10
+        duration: 1
+        range: 1
+        hitType: 0
+        radius: 1
+        distance: 1
+        maxRange: 0
+        statusEffect: 0
+        value: 0
+        count: 1
+        moveAwayFromTarget: 0
+        forceMoveDirection: 0
+        forceMoveStunDamage: 0
   level2:
-    description: "射程3の直線上に魔法の矢を放ち、最初に当たった対象に26ダメージを与える。現在の集中をすべて消費し、その値だけ射程が増加する。"
+    description: "\u76F4\u7DDA\u4E0A\u306B\u9B54\u6CD5\u306E\u77E2\u3092\u653E\u3061\u3001\u6700\u521D\u306B\u5F53\u305F\u3063\u305F\u5BFE\u8C61\u306B26\u30C0\u30E1\u30FC\u30B8\u3092\u4E0E\u3048\u308B\u3002\u73FE\u5728\u306E\u96C6\u4E2D\u3092\u3059\u3079\u3066\u6D88\u8CBB\u3057\u3001\u305D\u306E\u5024\u3060\u3051\u5C04\u7A0B\u304C\u5897\u52A0\u3059\u308B\u3002"
     cost:
       amount: 1
     cooldown:
@@ -47,18 +68,38 @@ MonoBehaviour:
       parameters:
         step: 1
         damage: 26
+        StunDamage: 0
         duration: 1
-        range: 3
+        range: 1
         hitType: 0
         radius: 1
         distance: 1
         maxRange: 0
         statusEffect: 0
         value: 0
+        count: 1
+        moveAwayFromTarget: 0
+        forceMoveDirection: 0
+        forceMoveStunDamage: 0
     - effect: {fileID: 11400000, guid: 4f2a6cd747b347c4a3792e1586526ddc, type: 2}
-      parameters: {StunDamage: 10}
+      parameters:
+        step: 1
+        damage: 1
+        StunDamage: 10
+        duration: 1
+        range: 1
+        hitType: 0
+        radius: 1
+        distance: 1
+        maxRange: 0
+        statusEffect: 0
+        value: 0
+        count: 1
+        moveAwayFromTarget: 0
+        forceMoveDirection: 0
+        forceMoveStunDamage: 0
   level3:
-    description: "射程3の直線上に魔法の矢を放ち、最初に当たった対象に34ダメージを与える。現在の集中をすべて消費し、その値だけ射程が増加する。"
+    description: "\u76F4\u7DDA\u4E0A\u306B\u9B54\u6CD5\u306E\u77E2\u3092\u653E\u3061\u3001\u6700\u521D\u306B\u5F53\u305F\u3063\u305F\u5BFE\u8C61\u306B34\u30C0\u30E1\u30FC\u30B8\u3092\u4E0E\u3048\u308B\u3002\u73FE\u5728\u306E\u96C6\u4E2D\u3092\u3059\u3079\u3066\u6D88\u8CBB\u3057\u3001\u305D\u306E\u5024\u3060\u3051\u5C04\u7A0B\u304C\u5897\u52A0\u3059\u308B\u3002"
     cost:
       amount: 2
     cooldown:
@@ -68,13 +109,33 @@ MonoBehaviour:
       parameters:
         step: 1
         damage: 34
+        StunDamage: 0
         duration: 1
-        range: 3
+        range: 1
         hitType: 0
         radius: 1
         distance: 1
         maxRange: 0
         statusEffect: 0
         value: 0
+        count: 1
+        moveAwayFromTarget: 0
+        forceMoveDirection: 0
+        forceMoveStunDamage: 0
     - effect: {fileID: 11400000, guid: 4f2a6cd747b347c4a3792e1586526ddc, type: 2}
-      parameters: {StunDamage: 10}
+      parameters:
+        step: 1
+        damage: 1
+        StunDamage: 10
+        duration: 1
+        range: 1
+        hitType: 0
+        radius: 1
+        distance: 1
+        maxRange: 0
+        statusEffect: 0
+        value: 0
+        count: 1
+        moveAwayFromTarget: 0
+        forceMoveDirection: 0
+        forceMoveStunDamage: 0
